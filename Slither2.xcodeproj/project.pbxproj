@@ -13,6 +13,27 @@
 		31C8803322227F9B008C0D99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31C8803222227F9B008C0D99 /* Assets.xcassets */; };
 		31C8803622227F9B008C0D99 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 31C8803422227F9B008C0D99 /* LaunchScreen.storyboard */; };
 		31C8804122227F9B008C0D99 /* Slither2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804022227F9B008C0D99 /* Slither2Tests.swift */; };
+		31C88054222282DC008C0D99 /* BoardTypesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804D222282DB008C0D99 /* BoardTypesViewController.swift */; };
+		31C88055222282DC008C0D99 /* CGUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804E222282DB008C0D99 /* CGUtil.swift */; };
+		31C88056222282DC008C0D99 /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804F222282DB008C0D99 /* EditViewController.swift */; };
+		31C88057222282DC008C0D99 /* FoldersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C88050222282DB008C0D99 /* FoldersViewController.swift */; };
+		31C88058222282DC008C0D99 /* AppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C88051222282DB008C0D99 /* AppManager.swift */; };
+		31C88059222282DC008C0D99 /* GenerateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C88052222282DB008C0D99 /* GenerateViewController.swift */; };
+		31C880602222831E008C0D99 /* PlayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8805B2222831E008C0D99 /* PlayViewController.swift */; };
+		31C880612222831E008C0D99 /* PuzzlesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8805C2222831E008C0D99 /* PuzzlesViewController.swift */; };
+		31C880622222831E008C0D99 /* PuzzleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8805D2222831E008C0D99 /* PuzzleView.swift */; };
+		31C880632222831E008C0D99 /* Puzzle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8805E2222831E008C0D99 /* Puzzle.swift */; };
+		31C880642222831E008C0D99 /* PuzzleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8805F2222831E008C0D99 /* PuzzleCell.swift */; };
+		31C8807022228495008C0D99 /* AreaChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806522228476008C0D99 /* AreaChecker.swift */; };
+		31C8807122228495008C0D99 /* Board.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806622228476008C0D99 /* Board.swift */; };
+		31C8807222228495008C0D99 /* Solver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806722228476008C0D99 /* Solver.swift */; };
+		31C8807322228495008C0D99 /* Generator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806822228476008C0D99 /* Generator.swift */; };
+		31C8807422228495008C0D99 /* SolverUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806922228476008C0D99 /* SolverUtil.swift */; };
+		31C8807522228495008C0D99 /* Step.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806A22228476008C0D99 /* Step.swift */; };
+		31C8807622228495008C0D99 /* Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806B22228476008C0D99 /* Elements.swift */; };
+		31C8807722228495008C0D99 /* Solver+InitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806C22228476008C0D99 /* Solver+InitCheck.swift */; };
+		31C8807822228495008C0D99 /* Solver+GateCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806D22228476008C0D99 /* Solver+GateCheck.swift */; };
+		31C8807922228495008C0D99 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806E22228476008C0D99 /* Action.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +57,29 @@
 		31C8803C22227F9B008C0D99 /* Slither2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Slither2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		31C8804022227F9B008C0D99 /* Slither2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slither2Tests.swift; sourceTree = "<group>"; };
 		31C8804222227F9B008C0D99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		31C8804B2222801D008C0D99 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
+		31C8804C2222801D008C0D99 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
+		31C8804D222282DB008C0D99 /* BoardTypesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardTypesViewController.swift; sourceTree = "<group>"; };
+		31C8804E222282DB008C0D99 /* CGUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGUtil.swift; sourceTree = "<group>"; };
+		31C8804F222282DB008C0D99 /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditViewController.swift; sourceTree = "<group>"; };
+		31C88050222282DB008C0D99 /* FoldersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoldersViewController.swift; sourceTree = "<group>"; };
+		31C88051222282DB008C0D99 /* AppManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppManager.swift; sourceTree = "<group>"; };
+		31C88052222282DB008C0D99 /* GenerateViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GenerateViewController.swift; sourceTree = "<group>"; };
+		31C8805B2222831E008C0D99 /* PlayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayViewController.swift; sourceTree = "<group>"; };
+		31C8805C2222831E008C0D99 /* PuzzlesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuzzlesViewController.swift; sourceTree = "<group>"; };
+		31C8805D2222831E008C0D99 /* PuzzleView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuzzleView.swift; sourceTree = "<group>"; };
+		31C8805E2222831E008C0D99 /* Puzzle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Puzzle.swift; sourceTree = "<group>"; };
+		31C8805F2222831E008C0D99 /* PuzzleCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PuzzleCell.swift; sourceTree = "<group>"; };
+		31C8806522228476008C0D99 /* AreaChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AreaChecker.swift; sourceTree = "<group>"; };
+		31C8806622228476008C0D99 /* Board.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Board.swift; sourceTree = "<group>"; };
+		31C8806722228476008C0D99 /* Solver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Solver.swift; sourceTree = "<group>"; };
+		31C8806822228476008C0D99 /* Generator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Generator.swift; sourceTree = "<group>"; };
+		31C8806922228476008C0D99 /* SolverUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolverUtil.swift; sourceTree = "<group>"; };
+		31C8806A22228476008C0D99 /* Step.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Step.swift; sourceTree = "<group>"; };
+		31C8806B22228476008C0D99 /* Elements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Elements.swift; sourceTree = "<group>"; };
+		31C8806C22228476008C0D99 /* Solver+InitCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Solver+InitCheck.swift"; sourceTree = "<group>"; };
+		31C8806D22228476008C0D99 /* Solver+GateCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Solver+GateCheck.swift"; sourceTree = "<group>"; };
+		31C8806E22228476008C0D99 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +127,18 @@
 				31C8803222227F9B008C0D99 /* Assets.xcassets */,
 				31C8803422227F9B008C0D99 /* LaunchScreen.storyboard */,
 				31C8803722227F9B008C0D99 /* Info.plist */,
+				31C8806F22228476008C0D99 /* Core */,
+				31C88051222282DB008C0D99 /* AppManager.swift */,
+				31C8804D222282DB008C0D99 /* BoardTypesViewController.swift */,
+				31C8804E222282DB008C0D99 /* CGUtil.swift */,
+				31C8804F222282DB008C0D99 /* EditViewController.swift */,
+				31C88050222282DB008C0D99 /* FoldersViewController.swift */,
+				31C88052222282DB008C0D99 /* GenerateViewController.swift */,
+				31C8805B2222831E008C0D99 /* PlayViewController.swift */,
+				31C8805E2222831E008C0D99 /* Puzzle.swift */,
+				31C8805F2222831E008C0D99 /* PuzzleCell.swift */,
+				31C8805C2222831E008C0D99 /* PuzzlesViewController.swift */,
+				31C8805D2222831E008C0D99 /* PuzzleView.swift */,
 			);
 			path = Slither2;
 			sourceTree = "<group>";
@@ -95,6 +151,24 @@
 			);
 			path = Slither2Tests;
 			sourceTree = "<group>";
+		};
+		31C8806F22228476008C0D99 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				31C8806522228476008C0D99 /* AreaChecker.swift */,
+				31C8806622228476008C0D99 /* Board.swift */,
+				31C8806722228476008C0D99 /* Solver.swift */,
+				31C8806822228476008C0D99 /* Generator.swift */,
+				31C8806922228476008C0D99 /* SolverUtil.swift */,
+				31C8806A22228476008C0D99 /* Step.swift */,
+				31C8806B22228476008C0D99 /* Elements.swift */,
+				31C8806C22228476008C0D99 /* Solver+InitCheck.swift */,
+				31C8806D22228476008C0D99 /* Solver+GateCheck.swift */,
+				31C8806E22228476008C0D99 /* Action.swift */,
+			);
+			name = Core;
+			path = /Users/zak/Projects/Slither2/Slither2/Core;
+			sourceTree = "<absolute>";
 		};
 /* End PBXGroup section */
 
@@ -158,7 +232,6 @@
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				en,
 				Base,
 			);
 			mainGroup = 31C8801F22227F99008C0D99;
@@ -197,8 +270,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				31C8807822228495008C0D99 /* Solver+GateCheck.swift in Sources */,
+				31C8807422228495008C0D99 /* SolverUtil.swift in Sources */,
+				31C880622222831E008C0D99 /* PuzzleView.swift in Sources */,
+				31C88058222282DC008C0D99 /* AppManager.swift in Sources */,
+				31C8807222228495008C0D99 /* Solver.swift in Sources */,
+				31C8807122228495008C0D99 /* Board.swift in Sources */,
+				31C8807022228495008C0D99 /* AreaChecker.swift in Sources */,
+				31C8807922228495008C0D99 /* Action.swift in Sources */,
+				31C880602222831E008C0D99 /* PlayViewController.swift in Sources */,
+				31C8807522228495008C0D99 /* Step.swift in Sources */,
+				31C8807722228495008C0D99 /* Solver+InitCheck.swift in Sources */,
+				31C88059222282DC008C0D99 /* GenerateViewController.swift in Sources */,
+				31C88056222282DC008C0D99 /* EditViewController.swift in Sources */,
+				31C880612222831E008C0D99 /* PuzzlesViewController.swift in Sources */,
 				31C8802E22227F99008C0D99 /* ViewController.swift in Sources */,
+				31C8807322228495008C0D99 /* Generator.swift in Sources */,
+				31C88057222282DC008C0D99 /* FoldersViewController.swift in Sources */,
+				31C8807622228495008C0D99 /* Elements.swift in Sources */,
+				31C880642222831E008C0D99 /* PuzzleCell.swift in Sources */,
 				31C8802C22227F99008C0D99 /* AppDelegate.swift in Sources */,
+				31C880632222831E008C0D99 /* Puzzle.swift in Sources */,
+				31C88054222282DC008C0D99 /* BoardTypesViewController.swift in Sources */,
+				31C88055222282DC008C0D99 /* CGUtil.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -225,6 +319,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				31C8803022227F99008C0D99 /* Base */,
+				31C8804B2222801D008C0D99 /* ja */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -233,6 +328,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				31C8803522227F9B008C0D99 /* Base */,
+				31C8804C2222801D008C0D99 /* ja */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -291,7 +387,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -346,7 +442,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -361,6 +457,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = A8EEF732K9;
 				INFOPLIST_FILE = Slither2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -369,7 +466,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = kj.okzk.Slither2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
 		};
@@ -378,6 +475,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = A8EEF732K9;
 				INFOPLIST_FILE = Slither2/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -386,7 +484,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = kj.okzk.Slither2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
 		};

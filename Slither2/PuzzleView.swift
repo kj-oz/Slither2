@@ -1,0 +1,876 @@
+//
+//  PuzzleView.swift
+//  Slither
+//
+//  Created by KO on 2018/12/29.
+//  Copyright © 2018 KO. All rights reserved.
+//
+
+import UIKit
+
+/// パズルビューのモード
+///
+/// - view:   表示のみ
+/// - play:   EdgeのOn、Offの指定
+/// - input:  数字の入力
+enum PuzzleViewMode {
+  case view
+  case play
+  case input
+}
+
+/// パズルビューのデリゲート
+protocol PuzzleViewDelegate {
+  /// 拡大画面での表示位置（回転後の問題座標系）
+  var zoomedPoint: CGPoint { get set }
+  
+  /// 線の連続入力の開始
+  func lineBegan()
+  
+  /// 何らかの操作が行われた時の発生するイベント
+  ///
+  /// - Parameter action: 操作
+  func actionDone(_ action: Action)
+  
+  /// 線の連続入力の終了
+  func lineEnded()
+}
+
+/// スリザーリンク専用のビュー
+class PuzzleView: UIView {
+  /// 問題の末端の点からの余白（問題座標系）
+  static let margin: CGFloat = 1.0
+  
+  /// 拡大表示時の端部のグレー表示幅（問題座標系）
+  static let boderWidth: CGFloat = 0.2
+  
+  /// 拡大表示時の最小ピッチ（ピクセル単位）
+  static let touchablePitch: CGFloat =  44.0
+  
+  /// 盤面の情報の取得、設定を行うデリゲート
+  var delegate: PuzzleViewDelegate?
+  
+  /// 描画対象の盤面データ
+  var board: Board?
+  
+  /// ビューのモード
+  var mode = PuzzleViewMode.play
+  
+  /// 拡大画面での表示範囲（回転後の問題座標系）
+  var zoomedArea: CGRect = CGRect.zero
+  
+  /// 各種ジェスチャーリコグナイザ
+  var panGr: UIPanGestureRecognizer?
+  var pinchGr: UIPinchGestureRecognizer?
+  var tap1Gr: UITapGestureRecognizer?
+  var tap2Gr: UITapGestureRecognizer?
+  
+  /// 線の連続入力時の軌跡
+  var tracks: [CGPoint] = []
+  
+  /// タップ位置にノードが含まれているかどうかの判定の半径
+  var r: CGFloat = 0.0
+  
+  /// 線の連続入力時の直前にたどったノード
+  var prevNode: Node?
+  
+  /// 線の連続入力時の直前にたどった辺（微小のドラッグをタップとして扱うため）
+  var prevEdge: Edge?
+  
+  /// ズーム中かどうか
+  var zoomed  = true
+  
+  /// 回転しているかどうか
+  /// 問題の縦横比と画面の縦横比の方向が一致していなければ回転
+  /// 問題が正方形の場合縦向きとして扱う
+  var rotated = false
+  
+  /// 拡大領域を調整したか
+  /// 初回描画時、及び回転時に拡大領域の調整が実行される
+  var adjusted = false
+  
+  /// 画面座標系でのズーム時の問題原点（左上）の座標と点の間隔
+  var zx0: CGFloat = 0.0
+  var zy0: CGFloat = 0.0
+  var zpitch: CGFloat = 0.0
+  
+  /// 画面座標系での全体表示時の問題原点（左上）の座標と点の間隔
+  var ax0: CGFloat = 0.0
+  var ay0: CGFloat = 0.0
+  var apitch: CGFloat = 0.0
+  
+  /// 問題座標系でのズームエリアの可動範囲
+  var zoomableArea = CGRect.zero
+  
+  /// 拡大時の盤面サイズが画面より小さく、スクロールの必要がない場合にYES
+  var fixH = false
+  var fixV = false
+  
+  /// 描画色
+  var boardColor = UIColor(red: 0.95, green: 0.95, blue: 0.9, alpha: 1.0)
+  var erasableColor = UIColor(red: 0.0, green: 0.5, blue: 1.0, alpha: 1.0)
+  var zoomAreaStrokeColor = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.2)
+  var zoomAreaFillColor = UIColor(red:1.0, green:1.0, blue:0.0, alpha:0.1)
+  var bgColor = UIColor.lightGray
+  var trackColor = UIColor(red:0.0, green:1.0, blue:1.0, alpha:0.03)
+
+  // MARK: - 初期化
+  // コンストラクタ
+  required init?(coder aDecoder: NSCoder) {
+    super.init(coder: aDecoder)
+  }
+  
+  // Storyboardからの復元時
+  override func awakeFromNib() {
+    // NOTE この段階ではまだdelegateは設定されていない
+    panGr = UIPanGestureRecognizer(target: self, action: #selector(panned))
+    pinchGr = UIPinchGestureRecognizer(target: self, action: #selector(pinched))
+    tap1Gr = UITapGestureRecognizer(target: self, action: #selector(tapped1))
+    tap2Gr = UITapGestureRecognizer(target: self, action: #selector(tapped2))
+    tap2Gr!.numberOfTouchesRequired = 2
+    
+    self.addGestureRecognizer(panGr!)
+    self.addGestureRecognizer(pinchGr!)
+    self.addGestureRecognizer(tap1Gr!)
+    self.addGestureRecognizer(tap2Gr!)
+    
+    // 定数
+    zpitch = PuzzleView.touchablePitch
+    r = zpitch * 0.5;
+  }
+  
+  
+  /// 盤面の設定
+  ///
+  /// - Parameter board: 盤面
+  func setBoard(_ board: Board) {
+    self.board = board
+    rotated = isRotated()
+  
+    // 拡大サイズでも画面より小さい場合は常に拡大
+    zoomed = true
+    adjusted = false
+  }
+  
+  /// MARK: - 描画
+  
+  // 描画
+  override func draw(_ rect: CGRect) {
+    guard let context = UIGraphicsGetCurrentContext() else {
+      return
+    }
+    let boardColor = self.boardColor.cgColor
+    let erasableColor = self.erasableColor.cgColor
+    let zoomAreaStrokeColor = self.zoomAreaStrokeColor.cgColor;
+    let zoomAreaFillColor = self.zoomAreaFillColor.cgColor;
+    let bgColor = self.bgColor.cgColor;
+    let trackColor = self.trackColor.cgColor;
+    
+    let w = self.frame.size.width
+    let h = self.frame.size.height
+    
+    if let board = board {
+      let rotated = isRotated()
+      if rotated != self.rotated || !adjusted {
+        self.rotated = rotated
+        adjustZoomedArea()
+      }
+      let editing = (mode == .input)
+      if zoomed {
+        context.setFillColor(bgColor)
+        context.fill(CGRect(x: 0.0, y: 0.0, width: w, height: h))
+        
+        context.setFillColor(boardColor)
+        var boardRect: CGRect
+        let margin = (PuzzleView.margin - PuzzleView.boderWidth) * zpitch;
+        if rotated {
+          boardRect = CGRect(x: zx0 - margin, y: zy0 - CGFloat(board.width) * zpitch - margin,
+                             width: CGFloat(board.height) * zpitch + margin * 2,
+                             height: CGFloat(board.width) * zpitch + margin * 2)
+        } else {
+          boardRect = CGRect(x: zx0 - margin, y: zy0 - margin,
+                             width: CGFloat(board.width) * zpitch + margin * 2,
+                             height: CGFloat(board.height) * zpitch + margin * 2)
+        }
+        context.fill(boardRect)
+        
+        // タッチの余韻描画
+        context.setFillColor(trackColor)
+        for track in tracks {
+          context.fillEllipse(in: CGRect(x: track.x - r, y: track.y - r, width: 2 * r, height: 2 * r))
+        }
+        
+        drawBoard(context: context, origin: CGPoint(x: zx0, y: zy0), pitch: zpitch, rotate: rotated,
+                  erasableColor: erasableColor, editing: editing)
+      } else {
+        context.setFillColor(boardColor)
+        context.fill(CGRect(x: 0, y: 0, width: w, height: h))
+        
+        drawBoard(context: context, origin: CGPoint(x: ax0, y: ay0), pitch: apitch, rotate: rotated,
+                  erasableColor: erasableColor, editing: editing)
+        
+        context.setFillColor(zoomAreaFillColor)
+        context.setStrokeColor(zoomAreaStrokeColor)
+        let rect = zoomedAreaInView()
+        context.fill(rect)
+        context.stroke(rect)
+      }
+    }
+  }
+  
+  /// 盤面を描画する
+  ///
+  /// - Parameters:
+  ///   - context: コンテキスト
+  ///   - origin: 原点
+  ///   - pitch: セルのピッチ
+  ///   - rotate: 回転しているかどうか
+  ///   - erasableColor: 削除可能な線の色
+  ///   - editing: 編集中かどうか
+  private func drawBoard(context: CGContext, origin: CGPoint, pitch: CGFloat,
+                         rotate: Bool, erasableColor: CGColor, editing: Bool) {
+    guard let board = board else {
+      return
+    }
+    let charH = 0.8 * pitch
+    let pointR = 0.03 * pitch
+    let lineW = 0.06 * pitch
+    let crossLineW = 0.04 * pitch
+    let crossR = 0.08 * pitch
+    
+    let fixedColor = UIColor.black.cgColor
+    
+    let x0 = origin.x
+    let y0 = origin.y
+    
+    context.setFillColor(fixedColor)
+    context.setLineWidth(crossLineW)
+    context.setShouldAntialias(false)
+    
+    var x: CGFloat = 0.0
+    var y: CGFloat = 0.0
+    for v in 0 ... board.height {
+      if rotate {
+        x = x0 + CGFloat(v) * pitch
+      } else {
+        y = y0 + CGFloat(v) * pitch
+      }
+      for u in 0 ... board.width {
+        if rotate {
+          y = y0 - CGFloat(u) * pitch;
+        } else {
+          x = x0 + CGFloat(u) * pitch;
+        }
+        let rect = CGRect(x: x-pointR, y: y-pointR, width: pointR * 2, height: pointR * 2)
+        context.fill(rect)
+      }
+    }
+    
+    let chars = ["0", "1", "2", "3"]
+    let font = UIFont.systemFont(ofSize: charH)
+    
+    context.setShouldAntialias(true)
+    if editing {
+      context.setFillColor(erasableColor)
+      
+    }
+    let size = "0".size(withAttributes: [NSAttributedString.Key.font: font])
+    let nx = (pitch - size.width) * 0.5 + 0.5
+    let ny = (pitch - size.height) * 0.5
+    
+    for v in 0 ..< board.height {
+      if rotate {
+        x = x0 + CGFloat(v) * pitch + nx
+      } else {
+        y = y0 + CGFloat(v) * pitch + ny
+      }
+      for u in 0  ..< board.width {
+        if rotate {
+          y = y0 - CGFloat(u + 1) * pitch + ny
+        } else {
+          x = x0 + CGFloat(u) * pitch + nx
+        }
+        let number = board.cellAt(x: u, y: v).number
+        if number >= 0 {
+          let char = chars[number] as NSString
+          char.draw(at: CGPoint(x: x, y: y), withAttributes: [NSAttributedString.Key.font: font])
+        }
+      }
+    }
+    
+    for v in 0 ... board.height {
+      if rotate {
+        x = x0 + CGFloat(v) * pitch
+      } else {
+        y = y0 + CGFloat(v) * pitch
+      }
+      for u in 0  ..< board.width {
+        if rotate {
+          y = y0 - CGFloat(u + 1) * pitch
+        } else {
+          x = x0 + CGFloat(u) * pitch
+        }
+        let edge = board.hEdgeAt(x: u, y: v)
+        context.setFillColor(edge.fixed ? fixedColor : erasableColor)
+        context.setStrokeColor(edge.fixed ? fixedColor : erasableColor)
+        let status = edge.status
+        if status == .on {
+          var rect: CGRect
+          if rotate {
+            rect = CGRect(x: x-lineW*0.5, y: y+pointR, width: lineW, height: pitch-2*pointR)
+          } else {
+            rect = CGRect(x: x+pointR, y: y-lineW*0.5, width: pitch-2*pointR, height: lineW)
+          }
+          context.fill(rect)
+        } else if status == .off {
+          if rotate {
+            drawCross(context: context, cx: x, cy: y + 0.5 * pitch, r: crossR)
+          } else {
+            drawCross(context: context, cx: x + 0.5 * pitch, cy: y, r: crossR)
+          }
+        }
+      }
+    }
+    
+    for v in 0 ..< board.height {
+      if rotate {
+        x = x0 + CGFloat(v) * pitch
+      } else {
+        y = y0 + CGFloat(v) * pitch
+      }
+      for u in 0 ... board.width {
+        if rotate {
+          y = y0 - CGFloat(u) * pitch
+        } else {
+          x = x0 + CGFloat(u) * pitch
+        }
+        let edge = board.vEdgeAt(x: u, y: v)
+        context.setFillColor(edge.fixed ? fixedColor : erasableColor)
+        context.setStrokeColor(edge.fixed ? fixedColor : erasableColor)
+        let status = edge.status
+        if status == .on {
+          var rect: CGRect
+          if rotate {
+            rect = CGRect(x: x+pointR, y: y-lineW*0.5, width: pitch-2*pointR, height: lineW)
+          } else {
+            rect = CGRect(x: x-lineW*0.5, y: y+pointR, width: lineW, height: pitch-2*pointR)
+          }
+          context.fill(rect)
+        } else if status == .off {
+          if (rotate) {
+            drawCross(context: context, cx: x+0.5*pitch, cy: y, r: crossR)
+          } else {
+            drawCross(context: context, cx: x, cy: y + 0.5 * pitch, r: crossR)
+          }
+        }
+      }
+    }
+  }
+  
+  /// 線無しを示すバツを描画する
+  ///
+  /// - Parameters:
+  ///   - context: コンテキスト
+  ///   - cx: バツの中心のX座標
+  ///   - cy: バツの中心のY座標
+  ///   - r: バツの腕の長さ
+  private func drawCross(context: CGContext, cx: CGFloat, cy: CGFloat, r: CGFloat) {
+    let x1 = cx - r
+    let y1 = cy - r
+    let x2 = cx + r
+    let y2 = cy + r
+    var points: [CGPoint] = []
+    points.append(CGPoint(x: x1, y: y1))
+    points.append(CGPoint(x: x2, y: y2))
+    context.strokeLineSegments(between: points)
+    points[0] = CGPoint(x: x1, y: y2)
+    points[1] = CGPoint(x: x2, y: y1)
+    context.strokeLineSegments(between: points)
+  }
+  
+  // MARK: - プライベートメソッド（ジェスチャー）
+  
+  // パン：1本指　拡大時-線、全体表示時-ズーム位置移動、２本指　拡大時-スクロール
+  @objc func panned(_ sender: Any) {
+    if zoomed {
+      if mode == .play {
+        if panGr!.numberOfTouches > 1 {
+          pan()
+        } else {
+          line()
+        }
+      }
+    } else {
+      let translation = panGr!.translation(in: self)
+      panGr!.setTranslation(CGPoint.zero, in: self)
+      let location = subtract(pt1: panGr!.location(in: self), pt2: translation)
+      let rect = zoomedAreaInView()
+      
+      if rect.contains(location) {
+        if rotated {
+          setZoomedAreaTo(rect: zoomedArea.offsetBy(dx: -translation.y / apitch, dy: translation.x / apitch))
+        } else {
+          setZoomedAreaTo(rect: zoomedArea.offsetBy(dx:  translation.x / apitch, dy: translation.y / apitch))
+        }
+        setNeedsDisplay()
+      }
+    }
+  }
+  
+  /// ズーム範囲の移動
+  private func pan() {
+    let translation = panGr!.translation(in: self)
+    panGr!.setTranslation(CGPoint.zero, in: self)
+    if rotated {
+      setZoomedAreaTo(rect: zoomedArea.offsetBy(dx: translation.y / zpitch, dy: -translation.x / zpitch))
+    } else {
+      setZoomedAreaTo(rect: zoomedArea.offsetBy(dx: -translation.x / zpitch, dy: -translation.y / zpitch))
+    }
+    setNeedsDisplay()
+  }
+  
+  /// 線の描画
+  private func line() {
+    guard let board = board else {
+      return
+    }
+    let state = panGr!.state
+    if state == .began {
+      debugPrint(">>START\n")
+      tracks.removeAll()
+      prevNode = nil
+      delegate?.lineBegan()
+      
+      let translation = panGr!.translation(in: self)
+      var track = panGr!.location(in: self)
+      track = subtract(pt1: track, pt2: translation)
+      tracks.append(track)
+      let node = findNode(point: track)
+      debugPrint("node0:%s\n", node != nil ? node!.id : "(nil)");
+      if let node = node {
+        prevNode = node
+      }
+      prevEdge = findEdge(point: track)
+    }
+    var track: CGPoint
+    track = panGr!.location(in: self)
+    tracks.append(track)
+    
+    let node = findNode(point: track)
+    debugPrint("node:%s-%s\n", node != nil ? node!.id : "(nil)",
+               prevNode != nil ? prevNode!.id : "(nil)")
+    if let node = node, node != prevNode {
+      if let prevNode = prevNode {
+        let edge = board.getJointEdge(of: prevNode, and: node)
+        debugPrint("> edge:%s\n", edge != nil ? edge!.id : "(nil)")
+        if let edge = edge, edge.status == .unset {
+          let action = SetEdgeStatusAction(edge: edge, status: .on)
+          delegate!.actionDone(action)
+          prevEdge = nil
+        }
+      }
+      prevNode = node
+    }
+    let edge = findEdge(point: track)
+    if let edge = edge, edge != prevEdge {
+      prevEdge = nil
+    }
+    
+    setNeedsDisplay()
+    
+    if state == .ended && prevEdge != nil && edge != nil && !edge!.fixed {
+      tap(edge: edge!)
+    }
+    if state == .ended || state == .cancelled {
+      delegate!.lineEnded()
+      perform(#selector(clearTrackes), with: nil, afterDelay: 1)
+    }
+  }
+  
+  // ピンチ
+  @objc func pinched(_ sender: Any) {
+    let scale = pinchGr!.scale
+    if scale < 1 && zoomed {
+      if apitch != zpitch {
+        zoomed = false
+      } else {
+        return
+      }
+    } else if scale > 1 && !zoomed {
+      // TODO ズーム位置の計算
+      zoomed = true
+    } else {
+      return
+    }
+    setNeedsDisplay()
+  }
+  
+  // タップ：×またはクリア
+  @IBAction func tapped1(_ sender: Any) {
+    // Note: tapのイベントのstateは常に3になる
+    if zoomed {
+      let track: CGPoint = tap1Gr!.location(in: self)
+      tracks.append(track)
+      switch mode {
+      case .input:
+        if let cell = findCell(point: track) {
+          let oldNumber = cell.number
+          let newNumber = oldNumber == 3 ? -1 : oldNumber + 1
+          let action = SetCellNumberAction(cell: cell, number: newNumber)
+          delegate!.actionDone(action)
+        }
+      case .play:
+        if let edge = findEdge(point: track), !edge.fixed {
+          tap(edge: edge)
+        }
+      default:
+        break
+      }
+      perform(#selector(clearTrackes), with: nil, afterDelay: 1)
+    } else {
+      // TODO ズーム位置の計算
+      zoomed = true
+    }
+    setNeedsDisplay()
+  }
+
+  /// 辺上をタップした際の処理（微小パンの場合にもこの処理が呼ばれる）
+  ///
+  /// - Parameter edge: 辺
+  func tap(edge: Edge) {
+    let oldStatus = edge.status
+    let newStatus: EdgeStatus = oldStatus == .unset ? .off : .unset
+    let action = SetEdgeStatusAction(edge: edge, status: newStatus)
+    delegate!.actionDone(action)
+  }
+
+  // 2本指タップ：ズームの切替
+  @IBAction func tapped2(_ sender: Any) {
+    if zoomed {
+      if apitch != zpitch {
+        zoomed = false
+      } else {
+        return
+      }
+    } else {
+      // TODO ズーム位置の計算
+      zoomed = true
+    }
+    setNeedsDisplay()
+  }
+
+  // MARK: - プライベートメソッド（表示領域）
+  
+  /// 拡大表示時の領域を調整する
+  func adjustZoomedArea() {
+    guard let board = board else {
+      return
+    }
+    calculateOverallParameter()
+    calculateZoomedParameter()
+    
+    let zoomedPoint = delegate!.zoomedPoint
+    let cx = zoomedPoint.x
+    let cy = zoomedPoint.y
+    
+    let (zoomedW, zoomedH) = sizeInPuzzle()
+    var x0 = cx - 0.5 * zoomedW
+    var y0 = cy - 0.5 * zoomedH
+    if !fixH {
+      if x0 < 0 {
+        x0 = -PuzzleView.margin
+      } else if x0 + zoomedW > CGFloat(board.width) {
+        x0 = CGFloat(board.width) + PuzzleView.margin - zoomedW
+      }
+    }
+    if !fixV {
+      if y0 < 0 {
+        y0 = -PuzzleView.margin
+      } else if y0 + zoomedH > CGFloat(board.height) {
+        y0 = CGFloat(board.height) + PuzzleView.margin - zoomedH
+      }
+    }
+    self.setZoomedAreaTo(rect: CGRect(x: x0, y: y0, width: zoomedW, height: zoomedH))
+    
+    adjusted = true
+  }
+
+  /// 全体表示時の位置や点の間隔を予め計算しておく
+  func calculateOverallParameter() {
+    guard let board = board else {
+      return
+    }
+    let (w, h) = sizeInPuzzleRotation()
+
+    let pitchH = w / (CGFloat(board.width) + 2 * PuzzleView.margin)
+    let pitchV = h / (CGFloat(board.height) + 2 * PuzzleView.margin)
+    if pitchH > PuzzleView.touchablePitch && pitchV > PuzzleView.touchablePitch {
+      // 実際には常にズーム中として扱うため使用されない
+      apitch = PuzzleView.touchablePitch
+      if rotated {
+        ax0 = (h - apitch * CGFloat(board.height)) / 2
+        ay0 = w - (w - apitch * CGFloat(board.width)) / 2
+      } else {
+        ax0 = (w - apitch * CGFloat(board.width)) / 2
+        ay0 = (h - apitch * CGFloat(board.height)) / 2
+      }
+    } else if pitchH < pitchV {
+      apitch = pitchH
+      if rotated {
+        ax0 = (h - apitch * CGFloat(board.height)) / 2
+        ay0 = w - apitch * PuzzleView.margin
+      } else {
+        ax0 = apitch * PuzzleView.margin
+        ay0 = (h - apitch * CGFloat(board.height)) / 2
+      }
+    } else {
+      apitch = pitchV
+      if rotated {
+        ax0 = apitch * PuzzleView.margin
+        ay0 = w - (w - apitch * CGFloat(board.width)) / 2
+      } else {
+        ax0 = (w - apitch * CGFloat(board.width)) / 2
+        ay0 = apitch * PuzzleView.margin
+      }
+    }
+  }
+
+  /// ズーム時の位置や点の間隔を予め計算しておく
+  func calculateZoomedParameter() {
+    guard let board = board else {
+      return
+    }
+    let (w, h) = sizeInPuzzle()
+    var zxmin: CGFloat
+    var zxmax: CGFloat
+    var zymin: CGFloat
+    var zymax: CGFloat
+    
+    if CGFloat(board.width) + 2 * PuzzleView.margin < w {
+      zxmax = (w - CGFloat(board.width)) / 2
+      zxmin = zxmax
+      fixH = true
+    } else {
+      zxmin = w - (CGFloat(board.width) + PuzzleView.margin)
+      zxmax = PuzzleView.margin
+      fixH = false
+    }
+    
+    if CGFloat(board.height) + 2 * PuzzleView.margin < h {
+      zymax = (h - CGFloat(board.height)) / 2
+      zymin = zymax
+      fixV = true
+    } else {
+      zymin = h - (CGFloat(board.height) + PuzzleView.margin)
+      zymax = PuzzleView.margin
+      fixV = false
+    }
+    
+    zoomableArea = CGRect(x: -zxmax, y: -zymax, width: zxmax + w - zxmin, height: zymax + h - zymin)
+  }
+
+  /// 拡大表示領域を設定する
+  ///
+  /// - Parameter rect: 領域を指定する長方形（問題座標系）
+  func setZoomedAreaTo(rect: CGRect) {
+    zoomedArea = clumpRect(rect: rect, border: zoomableArea)
+    delegate!.zoomedPoint = CGPoint(x: zoomedArea.midX, y: zoomedArea.midY)
+    if rotated {
+      zx0 = -zoomedArea.origin.y * zpitch
+      zy0 = self.frame.size.height + zoomedArea.origin.x * zpitch
+    } else {
+      zx0 = -zoomedArea.origin.x * zpitch
+      zy0 = -zoomedArea.origin.y * zpitch
+    }
+  }
+  
+  /// 拡大領域の表示座標系上での位置を得る
+  ///
+  /// - Returns: 拡大領域の表示座標系上での位置
+  func zoomedAreaInView() -> CGRect {
+    var x: CGFloat
+    var y: CGFloat
+    var w: CGFloat
+    var h: CGFloat
+    if rotated {
+      x = ax0 + zoomedArea.origin.y * apitch
+      y = ay0 - (zoomedArea.origin.x + zoomedArea.size.width) * apitch
+      w = zoomedArea.size.height * apitch
+      h = zoomedArea.size.width * apitch
+    } else {
+      x = ax0 + zoomedArea.origin.x * apitch
+      y = ay0 + zoomedArea.origin.y * apitch
+      w = zoomedArea.size.width * apitch
+      h = zoomedArea.size.height * apitch
+    }
+    return CGRect(x: x, y: y, width: w, height: h)
+  }
+  
+  /// 拡大領域を移動する
+  ///
+  /// - Parameter translation: 拡大領域を移動する量（表示座標系）
+  func panZoomedArea(translation: CGPoint) {
+    if rotated {
+      setZoomedAreaTo(rect: zoomedArea.offsetBy(dx: translation.y / zpitch, dy: -translation.x / zpitch))
+    } else {
+      setZoomedAreaTo(rect: zoomedArea.offsetBy(dx: -translation.x / zpitch, dy: -translation.y / zpitch))
+    }
+  }
+  
+  // MARK: - プライベートメソッド（検索）
+  
+  /// 指定の座標の近傍のノードを得る
+  ///
+  /// - Parameter point: 座標
+  /// - Returns: 指定の座標の近傍のノード
+  func findNode(point: CGPoint) -> Node? {
+    guard let board = board else {
+      return nil
+    }
+    let (xp, yp) = locationInPuzzle(point: point)
+    
+    var xi = Int(xp + 0.5)
+    var yi = Int(yp + 0.5)
+    xi = clumpInt(value: xi, min: 0, max: board.width)
+    yi = clumpInt(value: yi, min: 0, max: board.height)
+    
+    let dx = (xp - CGFloat(xi)) * zpitch
+    let dy = (yp - CGFloat(yi)) * zpitch
+    if (dx * dx + dy * dy < r * r) {
+      return board.nodeAt(x: xi, y: yi)
+    }
+    return nil
+  }
+  
+  /// 指定の座標の含まれるセルを得る
+  ///
+  /// - Parameter point: 座標
+  /// - Returns: 指定の座標の含まれるセル
+  func findCell(point: CGPoint) -> Cell? {
+    guard let board = board else {
+      return nil
+    }
+    let (xp, yp) = locationInPuzzle(point: point)
+    var xi = Int(xp)
+    var yi = Int(yp)
+    xi = clumpInt(value: xi, min: 0, max: board.width - 1)
+    yi = clumpInt(value: yi, min: 0, max: board.height - 1)
+    
+    let dx = (xp - (CGFloat(xi) + 0.5)) * zpitch
+    let dy = (yp - (CGFloat(yi) + 0.5)) * zpitch
+    if dx * dx + dy * dy < r * r {
+      return board.cellAt(x: xi, y: yi)
+    }
+    return nil
+  }
+  
+  /// 指定の座標が中点の近傍の辺を得る
+  ///
+  /// - Parameter point: 座標
+  /// - Returns: 指定の座標が中点の近傍の辺
+  private func findEdge(point: CGPoint) -> Edge? {
+    guard let board = board else {
+      return nil
+    }
+    let (xp, yp) = locationInPuzzle(point: point)
+    var xi = Int(xp + 0.5)
+    var yi = Int(yp + 0.5)
+    xi = clumpInt(value: xi, min: 0, max: board.width)
+    yi = clumpInt(value: yi, min: 0, max: board.height)
+    
+    var dx = (xp - CGFloat(xi)) * zpitch
+    var dy = (yp - CGFloat(yi)) * zpitch
+    
+    if (abs(dx) < abs(dy)) {
+      yi = Int(yp)
+      if yi == board.height {
+        yi -= 1
+      }
+      dy = (yp - (CGFloat(yi) + 0.5)) * zpitch
+      if (dx * dx + dy * dy < r * r) {
+        debugPrint(String(format: "VE:%d/%d (%.1f/%.1f)\n", xi, yi, xp, yp))
+        return board.vEdgeAt(x: xi, y: yi)
+      }
+    } else {
+      xi = Int(xp)
+      if xi == board.width {
+        xi -= 1
+      }
+      dx = (xp - (CGFloat(xi) + 0.5)) * zpitch
+      if (dx * dx + dy * dy < r * r) {
+        debugPrint(String(format: "HE:%d/%d (%.1f/%.1f)\n", xi, yi, xp, yp))
+        return board.hEdgeAt(x: xi, y: yi)
+      }
+    }
+    return nil
+  }
+  
+  // MARK: - プライベートメソッド（その他）
+  
+  /// 与えられた点の問題座標系上の位置を求める
+  ///
+  /// - Parameter point: 対象の点
+  /// - Returns: 点の問題座標系上の位置
+  private func locationInPuzzle(point: CGPoint) -> (CGFloat, CGFloat) {
+    var xp: CGFloat
+    var yp: CGFloat
+    if rotated {
+      xp = -(point.y - zy0) / zpitch
+      yp = (point.x - zx0) / zpitch
+    } else {
+      xp = (point.x - zx0) / zpitch
+      yp = (point.y - zy0) / zpitch
+    }
+    return (xp, yp)
+  }
+  
+  /// 画面のサイズの問題座標系での値を得る
+  ///
+  /// - Returns: 画面のサイズの問題座標系での値
+  private func sizeInPuzzle() -> (CGFloat, CGFloat) {
+    var w: CGFloat
+    var h: CGFloat
+    if rotated {
+      w = frame.size.height / zpitch
+      h = frame.size.width / zpitch
+    } else {
+      w = frame.size.width / zpitch
+      h = frame.size.height / zpitch
+    }
+    return (w, h)
+  }
+  
+  /// 画面のサイズの問題座標系の回転での値を得る
+  ///
+  /// - Returns: 画面のサイズの問題座標系の回転での値
+  private func sizeInPuzzleRotation() -> (CGFloat, CGFloat) {
+    var w: CGFloat
+    var h: CGFloat
+    if rotated {
+      w = frame.size.height
+      h = frame.size.width
+    } else {
+      w = frame.size.width
+      h = frame.size.height
+    }
+    return (w, h)
+  }
+  
+  /// 問題の正規の向きに対して画面が回転しているかどうかを調べる
+  ///
+  /// - Returns: 問題の正規の向きに対して画面が回転しているかどうか
+  private func isRotated() -> Bool {
+    guard let board = board else {
+      return false
+    }
+    return board.width > board.height && self.frame.size.width <= self.frame.size.height ||
+      board.width <= board.height && self.frame.size.width > self.frame.size.height
+  }
+  
+  /// 画面に表示中の軌跡をクリアする
+  @objc private func clearTrackes() {
+    tracks.removeAll()
+    setNeedsDisplay()
+  }
+  
+}

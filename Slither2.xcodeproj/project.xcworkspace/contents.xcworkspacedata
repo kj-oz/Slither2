@@ -1,7 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
+   <Group
+      location = "group:/Users/zak/Projects/Slither2/Slither2/Core"
+      name = "Core">
+      <FileRef
+         location = "group:AreaChecker.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Board.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Solver.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Generator.swift">
+      </FileRef>
+      <FileRef
+         location = "group:SolverUtil.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Step.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Elements.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Solver+InitCheck.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Solver+GateCheck.swift">
+      </FileRef>
+      <FileRef
+         location = "group:Action.swift">
+      </FileRef>
+   </Group>
    <FileRef
-      location = "self:Slither2.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>

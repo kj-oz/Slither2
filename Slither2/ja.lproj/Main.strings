@@ -1,0 +1,93 @@
+
+/* Class = "UINavigationItem"; title = "Root View Controller"; ObjectID = "1FI-0z-9in"; */
+"1FI-0z-9in.title" = "Root View Controller";
+
+/* Class = "UIBarButtonItem"; title = "フォルダ"; ObjectID = "2RS-I6-ZD7"; */
+"2RS-I6-ZD7.title" = "フォルダ";
+
+/* Class = "UITableViewSection"; headerTitle = "基本情報"; ObjectID = "47U-We-Cuk"; */
+"47U-We-Cuk.headerTitle" = "基本情報";
+
+/* Class = "UITableViewSection"; headerTitle = "プリセット"; ObjectID = "5Qo-2P-gAC"; */
+"5Qo-2P-gAC.headerTitle" = "プリセット";
+
+/* Class = "UILabel"; text = "1234567890123456"; ObjectID = "84P-U1-9cz"; */
+"84P-U1-9cz.text" = "1234567890123456";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "Amq-kN-rfR"; */
+"Amq-kN-rfR.text" = "Title";
+
+/* Class = "UILabel"; text = "タイトル"; ObjectID = "BAl-KF-GkA"; */
+"BAl-KF-GkA.text" = "タイトル";
+
+/* Class = "UIBarButtonItem"; title = "移動"; ObjectID = "Cbr-d5-kIf"; */
+"Cbr-d5-kIf.title" = "移動";
+
+/* Class = "UIBarButtonItem"; title = "削除"; ObjectID = "GcF-9s-Rh5"; */
+"GcF-9s-Rh5.title" = "削除";
+
+/* Class = "UILabel"; text = "１手仮置き [T]"; ObjectID = "Hm5-pc-4bV"; */
+"Hm5-pc-4bV.text" = "１手仮置き [T]";
+
+/* Class = "UILabel"; text = "完了（9:59:59 固定5 初期化5）"; ObjectID = "IWI-3S-mcm"; */
+"IWI-3S-mcm.text" = "完了（9:59:59 固定5 初期化5）";
+
+/* Class = "UIBarButtonItem"; title = "複写"; ObjectID = "J6G-6b-YkX"; */
+"J6G-6b-YkX.title" = "複写";
+
+/* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[0] = "手動"; ObjectID = "KV9-iw-neE"; */
+"KV9-iw-neE.segmentTitles[0]" = "手動";
+
+/* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[1] = "易"; ObjectID = "KV9-iw-neE"; */
+"KV9-iw-neE.segmentTitles[1]" = "易";
+
+/* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[2] = "難"; ObjectID = "KV9-iw-neE"; */
+"KV9-iw-neE.segmentTitles[2]" = "難";
+
+/* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[3] = "難"; ObjectID = "KV9-iw-neE"; */
+"KV9-iw-neE.segmentTitles[3]" = "難";
+
+/* Class = "UIBarButtonItem"; title = "入力"; ObjectID = "Kuk-0x-nV7"; */
+"Kuk-0x-nV7.title" = "入力";
+
+/* Class = "UILabel"; text = "セルの色 [C]"; ObjectID = "NK4-rt-2WP"; */
+"NK4-rt-2WP.text" = "セルの色 [C]";
+
+/* Class = "UILabel"; text = "領域出入り [A]"; ObjectID = "TU8-ga-Glz"; */
+"TU8-ga-Glz.text" = "領域出入り [A]";
+
+/* Class = "UIBarButtonItem"; title = "自動"; ObjectID = "d93-Jx-XDC"; */
+"d93-Jx-XDC.title" = "自動";
+
+/* Class = "UILabel"; text = "Title"; ObjectID = "eQg-yW-1sr"; */
+"eQg-yW-1sr.text" = "Title";
+
+/* Class = "UIBarButtonItem"; title = "修正"; ObjectID = "fLn-dO-WKJ"; */
+"fLn-dO-WKJ.title" = "修正";
+
+/* Class = "UIBarButtonItem"; title = "作成"; ObjectID = "gRT-51-K92"; */
+"gRT-51-K92.title" = "作成";
+
+/* Class = "UILabel"; text = "幅"; ObjectID = "jP7-Gq-Idj"; */
+"jP7-Gq-Idj.text" = "幅";
+
+/* Class = "UILabel"; text = "高さ"; ObjectID = "jn2-FG-mE9"; */
+"jn2-FG-mE9.text" = "高さ";
+
+/* Class = "UILabel"; text = "斜めゲート [G]"; ObjectID = "mlF-O7-kGw"; */
+"mlF-O7-kGw.text" = "斜めゲート [G]";
+
+/* Class = "UITableViewSection"; headerTitle = "詳細"; ObjectID = "nhh-bx-o5q"; */
+"nhh-bx-o5q.headerTitle" = "詳細";
+
+/* Class = "UILabel"; text = "HS-ATCG100"; ObjectID = "oSq-uN-4is"; */
+"oSq-uN-4is.text" = "HS-ATCG100";
+
+/* Class = "UILabel"; text = "判定時間（ms）"; ObjectID = "qka-68-fK6"; */
+"qka-68-fK6.text" = "判定時間（ms）";
+
+/* Class = "UILabel"; text = "20 X 36"; ObjectID = "zS9-Ut-zTC"; */
+"zS9-Ut-zTC.text" = "20 X 36";
+
+/* Class = "UILabel"; text = "配置パターン"; ObjectID = "zYO-8r-3nK"; */
+"zYO-8r-3nK.text" = "配置パターン";
