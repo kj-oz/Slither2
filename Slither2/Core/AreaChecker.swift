@@ -509,18 +509,18 @@ class AreaChecker {
       return true
     } else {
       // 上記以外＝4エッジとも未定で、２つのエリアに2箇所ずつ接している
-      // そのノードのコーナーゲートを指定のステータスに応じた状態に
-      let h = gate.nextPoints[1]?.areas[0] === area ? 0 : 1
-      let v = gate.nextPoints[0]?.areas[0] === area ? 0 : 1
-      let dir = h == v ? 0 : 1
-      let gateStatus: GateStatus = status == .on ? .open : .close
-      if try solver.setGateStatus(of: node, dir: dir, to: gateStatus) {
-        print("> corner gate change: \(node.id)-\(dir) -> \(gateStatus)")
-        solver.currentStep.gateCheckCells.insert(node.hEdges[h].cells[v])
-        solver.currentStep.gateCheckCells.insert(node.hEdges[1-h].cells[1-v])
-        return true
-      }
-      // 4エッジとも未定なのでエッジのfillは行わない
+//      // そのノードのコーナーゲートを指定のステータスに応じた状態に
+//      let h = gate.nextPoints[1]?.areas[0] === area ? 0 : 1
+//      let v = gate.nextPoints[0]?.areas[0] === area ? 0 : 1
+//      let dir = h == v ? 0 : 1
+//      let gateStatus: GateStatus = status == .on ? .open : .close
+//      if try solver.setGateStatus(of: node, dir: dir, to: gateStatus) {
+//        print("> corner gate change: \(node.id)-\(dir) -> \(gateStatus)")
+//        solver.currentStep.gateCheckCells.insert(node.hEdges[h].cells[v])
+//        solver.currentStep.gateCheckCells.insert(node.hEdges[1-h].cells[1-v])
+//        return true
+//      }
+//       4エッジとも未定なのでエッジのfillは行わない
       return false
     }
   }

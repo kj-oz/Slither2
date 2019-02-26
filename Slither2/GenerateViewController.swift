@@ -28,14 +28,14 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   @IBOutlet weak var areaCheckSwitch: UISwitch!
   /// 回答チェック時の許容時間(ms)の入力欄
   @IBOutlet weak var solveTimeText: UITextField!
-  /// 盤面の配置パターン名
-  @IBOutlet weak var boardTypeLabel: UILabel!
+  /// 盤面の除去パターン名
+  @IBOutlet weak var pruneTypeLabel: UILabel!
 
   /// 作成ボタン
   @IBOutlet weak var generateButton: UIBarButtonItem!
   
-  /// 盤面の数値の配置パターン
-  var boardType: BoardType!
+  /// 盤面の数値の除去パターン
+  var pruneType: PruneType!
   
   // ビューのロード時
   override func viewDidLoad() {
@@ -98,8 +98,8 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       tryOneStepSwitch.isOn = solveOpStr.firstIndex(of: "T") != nil
       areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
       solveTimeText.text = UserDefaults.standard.string(forKey: "genSolveTime") ?? "100"
-      boardType = BoardType(rawValue: UserDefaults.standard.string(forKey: "genBoardType") ?? "R4")
-      boardTypeLabel.text = boardType.description
+      pruneType = PruneType(rawValue: UserDefaults.standard.string(forKey: "genPruneType") ?? "R4")
+      pruneTypeLabel.text = pruneType.description
     }
   }
   
@@ -125,7 +125,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       }
       UserDefaults.standard.set(solveOpStr, forKey: "genSolveOp")
       UserDefaults.standard.set(solveTimeText.text, forKey: "genSolveTime")
-      UserDefaults.standard.set(boardType.rawValue, forKey: "genBoardType")
+      UserDefaults.standard.set(pruneType.rawValue, forKey: "genPruneType")
     }
   }
   
@@ -137,13 +137,13 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     switch level {
     case 1:
       solveOpStr = "G"
-      boardType = BoardType.random4Cell
+      pruneType = PruneType.random4Cell
     case 2:
       solveOpStr = "GC"
-      boardType = BoardType.random2Cell
+      pruneType = PruneType.random2Cell
     case 3:
       solveOpStr = "GCT"
-      boardType = BoardType.random2Cell
+      pruneType = PruneType.random2Cell
     default:
       break
     }
@@ -151,7 +151,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     cellColorSwitch.isOn = solveOpStr.firstIndex(of: "C") != nil
     tryOneStepSwitch.isOn = solveOpStr.firstIndex(of: "T") != nil
     areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
-    boardTypeLabel.text = boardType.description
+    pruneTypeLabel.text = pruneType.description
 
     updateSolveTime()
   }
@@ -242,24 +242,24 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   // 他画面への移動時
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     switch segue.identifier {
-    case "SelectBoardType":
+    case "SelectPruneType":
       let nv = segue.destination as! UINavigationController
-      let dst = nv.visibleViewController! as! BoardTypesViewController
-      dst.selectedBoardType = boardType
+      let dst = nv.visibleViewController! as! PruneTypesViewController
+      dst.selectedPruneType = pruneType
     default:
       break
     }
   }
   
   // 盤面タイプ選択画面からの戻り時のアクション
-  @IBAction func boardTypesSelected(segue: UIStoryboardSegue) {
-    let bv = segue.source as! BoardTypesViewController
-    boardType = bv.selectedBoardType!
-    boardTypeLabel.text = boardType.description
+  @IBAction func pruneTypesSelected(segue: UIStoryboardSegue) {
+    let bv = segue.source as! PruneTypesViewController
+    pruneType = bv.selectedPruneType!
+    pruneTypeLabel.text = pruneType.description
   }
   
   // 盤面タイプ選択画面のキャンセル時のアクション
-  @IBAction func boardTypesCanceled(segue: UIStoryboardSegue) {
+  @IBAction func pruneTypesCanceled(segue: UIStoryboardSegue) {
     // 何もしない
   }
   
@@ -275,6 +275,9 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     let generator = Generator(width: width, height: height)
     let _ = generator.generateLoop(option: GenerateOption())
 
+    let realType = pruneType.realType
+    generator.setupPruneOrder(pruneType: realType)
+
     var solveOption = SolveOption()
     solveOption.doAreaCheck = areaCheckSwitch.isOn
     solveOption.doTryOneStep = tryOneStepSwitch.isOn
@@ -284,9 +287,8 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     solveOption.maxGuessLevel = 0
     solveOption.elapsedSec = Double(solveTime) / 1000.0
     
-    generator.setupPruneOrder(boardType: boardType)
     let numbers = generator.pruneNumbers(solveOption: solveOption)
-    let genParam = boardType.realType.rawValue + "-" + solveOption.description
+    let genParam = realType.rawValue + "-" + solveOption.description
     let am = AppManager.sharedInstance
     
     let _ = Puzzle(folder: am.currentFolder,

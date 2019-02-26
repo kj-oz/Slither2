@@ -1,5 +1,5 @@
 //
-//  BoardTypesViewController.swift
+//  PruneTypesViewController.swift
 //  Slither
 //
 //  Created by KO on 2019/02/05.
@@ -8,25 +8,26 @@
 
 import UIKit
 
-// 盤面の数字の配置パターンの一覧を表示するビュー
-class BoardTypesViewController: UITableViewController {
+// 盤面の数字の除去パターンの一覧を表示するビュー
+class PruneTypesViewController: UITableViewController {
   
   /// 選択可能な盤面のタイプ
-  let boardTypes = [
+  let pruneTypes = [
     [
-      BoardType.free,
-      BoardType.xSymmetry,
-      BoardType.ySymmetry,
-      BoardType.xySymmetry,
-      BoardType.pointSymmetry,
-      BoardType.hPair,
-      BoardType.dPair,
-      BoardType.hPairSymmetry,
-      BoardType.dPairSymmetry,
-      BoardType.quad
+      PruneType.free
     ],[
-      BoardType.random2Cell,
-      BoardType.random4Cell
+      PruneType.random2Cell,
+      PruneType.xSymmetry,
+      PruneType.ySymmetry,
+      PruneType.pointSymmetry,
+      PruneType.hPair,
+      PruneType.dPair
+    ],[
+      PruneType.random4Cell,
+      PruneType.xySymmetry,
+      PruneType.hPairSymmetry,
+      PruneType.dPairSymmetry,
+      PruneType.quad
     ]
   ]
   
@@ -34,9 +35,9 @@ class BoardTypesViewController: UITableViewController {
   @IBOutlet weak var doneButton: UIBarButtonItem!
   
   /// 選択された盤面のタイプ
-  var selectedBoardType: BoardType? {
+  var selectedPruneType: PruneType? {
     didSet {
-      if let _ = selectedBoardType {
+      if let _ = selectedPruneType {
         doneButton.isEnabled = true
       } else {
         doneButton.isEnabled = false
@@ -51,9 +52,9 @@ class BoardTypesViewController: UITableViewController {
   
   // ビューの表示前
   override func viewWillAppear(_ animated: Bool) {
-    for s in 0 ..< boardTypes.count {
-      for r in 0 ..< boardTypes[s].count {
-        if boardTypes[s][r] == selectedBoardType {
+    for s in 0 ..< pruneTypes.count {
+      for r in 0 ..< pruneTypes[s].count {
+        if pruneTypes[s][r] == selectedPruneType {
           tableView.selectRow(at: IndexPath(row: r, section: s), animated: false, scrollPosition: .none)
         }
       }
@@ -63,25 +64,25 @@ class BoardTypesViewController: UITableViewController {
   // MARK: - UITableVewDataSource
   // セクション数
   override func numberOfSections(in tableView: UITableView) -> Int {
-    return boardTypes.count
+    return pruneTypes.count
   }
   
   // 行数
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return boardTypes[section].count
+    return pruneTypes[section].count
   }
   
   // セクションヘッダ文字列
   override func tableView(_ tableView: UITableView,
                  titleForHeaderInSection section: Int) -> String? {
-    return section == 0 ? "直接指定" : "ランダム"
+    return ["1セル", "2セル", "4セル"][section]
   }
   
   // セル
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "BoardTypeCell", for: indexPath)
-    cell.textLabel?.text = boardTypes[indexPath.section][indexPath.row].description
-    if boardTypes[indexPath.section][indexPath.row] == selectedBoardType {
+    let cell = tableView.dequeueReusableCell(withIdentifier: "PruneTypeCell", for: indexPath)
+    cell.textLabel?.text = pruneTypes[indexPath.section][indexPath.row].description
+    if pruneTypes[indexPath.section][indexPath.row] == selectedPruneType {
       cell.accessoryType = .checkmark
     } else {
       cell.accessoryType = .none
@@ -93,7 +94,7 @@ class BoardTypesViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let cell = tableView.cellForRow(at: indexPath)
     cell?.accessoryType = .checkmark
-    selectedBoardType = boardTypes[indexPath.section][indexPath.row]
+    selectedPruneType = pruneTypes[indexPath.section][indexPath.row]
   }
 
   // 行選択解除時

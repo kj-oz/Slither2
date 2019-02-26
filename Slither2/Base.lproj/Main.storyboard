@@ -13,7 +13,7 @@
         <!--Folders View Controller-->
         <scene sceneID="ZeN-Ph-jyj">
             <objects>
-                <tableViewController id="Jbv-GF-qeX" customClass="FoldersViewController" customModule="Slither" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="Jbv-GF-qeX" customClass="FoldersViewController" customModule="Slither2" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="YLR-EZ-9Oe">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="640"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -42,13 +42,13 @@
         <!--Puzzles View Controller-->
         <scene sceneID="zF3-Oh-wJU">
             <objects>
-                <tableViewController id="TfQ-8s-kNp" customClass="PuzzlesViewController" customModule="Slither" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="TfQ-8s-kNp" customClass="PuzzlesViewController" customModule="Slither2" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" allowsSelectionDuringEditing="YES" allowsMultipleSelectionDuringEditing="YES" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="e13-G7-tF8">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="PuzzleCell" id="UOZ-XB-hlK" customClass="PuzzleCell" customModule="Slither" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="PuzzleCell" id="UOZ-XB-hlK" customClass="PuzzleCell" customModule="Slither2" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="1024" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="UOZ-XB-hlK" id="I3H-VT-5vK">
@@ -175,7 +175,7 @@
         <!--Edit View Controller-->
         <scene sceneID="DzR-7v-lra">
             <objects>
-                <viewController id="N3Q-cj-Koq" customClass="EditViewController" customModule="Slither" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="N3Q-cj-Koq" customClass="EditViewController" customModule="Slither2" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="qAm-Ok-hHy">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -190,12 +190,12 @@
         <!--Play View Controller-->
         <scene sceneID="j5D-Ds-t7U">
             <objects>
-                <viewController id="Zgi-pP-djp" customClass="PlayViewController" customModule="Slither" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="Zgi-pP-djp" customClass="PlayViewController" customModule="Slither2" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="uav-49-ghu">
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CD0-Jc-3lN" customClass="PuzzleView" customModule="Slither" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="CD0-Jc-3lN" customClass="PuzzleView" customModule="Slither2" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="70" width="1024" height="648"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
@@ -262,7 +262,7 @@
         <!--Generate View Controller-->
         <scene sceneID="Bhf-CY-W5q">
             <objects>
-                <tableViewController id="PQF-7M-6QV" customClass="GenerateViewController" customModule="Slither" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="PQF-7M-6QV" customClass="GenerateViewController" customModule="Slither2" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="HiI-xF-N43">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="640"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -376,7 +376,7 @@
                                                     <segments>
                                                         <segment title="手動"/>
                                                         <segment title="易"/>
-                                                        <segment title="難"/>
+                                                        <segment title="中"/>
                                                         <segment title="難"/>
                                                     </segments>
                                                     <connections>
@@ -446,7 +446,7 @@
                                                         <constraint firstAttribute="width" constant="47" id="Nax-RV-vzi"/>
                                                     </constraints>
                                                     <connections>
-                                                        <action selector="presetChanged:" destination="PQF-7M-6QV" eventType="valueChanged" id="dW1-lq-Jjp"/>
+                                                        <action selector="solveOptionChanged:" destination="PQF-7M-6QV" eventType="valueChanged" id="ZN9-4h-DSL"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -478,7 +478,7 @@
                                                         <constraint firstAttribute="width" constant="49" id="8If-1E-vrB"/>
                                                     </constraints>
                                                     <connections>
-                                                        <action selector="presetChanged:" destination="PQF-7M-6QV" eventType="valueChanged" id="pJO-T3-dtf"/>
+                                                        <action selector="solveOptionChanged:" destination="PQF-7M-6QV" eventType="valueChanged" id="LF6-eK-Gil"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -510,7 +510,7 @@
                                                         <constraint firstAttribute="width" constant="49" id="dEi-gq-nYK"/>
                                                     </constraints>
                                                     <connections>
-                                                        <action selector="presetChanged:" destination="PQF-7M-6QV" eventType="valueChanged" id="dWF-ze-bCY"/>
+                                                        <action selector="solveOptionChanged:" destination="PQF-7M-6QV" eventType="valueChanged" id="jHg-oh-5cd"/>
                                                     </connections>
                                                 </switch>
                                             </subviews>
@@ -560,7 +560,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="286" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="配置パターン" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="zYO-8r-3nK">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="除去パターン" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="zYO-8r-3nK">
                                                     <rect key="frame" x="16" y="12" width="104" height="20.5"/>
                                                     <autoresizingMask key="autoresizingMask"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -577,7 +577,7 @@
                                             </subviews>
                                         </tableViewCellContentView>
                                         <connections>
-                                            <segue destination="GQn-jz-Uf2" kind="showDetail" identifier="SelectBoardType" id="YIS-h8-y4t"/>
+                                            <segue destination="GQn-jz-Uf2" kind="showDetail" identifier="SelectPruneType" id="YIS-h8-y4t"/>
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="gxE-UW-smM">
@@ -610,12 +610,12 @@
                     </navigationItem>
                     <connections>
                         <outlet property="areaCheckSwitch" destination="4bG-kd-foS" id="lDs-10-1ax"/>
-                        <outlet property="boardTypeLabel" destination="B5g-1D-Wph" id="ieB-p5-dm8"/>
                         <outlet property="cellColorSwitch" destination="Eft-Gu-j3S" id="LMS-6D-kPT"/>
                         <outlet property="gateCheckSwitch" destination="OUn-jQ-zp0" id="zMu-iX-u67"/>
                         <outlet property="generateButton" destination="gRT-51-K92" id="fzC-nN-JYQ"/>
                         <outlet property="heightText" destination="tQf-Ov-KZc" id="BIe-Ff-Seh"/>
                         <outlet property="presetSegment" destination="KV9-iw-neE" id="YBc-5n-3vX"/>
+                        <outlet property="pruneTypeLabel" destination="B5g-1D-Wph" id="ieB-p5-dm8"/>
                         <outlet property="solveTimeText" destination="Vyq-SL-ywB" id="At8-IG-8ec"/>
                         <outlet property="titleText" destination="1gg-7v-m0E" id="VT1-2p-SHS"/>
                         <outlet property="tryOneStepSwitch" destination="jPw-Um-n1K" id="xFx-1l-msM"/>
@@ -627,16 +627,16 @@
             </objects>
             <point key="canvasLocation" x="1050" y="1019"/>
         </scene>
-        <!--配置パターン-->
+        <!--除去パターン-->
         <scene sceneID="e5h-BT-0EP">
             <objects>
-                <tableViewController title="配置パターン" id="5LO-va-i5i" customClass="BoardTypesViewController" customModule="Slither" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController title="除去パターン" id="5LO-va-i5i" customClass="PruneTypesViewController" customModule="Slither2" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="tKW-5x-62M">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="640"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="BoardTypeCell" textLabel="Amq-kN-rfR" style="IBUITableViewCellStyleDefault" id="5Pv-q7-pzw">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="PruneTypeCell" textLabel="Amq-kN-rfR" style="IBUITableViewCellStyleDefault" id="5Pv-q7-pzw">
                                 <rect key="frame" x="0.0" y="28" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="5Pv-q7-pzw" id="hab-Um-AEj">
@@ -662,12 +662,12 @@
                     <navigationItem key="navigationItem" id="wzS-ZZ-88K">
                         <barButtonItem key="leftBarButtonItem" systemItem="cancel" id="8aZ-SQ-mdF">
                             <connections>
-                                <segue destination="2Bo-6t-da8" kind="unwind" identifier="boardTypeCanceled" unwindAction="boardTypesCanceledWithSegue:" id="ZMK-pS-Chc"/>
+                                <segue destination="2Bo-6t-da8" kind="unwind" identifier="pruneTypeCanceled" unwindAction="pruneTypesCanceledWithSegue:" id="ZMK-pS-Chc"/>
                             </connections>
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="nB5-ki-Tfb">
                             <connections>
-                                <segue destination="2Bo-6t-da8" kind="unwind" identifier="boardTypeSelected" unwindAction="boardTypesSelectedWithSegue:" id="oaS-n0-FTe"/>
+                                <segue destination="2Bo-6t-da8" kind="unwind" identifier="pruneTypeSelected" unwindAction="pruneTypesSelectedWithSegue:" id="oaS-n0-FTe"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>

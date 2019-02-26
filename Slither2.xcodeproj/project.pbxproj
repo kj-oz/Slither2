@@ -13,7 +13,7 @@
 		31C8803322227F9B008C0D99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31C8803222227F9B008C0D99 /* Assets.xcassets */; };
 		31C8803622227F9B008C0D99 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 31C8803422227F9B008C0D99 /* LaunchScreen.storyboard */; };
 		31C8804122227F9B008C0D99 /* Slither2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804022227F9B008C0D99 /* Slither2Tests.swift */; };
-		31C88054222282DC008C0D99 /* BoardTypesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804D222282DB008C0D99 /* BoardTypesViewController.swift */; };
+		31C88054222282DC008C0D99 /* PruneTypesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804D222282DB008C0D99 /* PruneTypesViewController.swift */; };
 		31C88055222282DC008C0D99 /* CGUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804E222282DB008C0D99 /* CGUtil.swift */; };
 		31C88056222282DC008C0D99 /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804F222282DB008C0D99 /* EditViewController.swift */; };
 		31C88057222282DC008C0D99 /* FoldersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C88050222282DB008C0D99 /* FoldersViewController.swift */; };
@@ -59,7 +59,7 @@
 		31C8804222227F9B008C0D99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		31C8804B2222801D008C0D99 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		31C8804C2222801D008C0D99 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
-		31C8804D222282DB008C0D99 /* BoardTypesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoardTypesViewController.swift; sourceTree = "<group>"; };
+		31C8804D222282DB008C0D99 /* PruneTypesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PruneTypesViewController.swift; sourceTree = "<group>"; };
 		31C8804E222282DB008C0D99 /* CGUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGUtil.swift; sourceTree = "<group>"; };
 		31C8804F222282DB008C0D99 /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditViewController.swift; sourceTree = "<group>"; };
 		31C88050222282DB008C0D99 /* FoldersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoldersViewController.swift; sourceTree = "<group>"; };
@@ -129,7 +129,7 @@
 				31C8803722227F9B008C0D99 /* Info.plist */,
 				31C8806F22228476008C0D99 /* Core */,
 				31C88051222282DB008C0D99 /* AppManager.swift */,
-				31C8804D222282DB008C0D99 /* BoardTypesViewController.swift */,
+				31C8804D222282DB008C0D99 /* PruneTypesViewController.swift */,
 				31C8804E222282DB008C0D99 /* CGUtil.swift */,
 				31C8804F222282DB008C0D99 /* EditViewController.swift */,
 				31C88050222282DB008C0D99 /* FoldersViewController.swift */,
@@ -291,7 +291,7 @@
 				31C880642222831E008C0D99 /* PuzzleCell.swift in Sources */,
 				31C8802C22227F99008C0D99 /* AppDelegate.swift in Sources */,
 				31C880632222831E008C0D99 /* Puzzle.swift in Sources */,
-				31C88054222282DC008C0D99 /* BoardTypesViewController.swift in Sources */,
+				31C88054222282DC008C0D99 /* PruneTypesViewController.swift in Sources */,
 				31C88055222282DC008C0D99 /* CGUtil.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

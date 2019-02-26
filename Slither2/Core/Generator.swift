@@ -26,7 +26,7 @@ struct GenerateException: Error {
 }
 
 
-/// 盤面の数値の配置パターン
+/// 盤面の数値の除去パターン
 ///
 /// - free: パターンなし
 /// - xSymmetry: X軸対称
@@ -40,7 +40,7 @@ struct GenerateException: Error {
 /// - dPairSymmetry: 斜め2個ずつ（同一方向、X軸対称）
 /// - quad: 田型4個ずつ（同一列）
 /// - quadShift: 田型4個ずつ（階段状）
-enum BoardType: String {
+enum PruneType: String {
   case free = "F"
   case xSymmetry = "X"
   case ySymmetry = "Y"
@@ -61,7 +61,7 @@ enum BoardType: String {
   public var description: String {
     switch self {
     case .free:
-      return "自由 [F]"
+      return "制約なし [F]"
     case .xSymmetry:
       return "X対象 [X]"
     case .ySymmetry:
@@ -87,13 +87,13 @@ enum BoardType: String {
     case .quadShift:
       return "田型4連ずれ [QS]"
     case .random2Cell:
-      return "2セル・ランダム"
+      return "2セル（任意）"
     case .random4Cell:
-      return "4セル・ランダム"
+      return "4セル（任意）"
     }
   }
   
-  public var realType: BoardType {
+  public var realType: PruneType {
     switch self {
     case .random2Cell:
       return [.xSymmetry, .ySymmetry, .pointSymmetry, .hPair, .dPair].randomElement()!
@@ -182,16 +182,16 @@ class Generator {
   ///   - width: 巾
   ///   - height: 高さ
   ///   - solveOption: 問題生成時に使用するソルバーのオプション
-  ///   - boardType: 盤面のパターン
+  ///   - pruneType: 盤面のパターン
   static func createWorkbook(path: String, numProblem: Int,
                              width: Int, height: Int, solveOption: SolveOption,
-                             boardType: BoardType = .free) {
+                             pruneType: PruneType = .free) {
     
     let formatter = DateFormatter()
     formatter.dateFormat = "yyMMddHHmm"
     let dateStr = formatter.string(from: Date())
-    let bookTitle = "\(boardType.description)-\(dateStr)\(solveOption.description)"
-    let puzzleTitle = "\(boardType.description)-\(solveOption.description)"
+    let bookTitle = "\(pruneType.description)-\(dateStr)\(solveOption.description)"
+    let puzzleTitle = "\(pruneType.description)-\(solveOption.description)"
 
     let filePath = path + "/\(bookTitle).workbook"
     
@@ -207,7 +207,7 @@ class Generator {
       let _ = generator.generateLoop(option: genOption)
       print(String(format: "GenerateLoop:Elapsed: %.0f ms",
                    generator.elapsedGL * 1000))
-      generator.setupPruneOrder(boardType: boardType)
+      generator.setupPruneOrder(pruneType: pruneType)
       let numbers = generator.pruneNumbers(solveOption: solveOption)
       
       var problem: [String:Any] = ["title" : "\(puzzleTitle)-\(i)"]
@@ -530,7 +530,7 @@ class Generator {
     return branches
   }
   
-  public func setupPruneOrder(boardType: BoardType) {
+  public func setupPruneOrder(pruneType: PruneType) {
     for cell in board.cells {
       originalNumbers.append(cell.onCount)
     }
@@ -539,7 +539,7 @@ class Generator {
     let xc = board.width % 2 == 1 ? board.width / 2 : -1
     let yc = board.height % 2 == 1 ? board.height / 2 : -1
     
-    switch boardType.realType {
+    switch pruneType {
     case .free:
       for i in 0 ..< board.cells.count {
         pruneOrders.append([i])
@@ -547,10 +547,10 @@ class Generator {
     case .xSymmetry, .ySymmetry, .xySymmetry, .pointSymmetry:
       var xmax = board.width
       var ymax = board.height
-      if boardType == .xSymmetry || boardType == .xySymmetry || boardType == .pointSymmetry {
+      if pruneType == .xSymmetry || pruneType == .xySymmetry || pruneType == .pointSymmetry {
         xmax = (board.width + 1) / 2
       }
-      if boardType == .ySymmetry || boardType == .xySymmetry {
+      if pruneType == .ySymmetry || pruneType == .xySymmetry {
         ymax = (board.height + 1) / 2
       }
       for y in 0 ..< ymax {
@@ -558,13 +558,13 @@ class Generator {
           var indecies = [y * board.width + x]
           let xm = board.width - x - 1
           let ym = board.height - y - 1
-          if xm != x && (boardType == .xSymmetry || boardType == .xySymmetry) {
+          if xm != x && (pruneType == .xSymmetry || pruneType == .xySymmetry) {
             indecies.append(y * board.width + xm)
           }
-          if ym != y && (boardType == .ySymmetry || boardType == .xySymmetry) {
+          if ym != y && (pruneType == .ySymmetry || pruneType == .xySymmetry) {
             indecies.append(ym * board.width + x)
           }
-          if xm != x && ym != y && (boardType == .pointSymmetry || boardType == .xySymmetry) {
+          if xm != x && ym != y && (pruneType == .pointSymmetry || pruneType == .xySymmetry) {
             indecies.append(ym * board.width + xm)
           }
           pruneOrders.append(indecies)
@@ -573,7 +573,7 @@ class Generator {
     case .hPair, .hPairSymmetry, .dPairCross, .quad:
       var xmax = board.width
       let ymax = board.height
-      if boardType == .hPairSymmetry {
+      if pruneType == .hPairSymmetry {
         xmax = (board.width + 1) / 2
       }
       var y = 0
@@ -583,37 +583,37 @@ class Generator {
           let index = y * board.width + x
           var indecies = [index]
           if x == xc {
-            if y != yc && (boardType == .dPairCross || boardType == .quad) {
+            if y != yc && (pruneType == .dPairCross || pruneType == .quad) {
               indecies.append(index + board.width)
             }
             pruneOrders.append(indecies)
             x += 1
           } else {
-            if boardType == .hPairSymmetry {
+            if pruneType == .hPairSymmetry {
               let xm = board.width - x - 1
               indecies.append(y * board.width + xm)
             }
-            if boardType == .hPair || boardType == .hPairSymmetry || boardType == .quad {
+            if pruneType == .hPair || pruneType == .hPairSymmetry || pruneType == .quad {
               indecies.append(index + 1)
-              if boardType == .hPairSymmetry {
+              if pruneType == .hPairSymmetry {
                 let xm = board.width - x - 2
                 indecies.append(y * board.width + xm)
               }
             }
             if y == yc {
-              if boardType == .dPairCross {
+              if pruneType == .dPairCross {
                 indecies.append(index + 1)
               }
               pruneOrders.append(indecies)
             } else {
-              if boardType == .quad {
+              if pruneType == .quad {
                 indecies.append(index + board.width)
               }
-              if boardType == .dPairCross || boardType == .quad {
+              if pruneType == .dPairCross || pruneType == .quad {
                 indecies.append(index + board.width + 1)
               }
               pruneOrders.append(indecies)
-              if boardType == .dPairCross {
+              if pruneType == .dPairCross {
                 indecies = [index + 1, index + board.width]
                 pruneOrders.append(indecies)
               }
@@ -621,7 +621,7 @@ class Generator {
             x += 2
           }
         }
-        y += ((boardType == .hPair || boardType == .hPairSymmetry || y == yc) ? 1 : 2)
+        y += ((pruneType == .hPair || pruneType == .hPairSymmetry || y == yc) ? 1 : 2)
       }
     case .hPairShift, .quadShift:
       var y = 0
@@ -631,13 +631,13 @@ class Generator {
         while x < board.width {
           let index = y * board.width + x
           var indecies = [index]
-          if y < board.height - 1 && boardType == .quadShift {
+          if y < board.height - 1 && pruneType == .quadShift {
             indecies.append(index + board.width)
           }
           if x >= start {
             if x < board.width - 1 {
               indecies.append(index + 1)
-              if y < board.height - 1 && boardType == .quadShift {
+              if y < board.height - 1 && pruneType == .quadShift {
                 indecies.append(index + board.width + 1)
               }
             }
@@ -647,13 +647,13 @@ class Generator {
           }
           pruneOrders.append(indecies)
         }
-        y += (boardType == .quadShift ? 2 : 1)
+        y += (pruneType == .quadShift ? 2 : 1)
         start = 1 - start
       }
     case .dPair, .dPairSymmetry:
       var xmax = board.width
       let ymax = board.height
-      if boardType == .dPairSymmetry {
+      if pruneType == .dPairSymmetry {
         xmax = (board.width + 1) / 2
       }
       var y = 0
@@ -662,14 +662,14 @@ class Generator {
           let index = y * board.width + x
           var indecies = [index]
           let xm = board.width - x - 1
-          if xm != x && boardType == .dPairSymmetry {
+          if xm != x && pruneType == .dPairSymmetry {
             indecies.append(y * board.width + xm)
           }
           let x1 = x + 1
           let y1 = y + 1
           if y1 < ymax && x1 < xmax {
             indecies.append(y1 * board.width + x1)
-            if boardType == .dPairSymmetry {
+            if pruneType == .dPairSymmetry {
               let xm1 = board.width - x1 - 1
               indecies.append(y1 * board.width + xm1)
             }
@@ -679,7 +679,7 @@ class Generator {
         y += 1
         if y < ymax {
           var indecies = [y * board.width]
-          if boardType == .dPairSymmetry {
+          if pruneType == .dPairSymmetry {
             let xm1 = board.width - 1
             indecies.append(y * board.width + xm1)
           }

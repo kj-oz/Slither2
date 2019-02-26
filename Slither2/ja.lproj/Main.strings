@@ -89,5 +89,5 @@
 /* Class = "UILabel"; text = "20 X 36"; ObjectID = "zS9-Ut-zTC"; */
 "zS9-Ut-zTC.text" = "20 X 36";
 
-/* Class = "UILabel"; text = "配置パターン"; ObjectID = "zYO-8r-3nK"; */
-"zYO-8r-3nK.text" = "配置パターン";
+/* Class = "UILabel"; text = "除去パターン"; ObjectID = "zYO-8r-3nK"; */
+"zYO-8r-3nK.text" = "除去パターン";
