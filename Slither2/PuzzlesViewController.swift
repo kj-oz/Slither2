@@ -122,8 +122,8 @@ class PuzzlesViewController: UITableViewController {
   @IBAction func inputButtonClicked(_ sender: Any) {
     let dialog = UIAlertController(title: appTitle,
                                    message: "幅と高さを入力して[作成]をタップしください。", preferredStyle: .alert)
-    dialog.addTextField(configurationHandler: nil)
-    dialog.addTextField(configurationHandler: nil)
+    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.numberPad})
+    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.numberPad})
     dialog.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
     dialog.addAction(UIAlertAction(title: "作成", style: .default, handler: { (_) in
       if let widthStr = dialog.textFields![0].text, let width = Int(widthStr),

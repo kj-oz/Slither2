@@ -38,6 +38,12 @@ protocol PuzzleViewDelegate {
 
 /// スリザーリンク専用のビュー
 class PuzzleView: UIView {
+  enum PanMode {
+    case none
+    case pan
+    case line
+  }
+  
   /// 問題の末端の点からの余白（問題座標系）
   static let margin: CGFloat = 1.0
   
@@ -76,6 +82,8 @@ class PuzzleView: UIView {
   
   /// 線の連続入力時の直前にたどった辺（微小のドラッグをタップとして扱うため）
   var prevEdge: Edge?
+  
+  var panMode = PanMode.none
   
   /// ズーム中かどうか
   var zoomed  = true
@@ -394,10 +402,20 @@ class PuzzleView: UIView {
   @objc func panned(_ sender: Any) {
     if zoomed {
       if mode == .play {
-        if panGr!.numberOfTouches > 1 {
+        if panGr!.state == .began {
+          if panGr!.numberOfTouches > 1 {
+            panMode = .pan
+          } else {
+            panMode = .line
+          }
+        }
+        if panMode == .pan {
           pan()
         } else {
           line()
+        }
+        if panGr!.state == .ended {
+          panMode = .none
         }
       }
     } else {

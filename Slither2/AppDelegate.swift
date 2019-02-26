@@ -1,46 +1,60 @@
 //
 //  AppDelegate.swift
-//  Slither2
+//  Slither
 //
-//  Created by KO on 2019/02/24.
-//  Copyright © 2019 KO. All rights reserved.
+//  Created by KO on 2018/09/19.
+//  Copyright © 2018年 KO. All rights reserved.
 //
 
 import UIKit
 
+/// アプリケーション・デリゲート
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+  /// ウィンドウ
   var window: UIWindow?
 
+  /// アプリケーションマネージャ
+  var am: AppManager!
 
+  // アプリ起動時
   func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    // Override point for customization after application launch.
+    // 前回の状態などを読み込む
+    am = AppManager.sharedInstance
+    am.restoring = true
     return true
   }
 
+  // バックグラウンドにまわる直前
   func applicationWillResignActive(_ application: UIApplication) {
-    // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-    // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+    let n = Notification(name: NSNotification.Name("applicationWillResignActive"), object: self)
+    NotificationCenter.default.post(n)
   }
 
+  // バックグラウンドにまわった直後
   func applicationDidEnterBackground(_ application: UIApplication) {
-    // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-    // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    let n = Notification(name: NSNotification.Name("applicationDidEnterBackground"), object: self)
+    NotificationCenter.default.post(n)
+    // 状態の保存
+    am.saveStatus()
   }
 
+  // フォアグラウンドにまわる直前
   func applicationWillEnterForeground(_ application: UIApplication) {
-    // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    let n = Notification(name: NSNotification.Name("applicationWillEnterForeground"), object: self)
+    NotificationCenter.default.post(n)
   }
 
+  // フォアグラウンドにまわった直後
   func applicationDidBecomeActive(_ application: UIApplication) {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    let n = Notification(name: NSNotification.Name("applicationDidBecomeActive"), object: self)
+    NotificationCenter.default.post(n)
   }
 
+  // アプリ終了時
   func applicationWillTerminate(_ application: UIApplication) {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    // 状態の保存
+    am.saveStatus()
   }
-
-
 }
 
