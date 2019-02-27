@@ -41,8 +41,8 @@
 /* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[1] = "易"; ObjectID = "KV9-iw-neE"; */
 "KV9-iw-neE.segmentTitles[1]" = "易";
 
-/* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[2] = "難"; ObjectID = "KV9-iw-neE"; */
-"KV9-iw-neE.segmentTitles[2]" = "難";
+/* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[2] = "中"; ObjectID = "KV9-iw-neE"; */
+"KV9-iw-neE.segmentTitles[2]" = "中";
 
 /* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[3] = "難"; ObjectID = "KV9-iw-neE"; */
 "KV9-iw-neE.segmentTitles[3]" = "難";
