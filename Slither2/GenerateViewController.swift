@@ -243,8 +243,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     switch segue.identifier {
     case "SelectPruneType":
-      let nv = segue.destination as! UINavigationController
-      let dst = nv.visibleViewController! as! PruneTypesViewController
+      let dst = segue.destination as! PruneTypesViewController
       dst.selectedPruneType = pruneType
     default:
       break

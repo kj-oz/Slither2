@@ -20,11 +20,12 @@ class Folder {
   
   var path: String
   
-  var name: String
+  var name: String {
+    return (path as NSString).lastPathComponent
+  }
   
   init(path: String) {
     self.path = path
-    self.name = (path as NSString).lastPathComponent
     
     let fm = FileManager.default
     let files = try! fm.contentsOfDirectory(atPath: path)
@@ -155,10 +156,71 @@ class AppManager {
     UserDefaults.standard.setValue(String(lastId), forKey: "lastId")
   }
 
-  func copy(puzzle: Puzzle) {
+  func copyPuzzle(_ puzzle: Puzzle) {
     let _ = Puzzle(folder: currentFolder, original: puzzle)
   }
 
+  func addFolder(name: String) -> Bool {
+    if !folderExists(name: name) {
+      let path = (rootDir as NSString).appendingPathComponent(name)
+      let fm = FileManager.default
+      do {
+        try fm.createDirectory(atPath: path, withIntermediateDirectories: false, attributes: nil)
+        folders.append(Folder(path: path))
+        return true
+      } catch {}
+    }
+    return false
+  }
+  
+  func removeFolder(at index: Int)  -> Bool {
+    let folder = folders[index]
+    let fm = FileManager.default
+    do {
+      try fm.removeItem(atPath: folder.path)
+      folders.remove(at: index)
+      return true
+    } catch {}
+    return false
+  }
+  
+  func renameFolder(_ folder: Folder, to newName: String) -> Bool {
+    if !folderExists(name: newName) {
+      let fm = FileManager.default
+      let fromDir = folder.path
+      let toDir = (rootDir as NSString).appendingPathComponent(newName)
+      do {
+        try fm.moveItem(atPath: fromDir, toPath: toDir)
+        folder.path = toDir
+        return true
+      } catch {}
+    }
+    return false
+  }
+  
+  func movePuzzles(_ puzzles: [Puzzle], to: Folder) -> Bool {
+    let fm = FileManager.default
+    let toDir = to.path
+    
+    for puzzle in puzzles {
+      let fromFile = puzzle.path
+      let puzzleName = (puzzle.path as NSString).lastPathComponent
+      let toFile = (toDir as NSString).appendingPathComponent(puzzleName)
+      do {
+        try fm.moveItem(atPath: fromFile, toPath: toFile)
+        puzzle.path = toFile
+        currentFolder.puzzles.remove(at: currentFolder.puzzles.firstIndex(of: puzzle)!)
+        to.puzzles.append(puzzle)
+      } catch {
+        return false
+      }
+    }
+    return true
+  }
+  
+  func folderExists(name: String) -> Bool {
+    return folders.first(where: { $0.name == name }) != nil
+  }
 }
 
 /// メッセージ上部に表示されるアプリケーション名
