@@ -37,6 +37,9 @@ class Solver {
   /// ブランチの再帰呼び出し時の最大レベル
   var maxLevel = 0
   
+  /// エリアチェックで有効な手が見つかったかどうか
+  var useAreaCheckResult = false
+  
   /// 与えられた盤面で初期化する
   ///
   /// - Parameter board: 盤面
@@ -108,6 +111,7 @@ class Solver {
   /// - Returns: 問題が正常に解けたかどうか
   func solve(option: SolveOption) -> Bool {
     let startTime = Date()
+    useAreaCheckResult = false
     timelimit = startTime.addingTimeInterval(option.elapsedSec)
     self.option = option
     do {
@@ -431,6 +435,7 @@ class Solver {
         }
         if option.doAreaCheck {
           if try checkArea() {
+            useAreaCheckResult = true
             continue
           }
         }

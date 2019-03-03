@@ -47,8 +47,11 @@ class Puzzle : Hashable {
   ///　盤面
   var board: Board
   
-  ///　盤面生成時のパラメータ
+  /// 盤面生成時のパラメータ
   var genParams = ""
+  
+  /// 盤面生成時の記録（ループ生成時間,間引き回数,間引き前半時間、間引き後半時間)
+  var genStats = ""
   
   /// 問題の状態
   var status = PuzzleStatus.editing
@@ -105,9 +108,10 @@ class Puzzle : Hashable {
   ///   - height: 高さ
   ///   - genParams: 生成時のパラメータ
   ///   - data: セルの数字の配列
-  init(folder: Folder, width: Int, height: Int, genParams: String, data: [Int]) {
+  init(folder: Folder, width: Int, height: Int, genParams: String, genStats: String, data: [Int]) {
     board = Board(width: width, height: height, numbers: data)
     self.genParams = genParams
+    self.genStats = genStats
     status = genParams.count > 0 ? .notStarted : .editing
     
     let am = AppManager.sharedInstance
@@ -126,7 +130,7 @@ class Puzzle : Hashable {
   ///   - height: 高さ
   convenience init(folder: Folder, width: Int, height: Int) {
     let data = Array<Int>(repeating: -1, count: width * height)
-    self.init(folder: folder, width: width, height: height, genParams: "", data: data)
+    self.init(folder: folder, width: width, height: height, genParams: "", genStats: "", data: data)
   }
   
   /// ファイルからの生成
@@ -169,6 +173,8 @@ class Puzzle : Hashable {
           height = Int(sizes[1])!
         case "genParams":
           genParams = value
+        case "genStats":
+          genStats = value
         case "numbers":
           numbersCount = height
         case "status":
@@ -310,6 +316,7 @@ class Puzzle : Hashable {
     lines.append("title: \(title)")
     lines.append("size: \(board.width) \(board.height)")
     lines.append("genParams: \(genParams)")
+    lines.append("genStats: \(genStats)")
     lines.append("numbers:")
     for y in 0 ..< board.height {
       var line = ""

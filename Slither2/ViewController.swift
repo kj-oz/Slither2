@@ -18,23 +18,6 @@ class ViewController: UIViewController {
   }
   
   @IBAction func GenerateTapped(_ sender: Any) {
-    var docDir = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, false)[0]
-    docDir = NSString(string: docDir).expandingTildeInPath
-    print(docDir)
-
-    let startTime = Date()
-    var solveOption = SolveOption()
-    solveOption.doAreaCheck = false
-    solveOption.doTryOneStep = true
-    solveOption.useCache = true
-    solveOption.doColorCheck = true
-    solveOption.doGateCheck = true
-    solveOption.maxGuessLevel = 0
-    solveOption.elapsedSec = 0.1
-    
-    Generator.createWorkbook(path: docDir, numProblem: 1, width: 21, height: 14, solveOption: solveOption)
-    
-    print(String(format: "Generating 3 Problems: %.0f ms", Date().timeIntervalSince(startTime) * 1000))
   }
   
   

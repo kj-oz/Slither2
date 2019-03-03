@@ -114,6 +114,28 @@ struct GenerateOption {
   var blankEdgeFraction = 0.05
 }
 
+struct GenerateStatistics {
+  var elapsed: [Int] = []
+  var pruneCount = 0
+  var areaCheckUsed = 0
+  var prev = Date()
+  
+  mutating func start() {
+    prev = Date()
+  }
+  
+  mutating func measure() {
+    let now = Date()
+    elapsed.append(Int(now.timeIntervalSince(prev) * 1000.0))
+    prev = now
+  }
+  
+  var description: String {
+    return String(format: "%d,%d,%d,%d,%d,%d,%d", pruneCount, elapsed[0], elapsed[1], elapsed[2],
+                  elapsed[3], elapsed[4], areaCheckUsed)
+  }
+}
+
 /// 問題を生成するクラス
 class Generator {
   /// 盤面データ
@@ -161,10 +183,7 @@ class Generator {
 
   /// デバッグ出力をおこなうかどうか
   var debug = true
-  
-  /// 処理に要した時間
-  var elapsedGL = 0.0
-  
+
   /// ブランチの再帰呼び出し時の最大レベル
   var maxLevel = 0
   
@@ -174,116 +193,7 @@ class Generator {
   /// セルの数値の間引き順序（いくつかのセルを同時に間引くため配列の配列になっている）
   var pruneOrders: [[Int]] = []
   
-  /// 仮：「スリザー」用の同じオプションによる複数の問題からなる問題集を生成する
-  ///
-  /// - Parameters:
-  ///   - path: ファイルのパス
-  ///   - numProblem: 生成する問題数
-  ///   - width: 巾
-  ///   - height: 高さ
-  ///   - solveOption: 問題生成時に使用するソルバーのオプション
-  ///   - pruneType: 盤面のパターン
-  static func createWorkbook(path: String, numProblem: Int,
-                             width: Int, height: Int, solveOption: SolveOption,
-                             pruneType: PruneType = .free) {
-    
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyMMddHHmm"
-    let dateStr = formatter.string(from: Date())
-    let bookTitle = "\(pruneType.description)-\(dateStr)\(solveOption.description)"
-    let puzzleTitle = "\(pruneType.description)-\(solveOption.description)"
-
-    let filePath = path + "/\(bookTitle).workbook"
-    
-    var workbook: [String:Any] = ["title" : bookTitle]
-    var problems: [[String:Any]] = []
-    for i in 0 ..< numProblem {
-      let generator = Generator(width: width, height: height)
-      
-      var genOption = GenerateOption()
-      genOption.blankEdgeFraction = 0.05
-      genOption.loopLengthFraction = 0.25
-      
-      let _ = generator.generateLoop(option: genOption)
-      print(String(format: "GenerateLoop:Elapsed: %.0f ms",
-                   generator.elapsedGL * 1000))
-      generator.setupPruneOrder(pruneType: pruneType)
-      let numbers = generator.pruneNumbers(solveOption: solveOption)
-      
-      var problem: [String:Any] = ["title" : "\(puzzleTitle)-\(i)"]
-      problem["status"] = 1
-      problem["difficulty"] = solveOption.maxGuessLevel
-      problem["width"] = width
-      problem["height"] = height
-      problem["data"] = numbers
-      problem["elapsedSecond"] = 0
-      problem["resetCount"] = 0
-      problem["fixCount"] = 0
-      problems.append(problem)
-    }
-    workbook["problems"] = problems
-    do {
-      let jsonData = try JSONSerialization.data(withJSONObject: workbook, options: [])
-      let jsonStr = String(bytes: jsonData, encoding: .utf8)!
-      try jsonStr.write(toFile: filePath, atomically: true, encoding: .utf8)
-      print(jsonStr)  // 生成されたJSON文字列 => {"Name":"Taro"}
-    } catch let error {
-      print(error)
-    }
-  }
-  
-  /// 仮：「スリザー」用の同ループに対し異なるオプションで生成した複数の問題からなる問題集を生成する
-  ///
-  /// - Parameters:
-  ///   - path: ファイルのパス
-  ///   - width: 巾
-  ///   - height: 高さ
-  ///   - solveOptions: ソルバのオプションの配列
-  static func createWorkbook(path: String, width: Int, height: Int,
-                             solveOptions: [SolveOption]) {
-    
-    let formatter = DateFormatter()
-    formatter.dateFormat = "yyMMddHHmm"
-    let dateStr = formatter.string(from: Date())
-    
-    let filePath = path + "/\(dateStr).workbook"
-    
-    var workbook: [String:Any] = ["title" : dateStr]
-    var problems: [[String:Any]] = []
-    let generator = Generator(width: width, height: height)
-    
-    var genOption = GenerateOption()
-    genOption.blankEdgeFraction = 0.05
-    genOption.loopLengthFraction = 0.25
-    
-    let _ = generator.generateLoop(option: genOption)
-    print(String(format: "GenerateLoop:Elapsed: %.0f ms",
-                 generator.elapsedGL * 1000))
-    
-    for solveOption in solveOptions {
-      let numbers = generator.pruneNumbers(solveOption: solveOption)
-      
-      var problem: [String:Any] = ["title" : "\(solveOption.description)"]
-      problem["status"] = 1
-      problem["difficulty"] = solveOption.maxGuessLevel
-      problem["width"] = width
-      problem["height"] = height
-      problem["data"] = numbers
-      problem["elapsedSecond"] = 0
-      problem["resetCount"] = 0
-      problem["fixCount"] = 0
-      problems.append(problem)
-    }
-    workbook["problems"] = problems
-    do {
-      let jsonData = try JSONSerialization.data(withJSONObject: workbook, options: [])
-      let jsonStr = String(bytes: jsonData, encoding: .utf8)!
-      try jsonStr.write(toFile: filePath, atomically: true, encoding: .utf8)
-      print(jsonStr)  // 生成されたJSON文字列 => {"Name":"Taro"}
-    } catch let error {
-      print(error)
-    }
-  }
+  var stats: GenerateStatistics = GenerateStatistics()
   
   /// コンストラクタ
   ///
@@ -295,6 +205,30 @@ class Generator {
                       numbers: Array<Int>(repeating: -1, count: width * height))
   }
   
+  public func generate(genOp: GenerateOption, pruneType: PruneType, solveOp: SolveOption) -> [Int] {
+    stats = GenerateStatistics()
+    stats.start()
+    let _ = generateLoop(option: genOp)
+    setupPruneOrder(pruneType: pruneType)
+    stats.pruneCount = pruneOrders.count
+    
+    stats.measure()
+    
+    let numbers = pruneNumbers(solveOption: solveOp, stepHandler: { (count, solved, solver) in
+      if solved && solver.useAreaCheckResult {
+        self.stats.areaCheckUsed += 1
+      }
+      switch count {
+      case self.stats.pruneCount / 4, self.stats.pruneCount / 2,
+            self.stats.pruneCount * 3 / 4, self.stats.pruneCount:
+        self.stats.measure()
+      default:
+        break
+      }
+    })
+    return numbers
+  }
+  
   /// ループを生成する
   ///
   /// - Parameter option: ループ生成オプション
@@ -303,8 +237,6 @@ class Generator {
     self.option = option
     minOnEdgeCount = Int(Double(board.edges.count) * option.loopLengthFraction)
     maxBlankEdgeCount = Int(Double(board.edges.count) * option.blankEdgeFraction)
-
-    let startTime = Date()
 
     // 満足のできる問題ができるまで試行を続ける
     retryCount = 0
@@ -334,8 +266,6 @@ class Generator {
       board.clear()
     }
     dump(title: "☆ Loop Generated:")
-    
-    elapsedGL = Date().timeIntervalSince(startTime)
     
     return board.loop
   }
@@ -697,7 +627,7 @@ class Generator {
   ///
   /// - Parameter solveOption: ソルバのオプション
   /// - Returns: 間引き後の数値の配列（間引かれた箇所は−1）
-  public func pruneNumbers(solveOption: SolveOption) -> [Int] {
+  public func pruneNumbers(solveOption: SolveOption, stepHandler: ((Int, Bool, Solver) -> ())?) -> [Int] {
     var numbers = originalNumbers
     var pruneCount = 0
     for indecies in pruneOrders {
@@ -714,6 +644,7 @@ class Generator {
           numbers[index] = originalNumbers[index]
         }
       }
+      stepHandler?(pruneCount, solved, solver)
       debug("prune \(pruneCount): \(solved) \(solver.maxLevel) \(Int(solver.elapsed * 1000.0))")
     }
     return numbers

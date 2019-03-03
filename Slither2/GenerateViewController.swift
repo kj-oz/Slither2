@@ -265,17 +265,11 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   // MARK: - Private
   /// パズルを生成する
   private func generatePuzzle() {
-    
+
     guard let width = Int(widthText.text!), let height = Int(heightText.text!),
           let solveTime = Int(solveTimeText.text!) else {
       return
     }
-
-    let generator = Generator(width: width, height: height)
-    let _ = generator.generateLoop(option: GenerateOption())
-
-    let realType = pruneType.realType
-    generator.setupPruneOrder(pruneType: realType)
 
     var solveOption = SolveOption()
     solveOption.doAreaCheck = areaCheckSwitch.isOn
@@ -285,12 +279,28 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     solveOption.doGateCheck = gateCheckSwitch.isOn
     solveOption.maxGuessLevel = 0
     solveOption.elapsedSec = Double(solveTime) / 1000.0
+
+    let realType = pruneType.realType
+    let generator = Generator(width: width, height: height)
+    let numbers = generator.generate(genOp: GenerateOption(),
+                                     pruneType: realType, solveOp: solveOption)
     
-    let numbers = generator.pruneNumbers(solveOption: solveOption)
+    
+//
+//    let _ = generator.generateLoop(option: GenerateOption())
+//
+//    let realType = pruneType.realType
+//    generator.setupPruneOrder(pruneType: realType)
+//
+//    let current = Date()
+//    elapsed[0] = Int(current.timeIntervalSince(start) * 1000.0)
+//
+//
+//    let numbers = generator.pruneNumbers(solveOption: solveOption)
     let genParam = realType.rawValue + "-" + solveOption.description
+    let genStats = generator.stats.description
     let am = AppManager.sharedInstance
-    
-    let _ = Puzzle(folder: am.currentFolder,
-                        width: width, height: height, genParams: genParam, data: numbers)
+    let _ = Puzzle(folder: am.currentFolder,  width: width, height: height,
+                   genParams: genParam, genStats: genStats, data: numbers)
   }
 }
