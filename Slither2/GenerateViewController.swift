@@ -270,6 +270,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
           let solveTime = Int(solveTimeText.text!) else {
       return
     }
+    let title = titleText.text!
 
     var solveOption = SolveOption()
     solveOption.doAreaCheck = areaCheckSwitch.isOn
@@ -300,7 +301,8 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     let genParam = realType.rawValue + "-" + solveOption.description
     let genStats = generator.stats.description
     let am = AppManager.sharedInstance
-    let _ = Puzzle(folder: am.currentFolder,  width: width, height: height,
+    let id = am.nextPuzzleId
+    let _ = Puzzle(folder: am.currentFolder,  id: id, title: title, width: width, height: height,
                    genParams: genParam, genStats: genStats, data: numbers)
   }
 }

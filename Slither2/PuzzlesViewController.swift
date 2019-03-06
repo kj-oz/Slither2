@@ -122,14 +122,15 @@ class PuzzlesViewController: UITableViewController, UIPopoverPresentationControl
   @IBAction func inputButtonClicked(_ sender: Any) {
     let dialog = UIAlertController(title: appTitle,
                                    message: "幅と高さを入力して[作成]をタップしください。", preferredStyle: .alert)
-    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.numberPad})
-    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.numberPad})
+    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.numberPad; $0.placeholder = "幅"})
+    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.numberPad; $0.placeholder = "高さ"})
     dialog.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
     dialog.addAction(UIAlertAction(title: "作成", style: .default, handler: { (_) in
       if let widthStr = dialog.textFields![0].text, let width = Int(widthStr),
           let heightStr = dialog.textFields![1].text, let height = Int(heightStr) {
         let am = AppManager.sharedInstance
-        am.currentPuzzle = Puzzle(folder: am.currentFolder, width: width, height: height)
+        let id = am.nextPuzzleId
+        am.currentPuzzle = Puzzle(folder: am.currentFolder, id: id, title: id, width: width, height: height)
   
         self.performSegue(withIdentifier: "EditPuzzle", sender: sender)
       }
@@ -158,7 +159,7 @@ class PuzzlesViewController: UITableViewController, UIPopoverPresentationControl
 
     let puzzles = selectedPuzzles()
     for puzzle in puzzles {
-      let _ = Puzzle(folder: am.currentFolder, original: puzzle)
+      let _ = Puzzle(folder: am.currentFolder, id: am.nextPuzzleId, original: puzzle)
     }
     tableView.reloadData()
   }

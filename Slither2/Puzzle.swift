@@ -104,19 +104,19 @@ class Puzzle : Hashable {
   ///
   /// - Parameters:
   ///   - folder: 問題を配置するフォルダ
+  ///   - id: ファイル名に使用されるユニークな文字列
+  ///   - title: リストに表示される名称
   ///   - width: 巾
   ///   - height: 高さ
   ///   - genParams: 生成時のパラメータ
   ///   - data: セルの数字の配列
-  init(folder: Folder, width: Int, height: Int, genParams: String, genStats: String, data: [Int]) {
+  init(folder: Folder, id: String, title: String, width: Int, height: Int, genParams: String, genStats: String, data: [Int]) {
     board = Board(width: width, height: height, numbers: data)
     self.genParams = genParams
     self.genStats = genStats
     status = genParams.count > 0 ? .notStarted : .editing
     
-    let am = AppManager.sharedInstance
-    let id = am.nextPuzzleId
-    self.title = id
+    self.title = title
     self.path = (folder.path as NSString).appendingPathComponent("\(id).\(Puzzle.extention)" )
     save()
     folder.puzzles.append(self)
@@ -126,11 +126,14 @@ class Puzzle : Hashable {
   ///
   /// - Parameters:
   ///   - folder: 問題を配置するフォルダ
+  ///   - id: ファイル名に使用されるユニークな文字列
+  ///   - title: リストに表示される名称
   ///   - width: 巾
   ///   - height: 高さ
-  convenience init(folder: Folder, width: Int, height: Int) {
+  convenience init(folder: Folder, id: String, title: String, width: Int, height: Int) {
     let data = Array<Int>(repeating: -1, count: width * height)
-    self.init(folder: folder, width: width, height: height, genParams: "", genStats: "", data: data)
+    self.init(folder: folder, id: id, title: title,
+              width: width, height: height, genParams: "", genStats: "", data: data)
   }
   
   /// ファイルからの生成
@@ -253,10 +256,9 @@ class Puzzle : Hashable {
   ///
   /// - Parameters:
   ///   - folder: 保存先のフォルダ
+  ///   - id: ファイル名に使用されるユニークな文字列
   ///   - original: コピー元のパズル
-  init(folder: Folder, original: Puzzle) {
-    let am = AppManager.sharedInstance
-    let id = am.nextPuzzleId
+  init(folder: Folder, id: String, original: Puzzle) {
     self.path = (folder.path as NSString).appendingPathComponent("\(id).\(Puzzle.extention)" )
     status = original.status == .editing ? .editing : .notStarted
     genParams = original.genParams
