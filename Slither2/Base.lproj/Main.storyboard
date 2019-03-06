@@ -26,8 +26,9 @@
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="H1w-my-HVb">
-                                            <rect key="frame" x="16" y="7" width="288" height="30"/>
+                                        <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="H1w-my-HVb">
+                                            <rect key="frame" x="16" y="13.5" width="288" height="17"/>
+                                            <color key="backgroundColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
                                             <nil key="textColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                             <textInputTraits key="textInputTraits"/>
@@ -52,8 +53,16 @@
                     </tableView>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="dbb-oM-utJ">
-                        <barButtonItem key="leftBarButtonItem" systemItem="done" id="exA-0a-9uJ"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="CfS-ZM-eo9"/>
+                        <barButtonItem key="leftBarButtonItem" systemItem="done" id="exA-0a-9uJ">
+                            <connections>
+                                <action selector="endAction" destination="Jbv-GF-qeX" id="F23-UU-Djj"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="CfS-ZM-eo9">
+                            <connections>
+                                <action selector="addAction" destination="Jbv-GF-qeX" id="Ruc-mA-nbq"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>

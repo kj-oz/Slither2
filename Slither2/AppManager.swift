@@ -157,7 +157,8 @@ class AppManager {
   }
 
   func copyPuzzle(_ puzzle: Puzzle) {
-    let _ = Puzzle(folder: currentFolder, original: puzzle)
+    let id = AppManager.sharedInstance.nextPuzzleId
+    let _ = Puzzle(folder: currentFolder, id: id, original: puzzle)
   }
 
   func addFolder(name: String) -> Bool {

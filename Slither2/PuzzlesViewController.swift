@@ -231,7 +231,8 @@ class PuzzlesViewController: UITableViewController, UIPopoverPresentationControl
   }
   
   func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-    self.title = AppManager.sharedInstance.currentFolder.name
+    title = AppManager.sharedInstance.currentFolder.name
+    navigationItem.title = title
   }
   
   /// その時点で画面で選択されている問題の配列を得る
