@@ -1,6 +1,6 @@
 //
 //  PruneTypesViewController.swift
-//  Slither
+//  Slither2
 //
 //  Created by KO on 2019/02/05.
 //  Copyright © 2019 KO. All rights reserved.
@@ -45,6 +45,8 @@ class PruneTypesViewController: UITableViewController {
     }
   }
   
+  // MARK: - UIViewController
+  
   // ビューのロード時
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -61,7 +63,8 @@ class PruneTypesViewController: UITableViewController {
     }
   }
   
-  // MARK: - UITableVewDataSource
+  // MARK: - UITableVewDataSource/Delegate
+  
   // セクション数
   override func numberOfSections(in tableView: UITableView) -> Int {
     return pruneTypes.count

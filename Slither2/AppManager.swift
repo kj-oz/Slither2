@@ -1,6 +1,6 @@
 //
 //  AppManager.swift
-//  Slither
+//  Slither2
 //
 //  Created by KO on 2019/01/24.
 //  Copyright © 2019 KO. All rights reserved.
@@ -95,6 +95,8 @@ class AppManager {
     }
     return String(lastId)
   }
+  
+  // MARK: - 設定の読み込み、保存
   
   /// プライベートなコンストラクタ
   /// 各種設定を読み込む

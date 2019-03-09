@@ -1,6 +1,6 @@
 //
 //  PlayViewController.swift
-//  Slither
+//  Slither2
 //
 //  Created by KO on 2019/01/30.
 //  Copyright © 2019 KO. All rights reserved.
@@ -35,6 +35,8 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   /// 開始時刻
   var start = Date()
   
+  // MARK: - UIViewController
+  
   // ビューロード時
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -62,17 +64,18 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     
-    updateButtonEnabled()
+    updateButtonStatus()
     startPlay()
   }
   
   // ビューが消える直前
   override func viewWillDisappear(_ animated: Bool) {
     super.viewWillDisappear(animated)
-    
     stopPlay()
   }
 
+  // MARK: - アプリケーションのアクティブ化・非アクティブ化
+  
   /// アプリケーションがバックグラウンドにまわった直後
   @objc func applicationDidEnterBackground() {
     stopPlay()
@@ -155,7 +158,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
           let sec = puzzle.elapsedSecond + Int(t)
           puzzle.elapsedSecond = sec
           puzzle.fix()
-          updateButtonEnabled()
+          updateButtonStatus()
           let msg = "正解です。所要時間 \(elapsedlabelString(sec))"
           alert(viewController: self, message: msg)
         } else if loopStatus == .cellError {
@@ -167,47 +170,42 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     }
   }
   
-  /// アンドゥ、リドゥボタンの活性・非活性を更新する
-  private func updateButtonEnabled() {
-    undoButton.isEnabled = puzzle.canUndo
-    redoButton.isEnabled = puzzle.canRedo
-    actionButton.isEnabled = puzzle.status == .solving
-  }
+  // MARK: - ボタンのアクション
   
   // アクションボタンタップ時
-  @IBAction func actionTapped(_ sender: Any) {
+  @IBAction func actionButtonTapped(_ sender: Any) {
     let alert: UIAlertController = UIAlertController(title: "スリザー2", message: "操作”",
                                                      preferredStyle: .actionSheet)
     alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
     alert.addAction(UIAlertAction(title: "初期化", style: .destructive, handler: { _ in
-      self.initClicked(self)
+      self.initActionSelected(self)
     }))
     alert.addAction(UIAlertAction(title: "未固定部消去", style: .destructive, handler: { _ in
-      self.eraseClicked(self)
+      self.eraseActionSelected(self)
     }))
     alert.addAction(UIAlertAction(title: "固定", style: .default, handler: { _ in
-      self.fixClicked(self)
+      self.fixActionSelected(self)
     }))
     alert.popoverPresentationController?.barButtonItem = sender as? UIBarButtonItem
     self.present(alert, animated: true, completion: nil)
   }
   
   // アンドゥボタンタップ時
-  @IBAction func undoTapped(_ sender: Any) {
+  @IBAction func undoButtonTapped(_ sender: Any) {
     puzzle.undo()
-    updateButtonEnabled()
+    updateButtonStatus()
     puzzleView.setNeedsDisplay()
   }
 
   // リドゥボタンタップ時
-  @IBAction func redoTapped(_ sender: Any) {
+  @IBAction func redoButtonTapped(_ sender: Any) {
     puzzle.redo()
-    updateButtonEnabled()
+    updateButtonStatus()
     puzzleView.setNeedsDisplay()
   }
   
   // アクションシートの初期化ボタン押下
-  @IBAction func initClicked(_ sender: Any) {
+  @IBAction func initActionSelected(_ sender: Any) {
     confirm(viewController: self, title: "初期化",
             message: "盤面を全て初期化してもよろしいですか？", handler: { answer in
       if answer {
@@ -220,7 +218,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   }
   
   // アクションシートの消去ボタン押下
-  @IBAction func eraseClicked(_ sender: Any) {
+  @IBAction func eraseActionSelected(_ sender: Any) {
     confirm(viewController: self, title: "消去",
             message: "固定されていない部分を消去してもよろしいですか？", handler: { answer in
       if answer {
@@ -232,13 +230,22 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   }
   
   // アクションシートの固定ボタン押下
-  @IBAction func fixClicked(_ sender: Any) {
+  @IBAction func fixActionSelected(_ sender: Any) {
     puzzle.fixCount += 1
     puzzle.fix()
     undoButton.isEnabled = false
     puzzleView.setNeedsDisplay()
   }
 
+  // MARK: - ヘルパメソッド
+  
+  /// アンドゥ、リドゥボタンの活性・非活性を更新する
+  private func updateButtonStatus() {
+    undoButton.isEnabled = puzzle.canUndo
+    redoButton.isEnabled = puzzle.canRedo
+    actionButton.isEnabled = puzzle.status == .solving
+  }
+  
   /// 画面のタイトルを更新する
   @objc func updateElapsedlabel() {
     let now = Date()

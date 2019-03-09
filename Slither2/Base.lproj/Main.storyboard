@@ -249,17 +249,17 @@
                         <rightBarButtonItems>
                             <barButtonItem systemItem="undo" id="D9t-pg-10y">
                                 <connections>
-                                    <action selector="undoTapped:" destination="Zgi-pP-djp" id="z33-zc-xb6"/>
+                                    <action selector="undoButtonTapped:" destination="Zgi-pP-djp" id="z33-zc-xb6"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem systemItem="redo" id="ldA-Q5-2f2">
                                 <connections>
-                                    <action selector="redoTapped:" destination="Zgi-pP-djp" id="e6z-zg-88c"/>
+                                    <action selector="redoButtonTapped:" destination="Zgi-pP-djp" id="e6z-zg-88c"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem systemItem="action" id="NIc-TV-Krq">
                                 <connections>
-                                    <action selector="actionTapped:" destination="Zgi-pP-djp" id="nnz-fN-zUh"/>
+                                    <action selector="actionButtonTapped:" destination="Zgi-pP-djp" id="nnz-fN-zUh"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>
