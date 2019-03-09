@@ -8,6 +8,19 @@
 
 import UIKit
 
+/// フォルダの選択及び名称の変更を監視するデリゲート
+protocol FoldersViewDelegate : class {
+  /// フォルダが選択された直後
+  ///
+  /// - Parameter folder: 選択されたフォルダ
+  func folderDidSelect(_ folder: Folder)
+  
+  /// フォルダの名称が変更された直後
+  ///
+  /// - Parameter folder: 名称変更されたフォルダ
+  func folderDidRename(_ folder: Folder)
+}
+
 /// 文字列が編集可能なセル
 class EditableBasicCell: UITableViewCell {
   @IBOutlet weak var textField: UITextField!
@@ -22,17 +35,14 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
   /// 既存フォルダの名称変更中フラグ（名称入力待ち）
   var renaming = false
   
-  /// 削除対象の行
-  var deletingRow = 0
-  
   /// 追加ボタン
   @IBOutlet var addButton: UIBarButtonItem!
   
-  /// 編集終了ボタン
-  @IBOutlet var endButton: UIBarButtonItem!
+  /// 文字列入力終了ボタン
+  @IBOutlet var inputEndButton: UIBarButtonItem!
   
-  /// この画面で選択されたフォルダ
-  var selectedFolder = AppManager.sharedInstance.currentFolder
+  /// フォルダの選択及び名称の変更を監視するデリゲート
+  weak var delegate: FoldersViewDelegate?
   
   // MARK: - UIViewController
   
@@ -57,7 +67,14 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
     }
     
     // ナビゲーションバーのボタンの更新を行う
-    updateNavigationItem(animated: animated)
+    updateNavigationItems(animated: animated)
+  }
+  
+  /// ビューのアンロード時
+  deinit {
+    // 表示を消すことがあるため、強参照している
+    addButton = nil
+    inputEndButton = nil
   }
   
   /// 編集モード
@@ -81,15 +98,7 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
     }
     
     // ナビゲーションボタンを更新する
-    updateNavigationItem(animated: animated)
-  }
-  
-  /// 画面遷移の直前
-  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    if segue.identifier == "FolderSelected" {
-      let indexPath = tableView.indexPathForSelectedRow!
-      selectedFolder = AppManager.sharedInstance.folders[indexPath.row]
-    }
+    updateNavigationItems(animated: animated)
   }
   
   // MARK: - UITableViewDataSource/Delegate
@@ -107,6 +116,13 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
     return cell
   }
   
+  // セルが選択された直後
+  override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let am = AppManager.sharedInstance
+    let folder = am.folders[indexPath.row]
+    delegate?.folderDidSelect(folder)
+  }
+
   // セルが編集可能かどうか
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
     let am = AppManager.sharedInstance
@@ -123,18 +139,17 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
   override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
     let folder = AppManager.sharedInstance.folders[indexPath.row]
     if editingStyle == .delete {
-      deletingRow = indexPath.row
       if folder.puzzles.count > 0 {
         // 削除操作の場合
         // アラートを表示する
         let msg = "含まれている全ての問題も同時に削除されます。\n\(folder.name)を削除してもよろしいですか？"
         confirm(viewController: self, message: msg, handler: {
           if $0 {
-            self.removeSelectedFolder(deletingRow: self.deletingRow)
+            self.removeSelectedFolder(deletingRow: indexPath.row)
           }
         })
       } else {
-        removeSelectedFolder(deletingRow: deletingRow)
+        removeSelectedFolder(deletingRow: indexPath.row)
       }
     }
   }
@@ -146,7 +161,7 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
     if !adding {
       renaming = true
     }
-    updateNavigationItem(animated: true)
+    updateNavigationItems(animated: true)
   }
   
   // 編集終了直後
@@ -195,13 +210,14 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
           }
           // 本棚の名称を変更する
           _ = am.renameFolder(folder, to: text!)
+          delegate?.folderDidRename(folder)
         }
       } else {
         textField.text = folder.name
       }
     }
     // ボタンの更新
-    updateNavigationItem(animated: true)
+    updateNavigationItems(animated: true)
   }
   
   // 編集が確定する直前
@@ -213,7 +229,7 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
   // MARK: - ボタンのアクション
   
   // 追加ボタンタップ時
-  @IBAction func addAction() {
+  @IBAction func addButtonTapped() {
     // 末尾に行を追加
     adding = true
     let indexPath = IndexPath(row: tableView.numberOfRows(inSection: 0), section: 0)
@@ -231,8 +247,8 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
     cell?.textField.becomeFirstResponder()
   }
   
-  // 完了ボタンタップ時
-  @IBAction func endAction() {
+  // 文字列編集完了ボタンタップ時
+  @IBAction func inputEndButtonTapped() {
     if let cell = findEditingCell() {
       cell.textField.resignFirstResponder()
     }
@@ -243,9 +259,9 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
   /// ナビゲーションバー上のボタンを状況に応じて更新する.
   ///
   /// - Parameter animated: アニメーションの有無
-  private func updateNavigationItem(animated: Bool) {
+  private func updateNavigationItems(animated: Bool) {
     if adding || renaming {
-      navigationItem.setLeftBarButton(endButton, animated: animated)
+      navigationItem.setLeftBarButton(inputEndButton, animated: animated)
       navigationItem.setRightBarButton(nil, animated: animated)
     } else {
       if isEditing {
@@ -264,7 +280,8 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
   ///   - indexPath: セルのインデックス
   private func updateCell(_ cell: UITableViewCell, at indexPath: IndexPath) {
     var text = ""
-    let folders = AppManager.sharedInstance.folders
+    let am = AppManager.sharedInstance
+    let folders = am.folders
     var folder: Folder?
     if indexPath.row < folders.count {
       folder = folders[indexPath.row]
@@ -284,7 +301,7 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
       }
     }
     
-    if folder === selectedFolder {
+    if folder === am.currentFolder {
       cell.accessoryType = .checkmark
     } else {
       cell.accessoryType = .none

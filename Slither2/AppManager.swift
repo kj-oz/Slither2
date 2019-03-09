@@ -9,21 +9,33 @@
 import Foundation
 import UIKit
 
+/// 表示しているビューの種類
+///
+/// - list: パズル一覧
+/// - play: パスルの実行
+/// - edit: パスルの編集
 enum ViewType: String {
   case list
   case play
   case edit
 }
 
+/// パズルを保存するフォルダを表すクラス
 class Folder {
+  /// 含んでいるパズル
   var puzzles: [Puzzle] = []
   
+  /// フォルダへのパス
   var path: String
   
+  /// フォルダ名
   var name: String {
     return (path as NSString).lastPathComponent
   }
   
+  /// 指定のパスのフォルダを表すインスタンスを得る
+  ///
+  /// - Parameter path: パス
   init(path: String) {
     self.path = path
     
@@ -37,6 +49,7 @@ class Folder {
 }
 
 
+/// アプリケーションのフォルダ等を管理するマネージャ
 class AppManager {
   /// シングルトンオブジェクト
   static var sharedInstance: AppManager {
@@ -45,27 +58,33 @@ class AppManager {
     }
     return _sharedInstance!
   }
+  private static var _sharedInstance: AppManager?
   
-  static var _sharedInstance: AppManager?
-  
+  /// フォルダの親フォルダのパス
   let rootDir: String
   
+  /// パズルのファイル名に採用する日時の書式
   let dateFormatter: DateFormatter
   
+  /// フォルダのリスト
   var folders: [Folder] = []
   
+  /// 現在選択されているフォルダ
   var currentFolder: Folder
   
-  var currrentView = "list"
-  
+  /// 現在選択されているパズル
   var currentPuzzle: Puzzle?
   
+  /// ストレージ上のデータの復元中かどうか
   var restoring = false
 
+  /// その時点で表示しているビューの種類
   var currentView = ViewType.list
   
+  /// 既存のパズルのIDのす初期値
   var lastId = 190101001
   
+  /// 次に生成するパズルのID
   var nextPuzzleId: String {
     let dateStr = dateFormatter.string(from: Date())
     let dateInt = Int(dateStr)!
@@ -77,6 +96,8 @@ class AppManager {
     return String(lastId)
   }
   
+  /// プライベートなコンストラクタ
+  /// 各種設定を読み込む
   private init() {
     let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
     rootDir = URL(fileURLWithPath: paths[0]).absoluteURL.path
@@ -100,6 +121,7 @@ class AppManager {
       dirs = ["Folder1"]
     }
     
+    // 存在するフォルダ群をもとにデータを構築する
     for dir in dirs {
       let path = (rootDir as NSString).appendingPathComponent(dir)
       folders.append(Folder(path: path))
@@ -111,10 +133,12 @@ class AppManager {
     dateFormatter.dateFormat = "yyMMdd"
     
     // 前回起動時の状態を得る
+    // 画面
     if let lastViewStr = UserDefaults.standard.string(forKey: "lastView") {
       currentView = ViewType(rawValue: lastViewStr) ?? .list
     }
     
+    // 前回起動時のフォルダ
     currentFolder = folders[0]
     if let lastFolderStr = UserDefaults.standard.string(forKey: "lastFolder") {
       for folder in folders {
@@ -125,6 +149,7 @@ class AppManager {
       }
     }
     
+    /// 最後に実行していたパズル
     if let lastPuzzleStr = UserDefaults.standard.string(forKey: "lastPuzzle") {
       for puzzle in currentFolder.puzzles {
         if puzzle.id == lastPuzzleStr {
@@ -134,15 +159,13 @@ class AppManager {
       }
     }
     
+    /// 最後に新規パズルのファイル名に利用した（パズルのID）
     if let lastIdStr = UserDefaults.standard.string(forKey: "lastId") {
       lastId = Int(lastIdStr) ?? 190101001
     }
   }
   
-  
-  
-  
-  
+  /// ステータスを保存する
   func saveStatus() {
     if let currentPuzzle = currentPuzzle {
       UserDefaults.standard.setValue(currentPuzzle.id, forKey: "lastPuzzle")
@@ -156,11 +179,20 @@ class AppManager {
     UserDefaults.standard.setValue(String(lastId), forKey: "lastId")
   }
 
+  // MARK: - フォルダ、パズルの操作
+  
+  /// パズルをカレントフォルダ内でコピーする
+  ///
+  /// - Parameter puzzle: コピー元のパズル
   func copyPuzzle(_ puzzle: Puzzle) {
     let id = AppManager.sharedInstance.nextPuzzleId
     let _ = Puzzle(folder: currentFolder, id: id, original: puzzle)
   }
 
+  /// 新規の空のフォルダを追加する
+  ///
+  /// - Parameter name: 追加するフォルダーの名称
+  /// - Returns: 無事追加できれば true、エラーが発生すれば false
   func addFolder(name: String) -> Bool {
     if !folderExists(name: name) {
       let path = (rootDir as NSString).appendingPathComponent(name)
@@ -174,6 +206,10 @@ class AppManager {
     return false
   }
   
+  /// 既存のi番目のフォルダーを削除する
+  ///
+  /// - Parameter index: 削除するフォルダの番号
+  /// - Returns: 無事削除できれば true、エラーが発生すれば false
   func removeFolder(at index: Int)  -> Bool {
     let folder = folders[index]
     let fm = FileManager.default
@@ -185,6 +221,12 @@ class AppManager {
     return false
   }
   
+  /// フォルダーの名称を変更する
+  ///
+  /// - Parameters:
+  ///   - folder: フォルダ
+  ///   - newName: 新しい名称
+  /// - Returns: 名称変更に成功したかどうか
   func renameFolder(_ folder: Folder, to newName: String) -> Bool {
     if !folderExists(name: newName) {
       let fm = FileManager.default
@@ -199,6 +241,12 @@ class AppManager {
     return false
   }
   
+  /// パスルをカレントのフォルダから指定のフォルダに移動する。
+  ///
+  /// - Parameters:
+  ///   - puzzles: 対象のパズル
+  ///   - to: 移動先フォルダ
+  /// - Returns: 移動に成功したかどうか
   func movePuzzles(_ puzzles: [Puzzle], to: Folder) -> Bool {
     let fm = FileManager.default
     let toDir = to.path
@@ -219,10 +267,16 @@ class AppManager {
     return true
   }
   
+  /// 指定の名勝のフォルダがすでに存在するか調べる
+  ///
+  /// - Parameter name: 名称
+  /// - Returns: すでに存在するかどうか
   func folderExists(name: String) -> Bool {
     return folders.first(where: { $0.name == name }) != nil
   }
 }
+
+// MARK: - メッセージ画面表示
 
 /// メッセージ上部に表示されるアプリケーション名
 let appTitle = "スリザー2"

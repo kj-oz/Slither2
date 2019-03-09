@@ -9,7 +9,7 @@
 import UIKit
 
 /// パズル一覧を表示するビュー
-class PuzzlesViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
+class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
   
   /// 修正ボタン
   @IBOutlet weak var modifyButton: UIBarButtonItem!
@@ -36,7 +36,7 @@ class PuzzlesViewController: UITableViewController, UIPopoverPresentationControl
     // 編集ボタンの追加
     self.navigationItem.rightBarButtonItems?.append(editButtonItem)
     
-    updateNavigationItem(for: self.isEditing)
+    updateNavigationItems(for: self.isEditing)
   }
   
   /// ビューが画面に表示された直後
@@ -82,13 +82,13 @@ class PuzzlesViewController: UITableViewController, UIPopoverPresentationControl
 //      navigationItem.leftBarButtonItems?.removeSubrange(1 ..< 5)
 //      loading = false
 //    } else {
-    updateNavigationItem(for: editing)
+    updateNavigationItems(for: editing)
 //    }
     super.setEditing(editing, animated: animated)
   }
   
   /// ナビゲーションバー上のボタンを状況に応じて更新する.
-  func updateNavigationItem(for editing: Bool) {
+  func updateNavigationItems(for editing: Bool) {
     if editing {
       folderButton.isEnabled = false
       
@@ -191,6 +191,7 @@ class PuzzlesViewController: UITableViewController, UIPopoverPresentationControl
     am.currentPuzzle = puzzle
     if isEditing {
       modifyButton.isEnabled = self.tableView.indexPathsForSelectedRows?.count == 1
+      moveButton.isEnabled = true
       copyButton.isEnabled = true
       deleteButton.isEnabled = true
     } else {
@@ -205,6 +206,7 @@ class PuzzlesViewController: UITableViewController, UIPopoverPresentationControl
       let count: Int? = self.tableView.indexPathsForSelectedRows?.count
       modifyButton.isEnabled = count == 1
       if count == nil {
+        moveButton.isEnabled = false
         copyButton.isEnabled = false
         deleteButton.isEnabled = false
       }
@@ -226,14 +228,31 @@ class PuzzlesViewController: UITableViewController, UIPopoverPresentationControl
     } else if (segue.identifier == "ShowFolders") {
       let nc = segue.destination as! UINavigationController
       let fv = nc.visibleViewController as! FoldersViewController
-      fv.popoverPresentationController?.delegate = self
+      fv.delegate = self
     }
   }
   
-  func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-    title = AppManager.sharedInstance.currentFolder.name
-    navigationItem.title = title
+  func folderDidSelect(_ folder: Folder) {
+    let am = AppManager.sharedInstance
+    if (!self.isEditing) {
+      am.currentFolder = folder
+      tableView.reloadData()
+      navigationItem.title = folder.name
+    } else {
+      _ = am.movePuzzles(selectedPuzzles(), to: folder)
+    }
   }
+  
+  func folderDidRename(_ folder: Folder) {
+    navigationItem.title = folder.name
+  }
+//
+//
+//
+//
+//  func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+//    //title = AppManager.sharedInstance.currentFolder.name
+//  }
   
   /// その時点で画面で選択されている問題の配列を得る
   ///
@@ -255,15 +274,15 @@ class PuzzlesViewController: UITableViewController, UIPopoverPresentationControl
   
   // フォルダ選択画面でフォルダが選択されたとき
   @IBAction func folderSelected(segue: UIStoryboardSegue) {
-    let am = AppManager.sharedInstance
-    let fv = segue.source as! FoldersViewController
-    if (!self.isEditing) {
-      am.currentFolder = fv.selectedFolder
-      tableView.reloadData()
-      title = am.currentFolder.name
-    } else {
-      _ = am.movePuzzles(selectedPuzzles(), to: fv.selectedFolder)
-    }
+//    let am = AppManager.sharedInstance
+//    let fv = segue.source as! FoldersViewController
+//    if (!self.isEditing) {
+//      am.currentFolder = fv.selectedFolder
+//      tableView.reloadData()
+//      title = am.currentFolder.name
+//    } else {
+//      _ = am.movePuzzles(selectedPuzzles(), to: fv.selectedFolder)
+//    }
   }
 
   // 呼び出した画面がキャンセルされたとき
