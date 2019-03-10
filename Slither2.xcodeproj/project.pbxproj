@@ -34,6 +34,7 @@
 		31C8807722228495008C0D99 /* Solver+InitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806C22228476008C0D99 /* Solver+InitCheck.swift */; };
 		31C8807822228495008C0D99 /* Solver+GateCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806D22228476008C0D99 /* Solver+GateCheck.swift */; };
 		31C8807922228495008C0D99 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806E22228476008C0D99 /* Action.swift */; };
+		31F15C002233A56100471AA2 /* Pruner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31F15BFF2233A56100471AA2 /* Pruner.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +81,7 @@
 		31C8806C22228476008C0D99 /* Solver+InitCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Solver+InitCheck.swift"; sourceTree = "<group>"; };
 		31C8806D22228476008C0D99 /* Solver+GateCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Solver+GateCheck.swift"; sourceTree = "<group>"; };
 		31C8806E22228476008C0D99 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
+		31F15BFF2233A56100471AA2 /* Pruner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pruner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +167,7 @@
 				31C8806C22228476008C0D99 /* Solver+InitCheck.swift */,
 				31C8806D22228476008C0D99 /* Solver+GateCheck.swift */,
 				31C8806E22228476008C0D99 /* Action.swift */,
+				31F15BFF2233A56100471AA2 /* Pruner.swift */,
 			);
 			name = Core;
 			path = /Users/zak/Projects/Slither2/Slither2/Core;
@@ -281,6 +284,7 @@
 				31C880602222831E008C0D99 /* PlayViewController.swift in Sources */,
 				31C8807522228495008C0D99 /* Step.swift in Sources */,
 				31C8807722228495008C0D99 /* Solver+InitCheck.swift in Sources */,
+				31F15C002233A56100471AA2 /* Pruner.swift in Sources */,
 				31C88059222282DC008C0D99 /* GenerateViewController.swift in Sources */,
 				31C88056222282DC008C0D99 /* EditViewController.swift in Sources */,
 				31C880612222831E008C0D99 /* PuzzlesViewController.swift in Sources */,

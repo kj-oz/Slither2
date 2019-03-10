@@ -1,6 +1,6 @@
 //
 //  Puzzle.swift
-//  Slither
+//  Slither2
 //
 //  Created by KO on 2019/01/06.
 //  Copyright © 2019 KO. All rights reserved.
@@ -9,7 +9,7 @@
 import Foundation
 import CoreGraphics
 
-/// 問題の状態
+/// パズルの状態
 ///
 /// - editing:　編集中
 /// - notStarted: 未着手
@@ -23,7 +23,7 @@ enum PuzzleStatus : String {
 }
 
 
-/// 問題とそれを解いている過程の情報を保持するクラス
+/// パズルとそれを解いている過程の情報を保持するクラス
 class Puzzle : Hashable {
   /// (Hashable)
   var hashValue: Int {
@@ -88,12 +88,50 @@ class Puzzle : Hashable {
     return ((self.path as NSString).lastPathComponent as NSString).deletingPathExtension
   }
   
-  /// アンドゥを実行する
+  /// サイズ文字列
+  var sizeString: String {
+    return String(format: "%dX%d", board.width, board.height)
+  }
+  
+  /// 状態文字列
+  var statusString: String {
+    switch status {
+    case .editing:
+      return "作成中"
+    case .notStarted:
+      return "未着手"
+    case .solving:
+      return solvingStatusString
+    case .solved:
+      return "完了（\(solvingStatusString)）"
+    }
+  }
+  
+  /// 解くのに掛かった時間（と固定回数、初期化回数）の文字列（H:mm:ss 固定:f 初期化:i）
+  var solvingStatusString: String {
+    if elapsedSecond > 0 {
+      if resetCount > 0 || fixCount > 0 {
+        return String(format: "%@ 固定%d 初期化%d", elapsedTimeString, fixCount, resetCount)
+      } else {
+        return elapsedTimeString
+      }
+    } else {
+      return ""
+    }
+  }
+  
+  /// 解くのに掛かった時間（と固定回数、初期化回数）の文字列（H:mm:ss 固定:f 初期化:i）
+  var elapsedTimeString: String {
+    return String(format: "%d:%02d:%02d", elapsedSecond / 3600,
+                  (elapsedSecond % 3600) / 60, elapsedSecond % 60)
+  }
+  
+  /// アンドゥが可能かどうか
   var canUndo: Bool {
     return currentIndex > fixedIndex && status == .solving
   }
   
-  /// アンドゥを取り消す
+  /// アンドゥの取り消しが可能かどうか
   var canRedo: Bool {
     return actions.count > 0 && currentIndex < actions.count && status == .solving
   }
@@ -109,8 +147,10 @@ class Puzzle : Hashable {
   ///   - width: 巾
   ///   - height: 高さ
   ///   - genParams: 生成時のパラメータ
+  ///   - genStats: 生成時の各種統計
   ///   - data: セルの数字の配列
-  init(folder: Folder, id: String, title: String, width: Int, height: Int, genParams: String, genStats: String, data: [Int]) {
+  init(folder: Folder, id: String, title: String, width: Int, height: Int,
+       genParams: String, genStats: String, data: [Int]) {
     board = Board(width: width, height: height, numbers: data)
     self.genParams = genParams
     self.genStats = genStats
@@ -136,7 +176,8 @@ class Puzzle : Hashable {
               width: width, height: height, genParams: "", genStats: "", data: data)
   }
   
-  /// ファイルからの生成
+  /// 既存のファイルからの生成
+  /// 一覧表示必要な情報のみ取り込み、これまでの操作記録は実際に操作する際に読み込むた
   ///
   /// - Parameter path: データファイルのパス
   init(path: String) {
@@ -197,7 +238,7 @@ class Puzzle : Hashable {
     }
   }
   
-  /// 辺の状態の読み込み
+  /// 操作記録の読み込み
   func loadActions() {
     var lines: [Substring] = []
     if let contents = try? String(contentsOfFile: path) {
@@ -252,7 +293,7 @@ class Puzzle : Hashable {
     lastAction = nil
   }
 
-  /// 他の問題からの生成
+  /// 他の問題のコピー
   ///
   /// - Parameters:
   ///   - folder: 保存先のフォルダ
@@ -299,19 +340,8 @@ class Puzzle : Hashable {
     }
   }
   
-  ///　問題を回転させる
-  func rotate() {
-    var data = Array<Int>(repeating: -1, count: board.cells.count)
-    for y in 0 ..< board.height {
-      for x in 0 ..< board.width {
-        let val = board.cellAt(x: x, y: y).number
-        let i = (board.width - 1 - x) * board.height + y
-        data[i] = val
-      }
-    }
-    board = Board(width: board.height, height: board.width, numbers: data)
-  }
-
+  //MARK: - 保存
+  
   ///　ファイルに問題の内容を保存する
   func save() {
     var lines: [String] = []
@@ -344,44 +374,8 @@ class Puzzle : Hashable {
     try! lines.joined(separator: "\r\n").write(toFile: path, atomically: true, encoding: .utf8)
   }
 
-  /// サイズ文字列
-  var sizeString: String {
-    return String(format: "%dX%d", board.width, board.height)
-  }
+  //MARK: - 各種操作
   
-  /// 状態文字列
-  var statusString: String {
-    switch status {
-    case .editing:
-      return "作成中"
-    case .notStarted:
-      return "未着手"
-    case .solving:
-      return solvingStatusString
-    case .solved:
-      return "完了（\(solvingStatusString)）"
-    }
-  }
-  
-  /// 解くのに掛かった時間（と固定回数、初期化回数）の文字列（H:mm:ss 固定:f 初期化:i）
-  var solvingStatusString: String {
-    if elapsedSecond > 0 {
-      if resetCount > 0 || fixCount > 0 {
-        return String(format: "%@ 固定%d 初期化%d", elapsedTimeString, fixCount, resetCount)
-      } else {
-        return elapsedTimeString
-      }
-    } else {
-      return ""
-    }
-  }
-
-  /// 解くのに掛かった時間（と固定回数、初期化回数）の文字列（H:mm:ss 固定:f 初期化:i）
-  var elapsedTimeString: String {
-    return String(format: "%d:%02d:%02d", elapsedSecond / 3600,
-                       (elapsedSecond % 3600) / 60, elapsedSecond % 60)
-  }
-
   /// Edgeのステータス変更のActionを追加する
   ///
   /// - Parameter action: アクション
@@ -431,7 +425,6 @@ class Puzzle : Hashable {
     board.fixStatus()
     lastAction = nil
   }
-  
   
   /// アンドゥを実行する
   func undo() {

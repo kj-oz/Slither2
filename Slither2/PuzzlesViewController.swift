@@ -1,6 +1,6 @@
 //
 //  PuzzlesViewController.swift
-//  Slither
+//  Slither2
 //
 //  Created by KO on 2019/01/25.
 //  Copyright © 2019 KO. All rights reserved.
@@ -21,13 +21,10 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
   @IBOutlet weak var deleteButton: UIBarButtonItem!
   /// フォルダボタン
   @IBOutlet weak var folderButton: UIBarButtonItem!
-  
   /// 自動生成ボタン
   @IBOutlet weak var generateButton: UIBarButtonItem!
   /// 入力ボタン
   @IBOutlet weak var inputButton: UIBarButtonItem!
-  
-  private var loading = true
   
   // ビューのロード時
   override func viewDidLoad() {

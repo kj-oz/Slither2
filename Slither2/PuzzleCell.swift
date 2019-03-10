@@ -1,6 +1,6 @@
 //
 //  PuzzleCell.swift
-//  Slither
+//  Slither2
 //
 //  Created by KO on 2019/01/25.
 //  Copyright © 2019 KO. All rights reserved.
@@ -8,13 +8,21 @@
 
 import UIKit
 
+/// パズル一覧で利用するセル
 class PuzzleCell: UITableViewCell {
   
+  /// パズル名称
   @IBOutlet weak var titleLabel: UILabel!
+  /// サイズ文字列
   @IBOutlet weak var sizeLabel: UILabel!
+  /// 難易度文字列（生成時パラメータの表示）
   @IBOutlet weak var difficultyLabel: UILabel!
+  /// 状態文字列
   @IBOutlet weak var statusLabel: UILabel!
   
+  /// パズルの情報をセットする
+  ///
+  /// - Parameter puzzle: パズル
   func setup(_ puzzle: Puzzle) {
     titleLabel.text = puzzle.title
     sizeLabel.text = puzzle.sizeString
@@ -34,12 +42,11 @@ class PuzzleCell: UITableViewCell {
     }
   }
   
-  /**
-   * 問題セルのenable/disableとenableの場合の色を設定する.
-   * @param cell 対象の問題用セル
-   * @param enabled enable/disable
-   * @param color enabeの場合の文字色
-   */
+  /// セルのenable/disableとenableの場合の色を設定する
+  ///
+  /// - Parameters:
+  ///   - enabled: enable/disable
+  ///   - color: enabeの場合の文字色
   func setEnabled(_ enabled: Bool, color: UIColor) {
     titleLabel.isEnabled = enabled
     sizeLabel.isEnabled = enabled
