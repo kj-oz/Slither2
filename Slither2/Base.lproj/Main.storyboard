@@ -167,18 +167,18 @@
                             </barButtonItem>
                             <barButtonItem title="複製" id="kPK-Tv-UWF">
                                 <connections>
-                                    <action selector="copyClicked:" destination="TfQ-8s-kNp" id="569-ay-SLO"/>
+                                    <action selector="copyButtonTapped:" destination="TfQ-8s-kNp" id="569-ay-SLO"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem title="移動" id="hcB-lp-Ncl"/>
                             <barButtonItem title="削除" id="MlS-LP-PzD">
                                 <connections>
-                                    <action selector="deleteClicked:" destination="TfQ-8s-kNp" id="s4O-O8-uqK"/>
+                                    <action selector="deleteButtonTapped:" destination="TfQ-8s-kNp" id="s4O-O8-uqK"/>
                                 </connections>
                             </barButtonItem>
                         </leftBarButtonItems>
                         <rightBarButtonItems>
-                            <barButtonItem title="自動" id="qWt-U1-HCA">
+                            <barButtonItem title="生成" id="qWt-U1-HCA">
                                 <connections>
                                     <segue destination="KCc-Bc-CQR" kind="popoverPresentation" popoverAnchorBarButtonItem="qWt-U1-HCA" id="kYl-HH-LRy">
                                         <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
@@ -187,7 +187,7 @@
                             </barButtonItem>
                             <barButtonItem title="入力" id="vao-Ea-z4H">
                                 <connections>
-                                    <action selector="inputButtonClicked:" destination="TfQ-8s-kNp" id="mbo-HD-Hn7"/>
+                                    <action selector="inputButtonTapped:" destination="TfQ-8s-kNp" id="mbo-HD-Hn7"/>
                                 </connections>
                             </barButtonItem>
                         </rightBarButtonItems>

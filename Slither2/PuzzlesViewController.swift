@@ -12,20 +12,22 @@ import UIKit
 class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
   
   /// 修正ボタン
-  @IBOutlet weak var modifyButton: UIBarButtonItem!
+  @IBOutlet var modifyButton: UIBarButtonItem!
   /// 複写ボタン
-  @IBOutlet weak var copyButton: UIBarButtonItem!
+  @IBOutlet var copyButton: UIBarButtonItem!
   /// 移動ボタン
-  @IBOutlet weak var moveButton: UIBarButtonItem!
+  @IBOutlet var moveButton: UIBarButtonItem!
   /// 削除ボタン
-  @IBOutlet weak var deleteButton: UIBarButtonItem!
+  @IBOutlet var deleteButton: UIBarButtonItem!
   /// フォルダボタン
-  @IBOutlet weak var folderButton: UIBarButtonItem!
+  @IBOutlet var folderButton: UIBarButtonItem!
   /// 自動生成ボタン
-  @IBOutlet weak var generateButton: UIBarButtonItem!
+  @IBOutlet var generateButton: UIBarButtonItem!
   /// 入力ボタン
-  @IBOutlet weak var inputButton: UIBarButtonItem!
+  @IBOutlet var inputButton: UIBarButtonItem!
   
+  // MARK: - UIViewController
+
   // ビューのロード時
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -74,105 +76,31 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     }
   }
   
+  /// ビューのアンロード時
+  deinit {
+    // 表示を消すことがあるため、強参照している
+    generateButton = nil
+    inputButton = nil
+    moveButton = nil
+    modifyButton = nil
+    copyButton = nil
+    deleteButton = nil
+  }
+
+  // 編集状態が変更されたとき
   override func setEditing(_ editing: Bool, animated: Bool) {
-//    if loading {
-//      navigationItem.leftBarButtonItems?.removeSubrange(1 ..< 5)
-//      loading = false
-//    } else {
-    updateNavigationItems(for: editing)
-//    }
     super.setEditing(editing, animated: animated)
+    updateNavigationItems(for: editing)
   }
   
-  /// ナビゲーションバー上のボタンを状況に応じて更新する.
-  func updateNavigationItems(for editing: Bool) {
-    if editing {
-      folderButton.isEnabled = false
-      
-      inputButton.isEnabled = false
-      generateButton.isEnabled = false
-//      navigationItem.leftBarButtonItems?.insert(folderButton, at: 0)
-//      navigationItem.leftBarButtonItems?.removeSubrange(1 ..< 5)
-      
-//      navigationItem.rightBarButtonItems?.append(inputButton)
-//      navigationItem.rightBarButtonItems?.append(generateButton)
-    } else {
-      folderButton.isEnabled = true
-      moveButton.isEnabled = false
-      modifyButton.isEnabled = false
-      copyButton.isEnabled = false
-      deleteButton.isEnabled = false
-      
-      inputButton.isEnabled = true
-      generateButton.isEnabled = true
-//      navigationItem.leftBarButtonItems?.append(moveButton)
-//      navigationItem.leftBarButtonItems?.append(modifyButton)
-//      navigationItem.leftBarButtonItems?.append(copyButton)
-//      navigationItem.leftBarButtonItems?.append(deleteButton)
-//      navigationItem.leftBarButtonItems?.remove(at: 0)
-//
-//      navigationItem.rightBarButtonItems?.removeSubrange(1 ..< 3)
-    }
-  }
-
-  // 入力ボタン押下時
-  @IBAction func inputButtonClicked(_ sender: Any) {
-    let dialog = UIAlertController(title: appTitle,
-                                   message: "幅と高さを入力して[作成]をタップしください。", preferredStyle: .alert)
-    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.numberPad; $0.placeholder = "幅"})
-    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.numberPad; $0.placeholder = "高さ"})
-    dialog.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
-    dialog.addAction(UIAlertAction(title: "作成", style: .default, handler: { (_) in
-      if let widthStr = dialog.textFields![0].text, let width = Int(widthStr),
-          let heightStr = dialog.textFields![1].text, let height = Int(heightStr) {
-        let am = AppManager.sharedInstance
-        let id = am.nextPuzzleId
-        am.currentPuzzle = Puzzle(folder: am.currentFolder, id: id, title: id, width: width, height: height)
+  // MARK: - UITableViewDataSource/Delegate
   
-        self.performSegue(withIdentifier: "EditPuzzle", sender: sender)
-      }
-    }))
-    dialog.popoverPresentationController?.sourceView = view
-    dialog.popoverPresentationController?.sourceRect = view.frame
-    present(dialog, animated: true, completion: nil)
-  }
-  
-  // 削除ボタン押下
-  @IBAction func deleteClicked(_ sender: Any) {
-    let indecies = (tableView.indexPathsForSelectedRows ?? []).reversed()
-    let msg = "選択されている\(indecies.count)個の問題が削除されます。\n削除してもよろしいですか？"
-    alert(viewController: self, message: msg, handler: {
-      let am = AppManager.sharedInstance
-      for index in indecies {
-        am.currentFolder.puzzles.remove(at: index.row)
-      }
-      self.tableView.reloadData()
-    })
-  }
-  
-  // 複写ボタン押下
-  @IBAction func copyClicked(_ sender: Any) {
-    let am = AppManager.sharedInstance
-
-    let puzzles = selectedPuzzles()
-    for puzzle in puzzles {
-      let _ = Puzzle(folder: am.currentFolder, id: am.nextPuzzleId, original: puzzle)
-    }
-    tableView.reloadData()
-  }
-
-  // MARK: - TableViewDataSource
-  
-  override func numberOfSections(in tableView: UITableView) -> Int {
-    // #warning Incomplete implementation, return the number of sections
-    return 1
-  }
-  
+  // 行数
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    // #warning Incomplete implementation, return the number of rows
     return AppManager.sharedInstance.currentFolder.puzzles.count
   }
   
+  // セル
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "PuzzleCell") as! PuzzleCell
     
@@ -182,6 +110,7 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     return cell
   }
 
+  // 行が選択された直後
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let am = AppManager.sharedInstance
     let puzzle = am.currentFolder.puzzles[indexPath.row]
@@ -198,6 +127,7 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     }
   }
 
+  // 行の選択が解除された直後
   override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
     if isEditing {
       let count: Int? = self.tableView.indexPathsForSelectedRows?.count
@@ -210,10 +140,81 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     }
   }
   
+  // 行が編集可能かどうか
   override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
     return isEditing
   }
 
+  // MARK: - FoldersViewDelegate
+  
+  // フォルダが選択された直後
+  func folderDidSelect(_ folder: Folder) {
+    let am = AppManager.sharedInstance
+    if (!self.isEditing) {
+      am.currentFolder = folder
+      tableView.reloadData()
+      navigationItem.title = folder.name
+    } else {
+      _ = am.movePuzzles(selectedPuzzles(), to: folder)
+    }
+  }
+  
+  // フォルダが名称変更された直後
+  func folderDidRename(_ folder: Folder) {
+    navigationItem.title = folder.name
+  }
+  
+  // MARK: - ボタンのアクション
+  
+  // 入力ボタン押下時
+  @IBAction func inputButtonTapped(_ sender: Any) {
+    let dialog = UIAlertController(title: appTitle,
+                                   message: "幅と高さを入力して[作成]をタップしください。", preferredStyle: .alert)
+    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.numberPad; $0.placeholder = "幅"})
+    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.numberPad; $0.placeholder = "高さ"})
+    dialog.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
+    dialog.addAction(UIAlertAction(title: "作成", style: .default, handler: { (_) in
+      if let widthStr = dialog.textFields![0].text, let width = Int(widthStr),
+        let heightStr = dialog.textFields![1].text, let height = Int(heightStr) {
+        let am = AppManager.sharedInstance
+        let id = am.nextPuzzleId
+        am.currentPuzzle = Puzzle(folder: am.currentFolder, id: id, title: id, width: width, height: height)
+        
+        self.performSegue(withIdentifier: "EditPuzzle", sender: sender)
+      }
+    }))
+    dialog.popoverPresentationController?.sourceView = view
+    dialog.popoverPresentationController?.sourceRect = view.frame
+    present(dialog, animated: true, completion: nil)
+  }
+  
+  // 削除ボタン押下
+  @IBAction func deleteButtonTapped(_ sender: Any) {
+    let indecies = (tableView.indexPathsForSelectedRows ?? []).reversed()
+    let msg = "選択されている\(indecies.count)個の問題が削除されます。\n削除してもよろしいですか？"
+    alert(viewController: self, message: msg, handler: {
+      let am = AppManager.sharedInstance
+      for index in indecies {
+        am.currentFolder.puzzles.remove(at: index.row)
+      }
+      self.tableView.reloadData()
+    })
+  }
+  
+  // 複写ボタン押下
+  @IBAction func copyButtonTapped(_ sender: Any) {
+    let am = AppManager.sharedInstance
+    
+    let puzzles = selectedPuzzles()
+    for puzzle in puzzles {
+      let _ = Puzzle(folder: am.currentFolder, id: am.nextPuzzleId, original: puzzle)
+    }
+    tableView.reloadData()
+  }
+  
+  // MARK: - ナビゲーション
+  
+  // セグエの実行の直前
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     debugPrint(">>")
     let am = AppManager.sharedInstance
@@ -229,27 +230,37 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     }
   }
   
-  func folderDidSelect(_ folder: Folder) {
-    let am = AppManager.sharedInstance
-    if (!self.isEditing) {
-      am.currentFolder = folder
-      tableView.reloadData()
-      navigationItem.title = folder.name
-    } else {
-      _ = am.movePuzzles(selectedPuzzles(), to: folder)
-    }
+  // 自動生成が完了したとき
+  @IBAction func puzzleGenerated(segue: UIStoryboardSegue) {
+    tableView.reloadData()
   }
   
-  func folderDidRename(_ folder: Folder) {
-    navigationItem.title = folder.name
+  // フォルダ選択画面でフォルダが選択されたとき
+  @IBAction func folderSelected(segue: UIStoryboardSegue) {
+    // 何もしない（デリゲート側で処理）
   }
-//
-//
-//
-//
-//  func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-//    //title = AppManager.sharedInstance.currentFolder.name
-//  }
+
+  // 呼び出した画面がキャンセルされたとき
+  @IBAction func dialogCanceled(segue: UIStoryboardSegue) {
+    // 何もしない
+  }
+    
+  // MARK: - ヘルパメソッド
+
+  /// ナビゲーションバー上のボタンを状況に応じて更新する.
+  func updateNavigationItems(for editing: Bool) {
+    if editing {
+      navigationItem.leftBarButtonItems = [moveButton, modifyButton, copyButton, deleteButton]
+      navigationItem.rightBarButtonItems = [editButtonItem]
+      moveButton.isEnabled = false
+      modifyButton.isEnabled = false
+      copyButton.isEnabled = false
+      deleteButton.isEnabled = false
+    } else {
+      navigationItem.leftBarButtonItems = [folderButton]
+      navigationItem.rightBarButtonItems = [generateButton, inputButton, editButtonItem]
+    }
+  }
   
   /// その時点で画面で選択されている問題の配列を得る
   ///
@@ -263,29 +274,4 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     }
     return puzzles
   }
-  
-  // 自動生成が完了したとき
-  @IBAction func puzzleGenerated(segue: UIStoryboardSegue) {
-    tableView.reloadData()
-  }
-  
-  // フォルダ選択画面でフォルダが選択されたとき
-  @IBAction func folderSelected(segue: UIStoryboardSegue) {
-//    let am = AppManager.sharedInstance
-//    let fv = segue.source as! FoldersViewController
-//    if (!self.isEditing) {
-//      am.currentFolder = fv.selectedFolder
-//      tableView.reloadData()
-//      title = am.currentFolder.name
-//    } else {
-//      _ = am.movePuzzles(selectedPuzzles(), to: fv.selectedFolder)
-//    }
-  }
-
-  // 呼び出した画面がキャンセルされたとき
-  @IBAction func dialogCanceled(segue: UIStoryboardSegue) {
-    // 何もしない
-  }
-  
-  
 }

@@ -103,7 +103,7 @@ class FoldersViewController: UITableViewController, UITextFieldDelegate {
   
   // MARK: - UITableViewDataSource/Delegate
   
-  /// 行数
+  // 行数
   override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return AppManager.sharedInstance.folders.count + (adding ? 1 : 0)
   }
