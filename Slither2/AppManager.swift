@@ -183,12 +183,58 @@ class AppManager {
 
   // MARK: - フォルダ、パズルの操作
   
+  /// パスルをカレントのフォルダから指定のフォルダに移動する。
+  ///
+  /// - Parameters:
+  ///   - puzzles: 対象のパズル
+  ///   - to: 移動先フォルダ
+  /// - Returns: 移動に成功したかどうか
+  func movePuzzles(_ puzzles: [Puzzle], to: Folder) -> Bool {
+    let fm = FileManager.default
+    let toDir = to.path
+    
+    for puzzle in puzzles {
+      let fromFile = puzzle.path
+      let puzzleName = (puzzle.path as NSString).lastPathComponent
+      let toFile = (toDir as NSString).appendingPathComponent(puzzleName)
+      do {
+        try fm.moveItem(atPath: fromFile, toPath: toFile)
+        puzzle.path = toFile
+        currentFolder.puzzles.remove(at: currentFolder.puzzles.firstIndex(of: puzzle)!)
+        to.puzzles.append(puzzle)
+      } catch {
+        return false
+      }
+    }
+    return true
+  }
+  
   /// パズルをカレントフォルダ内でコピーする
   ///
-  /// - Parameter puzzle: コピー元のパズル
-  func copyPuzzle(_ puzzle: Puzzle) {
-    let id = AppManager.sharedInstance.nextPuzzleId
-    let _ = Puzzle(folder: currentFolder, id: id, original: puzzle)
+  /// - Parameter puzzles: コピー元のパズル
+  func copyPuzzles(_ puzzles: [Puzzle]) {
+    for puzzle in puzzles {
+      let id = AppManager.sharedInstance.nextPuzzleId
+      let title = copiedTitleOf(folder: currentFolder, original: puzzle.title)
+      let _ = Puzzle(folder: currentFolder, id: id, title: title, original: puzzle)
+    }
+  }
+  
+  /// カレントフォルダからパズルを削除する
+  ///
+  /// - Parameter puzzles: 対象のパズル
+  func removePuzzles(_ puzzles: [Puzzle]) -> Bool {
+    let fm = FileManager.default
+
+    for puzzle in puzzles {
+      do {
+        try fm.removeItem(atPath: puzzle.path)
+        currentFolder.puzzles.remove(at: currentFolder.puzzles.firstIndex(of: puzzle)!)
+      } catch {
+        return false
+      }
+    }
+    return true
   }
 
   /// 新規の空のフォルダを追加する
@@ -237,36 +283,42 @@ class AppManager {
       do {
         try fm.moveItem(atPath: fromDir, toPath: toDir)
         folder.path = toDir
+        for puzzle in folder.puzzles {
+          let name = (puzzle.path as NSString).lastPathComponent
+          puzzle.path = (toDir as NSString).appendingPathComponent(name)
+        }
         return true
       } catch {}
     }
     return false
   }
   
-  /// パスルをカレントのフォルダから指定のフォルダに移動する。
+  // MARK: - ヘルパメソッド
+  
+  /// コピー先のタイトルを得る
   ///
   /// - Parameters:
-  ///   - puzzles: 対象のパズル
-  ///   - to: 移動先フォルダ
-  /// - Returns: 移動に成功したかどうか
-  func movePuzzles(_ puzzles: [Puzzle], to: Folder) -> Bool {
-    let fm = FileManager.default
-    let toDir = to.path
-    
-    for puzzle in puzzles {
-      let fromFile = puzzle.path
-      let puzzleName = (puzzle.path as NSString).lastPathComponent
-      let toFile = (toDir as NSString).appendingPathComponent(puzzleName)
-      do {
-        try fm.moveItem(atPath: fromFile, toPath: toFile)
-        puzzle.path = toFile
-        currentFolder.puzzles.remove(at: currentFolder.puzzles.firstIndex(of: puzzle)!)
-        to.puzzles.append(puzzle)
-      } catch {
-        return false
-      }
+  ///   - folder: 保存先のふフォルダ
+  ///   - original: コピー元の問題
+  /// - Returns: コピー先のタイトル（コピー元のタイトル(n)）
+  private func copiedTitleOf(folder: Folder, original: String) -> String {
+    var seed = original
+    var number = 2
+    let range = original.range(of: "\\(\\d+\\)")
+    if let range = range {
+      seed = String(original[original.startIndex ..< range.lowerBound])
+      number = Int(original[original.index(after: range.lowerBound)
+        ..< original.index(before: range.upperBound)])!
     }
-    return true
+    
+    var newTitle = ""
+    while true {
+      newTitle = String(format: "%@(%d)", seed, number)
+      if !folder.puzzles.contains(where: {$0.title == newTitle}) {
+        return newTitle
+      }
+      number += 1
+    }
   }
   
   /// 指定の名勝のフォルダがすでに存在するか調べる

@@ -170,7 +170,13 @@
                                     <action selector="copyButtonTapped:" destination="TfQ-8s-kNp" id="569-ay-SLO"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="移動" id="hcB-lp-Ncl"/>
+                            <barButtonItem title="移動" id="hcB-lp-Ncl">
+                                <connections>
+                                    <segue destination="I6d-uS-rkF" kind="popoverPresentation" identifier="ShowFolders" popoverAnchorBarButtonItem="hcB-lp-Ncl" id="Rhj-pn-DAx">
+                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                    </segue>
+                                </connections>
+                            </barButtonItem>
                             <barButtonItem title="削除" id="MlS-LP-PzD">
                                 <connections>
                                     <action selector="deleteButtonTapped:" destination="TfQ-8s-kNp" id="s4O-O8-uqK"/>
@@ -754,4 +760,7 @@
             <point key="canvasLocation" x="644.53125" y="-662.5"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="Rhj-pn-DAx"/>
+    </inferredMetricsTieBreakers>
 </document>

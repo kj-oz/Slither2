@@ -152,11 +152,11 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     let am = AppManager.sharedInstance
     if (!self.isEditing) {
       am.currentFolder = folder
-      tableView.reloadData()
       navigationItem.title = folder.name
     } else {
       _ = am.movePuzzles(selectedPuzzles(), to: folder)
     }
+    tableView.reloadData()
   }
   
   // フォルダが名称変更された直後
@@ -194,21 +194,16 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     let msg = "選択されている\(indecies.count)個の問題が削除されます。\n削除してもよろしいですか？"
     alert(viewController: self, message: msg, handler: {
       let am = AppManager.sharedInstance
-      for index in indecies {
-        am.currentFolder.puzzles.remove(at: index.row)
+      if am.removePuzzles(self.selectedPuzzles()) {
+        self.tableView.reloadData()
       }
-      self.tableView.reloadData()
     })
   }
   
   // 複写ボタン押下
   @IBAction func copyButtonTapped(_ sender: Any) {
     let am = AppManager.sharedInstance
-    
-    let puzzles = selectedPuzzles()
-    for puzzle in puzzles {
-      let _ = Puzzle(folder: am.currentFolder, id: am.nextPuzzleId, original: puzzle)
-    }
+    am.copyPuzzles(selectedPuzzles())
     tableView.reloadData()
   }
   

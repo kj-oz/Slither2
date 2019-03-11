@@ -298,9 +298,11 @@ class Puzzle : Hashable {
   /// - Parameters:
   ///   - folder: 保存先のフォルダ
   ///   - id: ファイル名に使用されるユニークな文字列
+  ///   - title: パズルの名称
   ///   - original: コピー元のパズル
-  init(folder: Folder, id: String, original: Puzzle) {
+  init(folder: Folder, id: String, title: String, original: Puzzle) {
     self.path = (folder.path as NSString).appendingPathComponent("\(id).\(Puzzle.extention)" )
+    self.title = title
     status = original.status == .editing ? .editing : .notStarted
     genParams = original.genParams
     let orgBoard = original.board
@@ -309,35 +311,8 @@ class Puzzle : Hashable {
     resetCount = 0
     fixCount = 0
     actions = []
-    title = copiedTitleOf(folder: folder, original: original.title)
     save()
     folder.puzzles.append(self)
-  }
-  
-  /// コピー先のタイトルを得る
-  ///
-  /// - Parameters:
-  ///   - folder: 保存先のふフォルダ
-  ///   - original: コピー元の問題
-  /// - Returns: コピー先のタイトル（コピー元のタイトル(n)）
-  private func copiedTitleOf(folder: Folder, original: String) -> String {
-    var seed = original
-    var number = 2
-    let range = original.range(of: "\\(\\d+\\)")
-    if let range = range {
-      seed = String(original[original.startIndex ..< range.lowerBound])
-      number = Int(original[original.index(after: range.lowerBound)
-        ..< original.index(before: range.upperBound)])!
-    }
-    
-    var newTitle = ""
-    while true {
-      newTitle = String(format: "%@(%d)", seed, number)
-      if !folder.puzzles.contains(where: {$0.title == newTitle}) {
-        return newTitle
-      }
-      number += 1
-    }
   }
   
   //MARK: - 保存
