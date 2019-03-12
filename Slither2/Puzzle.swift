@@ -27,7 +27,7 @@ enum PuzzleStatus : String {
 class Puzzle : Hashable {
   /// (Hashable)
   var hashValue: Int {
-    return path.hashValue
+    return id.hashValue
   }
   
   /// (Hashable)
@@ -36,10 +36,13 @@ class Puzzle : Hashable {
   }
   
   /// ファイル保存時の拡張子
-  static let extention = "slp"
+  static let extention = ".slp"
   
-  /// ファイル名
-  var path = ""
+  /// ファイル名として利用するユニークID
+  var id = ""
+  
+  /// 属するフォルダ
+  weak var folder: Folder!
   
   /// 一覧に表示する名称
   var title = ""
@@ -83,9 +86,14 @@ class Puzzle : Hashable {
   ///　拡大表示時の拡大領域の中心位置
   var zoomedPoint = CGPoint.zero
   
-  /// （拡張子を除いた）ファイル名
-  var id: String {
-    return ((self.path as NSString).lastPathComponent as NSString).deletingPathExtension
+  /// パス
+  var path: String {
+    return (folder.path as NSString).appendingPathComponent(filename)
+  }
+  
+  /// ファイル名
+  var filename: String {
+    return id + Puzzle.extention
   }
   
   /// サイズ文字列
@@ -151,13 +159,13 @@ class Puzzle : Hashable {
   ///   - data: セルの数字の配列
   init(folder: Folder, id: String, title: String, width: Int, height: Int,
        genParams: String, genStats: String, data: [Int]) {
+    self.folder = folder
+    self.id = id
+    self.title = title
     board = Board(width: width, height: height, numbers: data)
     self.genParams = genParams
     self.genStats = genStats
     status = genParams.count > 0 ? .notStarted : .editing
-    
-    self.title = title
-    self.path = (folder.path as NSString).appendingPathComponent("\(id).\(Puzzle.extention)" )
     save()
     folder.puzzles.append(self)
   }
@@ -180,13 +188,16 @@ class Puzzle : Hashable {
   /// 一覧表示必要な情報のみ取り込み、これまでの操作記録は実際に操作する際に読み込むた
   ///
   /// - Parameter path: データファイルのパス
-  init(path: String) {
-    board = Board(width: 1, height: 1, numbers: [0])
-    self.path = path
+  init(folder: Folder, filename: String) {
+    self.folder = folder
+    self.id = (filename as NSString).deletingPathExtension
+    // まだプロパティが使えないので自分で算出
+    let path = (folder.path as NSString).appendingPathComponent(filename)
     var lines: [Substring] = []
     if let contents = try? String(contentsOfFile: path) {
       lines = contents.split(separator: "\r\n")
     }
+    board = Board(width: 1, height: 1, numbers: [0])
     var width = 0
     var height = 0
     var data: [Int] = []
@@ -301,7 +312,8 @@ class Puzzle : Hashable {
   ///   - title: パズルの名称
   ///   - original: コピー元のパズル
   init(folder: Folder, id: String, title: String, original: Puzzle) {
-    self.path = (folder.path as NSString).appendingPathComponent("\(id).\(Puzzle.extention)" )
+    self.folder = folder
+    self.id = id
     self.title = title
     status = original.status == .editing ? .editing : .notStarted
     genParams = original.genParams

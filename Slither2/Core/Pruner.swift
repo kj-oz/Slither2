@@ -92,6 +92,10 @@ class Pruner {
   
   let board: Board
   
+  /// セルの数値の間引き順序（いくつかのセルを同時に間引くため配列の配列になっている）
+  var pruneOrders: [[Int]] = []
+  
+
 //  var originalNumbers: [Int] = []
   
   init(board: Board, pruneType: PruneType) {
@@ -99,12 +103,11 @@ class Pruner {
     self.pruneType = pruneType
   }
   
-  public func setupPruneOrder() -> [[Int]] {
+  public func setupPruneOrder() {
 //    for cell in board.cells {
 //      originalNumbers.append(cell.onCount)
 //    }
 //
-    var pruneOrders: [[Int]] = []
     let xc = board.width % 2 == 1 ? board.width / 2 : -1
     let yc = board.height % 2 == 1 ? board.height / 2 : -1
     
@@ -260,7 +263,38 @@ class Pruner {
       break
     }
     pruneOrders.shuffle()
-    return pruneOrders
   }
+
+  /// 数値を間引く
+  ///
+  /// - Parameter solveOption: ソルバのオプション
+  /// - Returns: 間引き後の数値の配列（間引かれた箇所は−1）
+  public func pruneNumbers(solveOption: SolveOption, stepHandler: ((Int, Bool, Solver) -> ())?) -> [Int] {
+    var originalNumbers: [Int] = []
+    for cell in board.cells {
+      originalNumbers.append(cell.onCount)
+    }
+    
+    var numbers = originalNumbers
+    var pruneCount = 0
+    for indecies in pruneOrders {
+      pruneCount += 1
+      for index in indecies {
+        numbers[index] = -1
+      }
+      let newBoard = Board(width: board.width, height: board.height, numbers: numbers)
+      let solver = Solver(board: newBoard)
+      
+      let solved = solver.solve(option: solveOption)
+      if !solved {
+        for index in indecies {
+          numbers[index] = originalNumbers[index]
+        }
+      }
+      stepHandler?(pruneCount, solved, solver)
+    }
+    return numbers
+  }
+  
 }
 

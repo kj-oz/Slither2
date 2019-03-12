@@ -42,8 +42,7 @@ class Folder {
     let fm = FileManager.default
     let files = try! fm.contentsOfDirectory(atPath: path)
     for file in files {
-      let puzzlePath = (path as NSString).appendingPathComponent(file)
-      puzzles.append(Puzzle(path: puzzlePath))
+      puzzles.append(Puzzle(folder: self, filename: file))
     }
   }
 }
@@ -83,18 +82,6 @@ class AppManager {
   
   /// 既存のパズルのIDのす初期値
   var lastId = 190101001
-  
-  /// 次に生成するパズルのID
-  var nextPuzzleId: String {
-    let dateStr = dateFormatter.string(from: Date())
-    let dateInt = Int(dateStr)!
-    if lastId / 1000 >= dateInt {
-      lastId += 1
-    } else {
-      lastId = dateInt * 1000 + 1
-    }
-    return String(lastId)
-  }
   
   // MARK: - 設定の読み込み、保存
   
@@ -199,13 +186,14 @@ class AppManager {
       let toFile = (toDir as NSString).appendingPathComponent(puzzleName)
       do {
         try fm.moveItem(atPath: fromFile, toPath: toFile)
-        puzzle.path = toFile
         currentFolder.puzzles.remove(at: currentFolder.puzzles.firstIndex(of: puzzle)!)
         to.puzzles.append(puzzle)
+        puzzle.folder = to
       } catch {
         return false
       }
     }
+    to.puzzles.sort(by: {$0.id < $1.id})
     return true
   }
   
@@ -214,7 +202,7 @@ class AppManager {
   /// - Parameter puzzles: コピー元のパズル
   func copyPuzzles(_ puzzles: [Puzzle]) {
     for puzzle in puzzles {
-      let id = AppManager.sharedInstance.nextPuzzleId
+      let id = nextPuzzleId()
       let title = copiedTitleOf(folder: currentFolder, original: puzzle.title)
       let _ = Puzzle(folder: currentFolder, id: id, title: title, original: puzzle)
     }
@@ -283,10 +271,6 @@ class AppManager {
       do {
         try fm.moveItem(atPath: fromDir, toPath: toDir)
         folder.path = toDir
-        for puzzle in folder.puzzles {
-          let name = (puzzle.path as NSString).lastPathComponent
-          puzzle.path = (toDir as NSString).appendingPathComponent(name)
-        }
         return true
       } catch {}
     }
@@ -295,6 +279,24 @@ class AppManager {
   
   // MARK: - ヘルパメソッド
   
+  /// 次に生成するパズルのIDを得る
+  ///
+  /// - Returns: 次に生成するパズルのID
+  func nextPuzzleId(readonly: Bool = false) -> String {
+    let dateStr = dateFormatter.string(from: Date())
+    let dateInt = Int(dateStr)!
+    let nextId: Int
+    if lastId / 1000 >= dateInt {
+      nextId = lastId + 1
+    } else {
+      nextId = dateInt * 1000 + 1
+    }
+    if !readonly {
+      lastId = nextId
+    }
+    return String(nextId)
+  }
+
   /// コピー先のタイトルを得る
   ///
   /// - Parameters:

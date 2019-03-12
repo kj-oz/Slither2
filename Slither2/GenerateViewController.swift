@@ -41,7 +41,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   override func viewDidLoad() {
     super.viewDidLoad()
     let am = AppManager.sharedInstance
-    titleText.text = am.nextPuzzleId
+    titleText.text = am.nextPuzzleId(readonly: true)
     titleText.delegate = self
     widthText.delegate = self
     heightText.delegate = self
@@ -286,22 +286,10 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     let numbers = generator.generate(genOp: GenerateOption(),
                                      pruneType: realType, solveOp: solveOption)
     
-    
-//
-//    let _ = generator.generateLoop(option: GenerateOption())
-//
-//    let realType = pruneType.realType
-//    generator.setupPruneOrder(pruneType: realType)
-//
-//    let current = Date()
-//    elapsed[0] = Int(current.timeIntervalSince(start) * 1000.0)
-//
-//
-//    let numbers = generator.pruneNumbers(solveOption: solveOption)
     let genParam = realType.rawValue + "-" + solveOption.description
     let genStats = generator.stats.description
     let am = AppManager.sharedInstance
-    let id = am.nextPuzzleId
+    let id = am.nextPuzzleId()
     let _ = Puzzle(folder: am.currentFolder,  id: id, title: title, width: width, height: height,
                    genParams: genParam, genStats: genStats, data: numbers)
   }

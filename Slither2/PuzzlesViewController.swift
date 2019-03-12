@@ -177,7 +177,7 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
       if let widthStr = dialog.textFields![0].text, let width = Int(widthStr),
         let heightStr = dialog.textFields![1].text, let height = Int(heightStr) {
         let am = AppManager.sharedInstance
-        let id = am.nextPuzzleId
+        let id = am.nextPuzzleId()
         am.currentPuzzle = Puzzle(folder: am.currentFolder, id: id, title: id, width: width, height: height)
         
         self.performSegue(withIdentifier: "EditPuzzle", sender: sender)
