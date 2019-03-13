@@ -37,6 +37,8 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   /// 盤面の数値の除去パターン
   var pruneType: PruneType!
   
+  // MARK: - UIViewController
+  
   // ビューのロード時
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -49,6 +51,8 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     loadSettings()
     setGenerateButtonEnabled()
   }
+  
+  // MARK: - UITextFieldDelegate
   
   // テキスト欄の変更時
   // 何故かこちらは発生しない
@@ -71,6 +75,8 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     return true
   }
   
+  // MARK: - 各種アクション
+
   // プリセットセグメント変更時
   @IBAction func presetChanged(_ sender: Any) {
     if presetSegment.selectedSegmentIndex > 0 {
@@ -82,6 +88,58 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   @IBAction func solveOptionChanged(_ sender: Any) {
     presetSegment.selectedSegmentIndex = 0
   }
+  
+  // MARK: - Navigation
+  
+  // セグエ呼び出し前
+  override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+    if identifier == "GenerateDone" {
+      let indicator = UIActivityIndicatorView()
+      indicator.style = .whiteLarge
+      indicator.center = self.view.center
+      indicator.color = UIColor.red
+      indicator.hidesWhenStopped = true
+      self.view.addSubview(indicator)
+      self.view.bringSubviewToFront(indicator)
+      indicator.startAnimating()
+      
+      DispatchQueue.global().async {
+        self.generatePuzzle()
+        DispatchQueue.main.async {
+          self.saveSetting()
+          indicator.stopAnimating()
+          self.performSegue(withIdentifier: identifier, sender: sender)
+        }
+      }
+      return false
+    }
+    return true
+  }
+  
+  // 他画面への移動時
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    switch segue.identifier {
+    case "SelectPruneType":
+      let dst = segue.destination as! PruneTypesViewController
+      dst.selectedPruneType = pruneType
+    default:
+      break
+    }
+  }
+  
+  // 盤面タイプ選択画面からの戻り時のアクション
+  @IBAction func pruneTypesSelected(segue: UIStoryboardSegue) {
+    let bv = segue.source as! PruneTypesViewController
+    pruneType = bv.selectedPruneType!
+    pruneTypeLabel.text = pruneType.description
+  }
+  
+  // 盤面タイプ選択画面のキャンセル時のアクション
+  @IBAction func pruneTypesCanceled(segue: UIStoryboardSegue) {
+    // 何もしない
+  }
+  
+  // MARK: - ヘルパメソッド
   
   /// 保存されている設定値を呼び出す
   private func loadSettings() {
@@ -152,7 +210,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     tryOneStepSwitch.isOn = solveOpStr.firstIndex(of: "T") != nil
     areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
     pruneTypeLabel.text = pruneType.description
-
+    
     updateSolveTime()
   }
   
@@ -195,74 +253,6 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     return false
   }
   
-  // MARK: - TableViewDataSource
-  // セクション数
-  override func numberOfSections(in tableView: UITableView) -> Int {
-    return 3
-  }
-  
-  // 行数
-  override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    switch section {
-    case 0:
-      return 3
-    case 1:
-      return 1
-    default:
-      return 6
-    }
-  }
-  
-  // MARK: - Navigation
-  // セグエ呼び出し前
-  override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
-    if identifier == "GenerateDone" {
-      let indicator = UIActivityIndicatorView()
-      indicator.style = .whiteLarge
-      indicator.center = self.view.center
-      indicator.color = UIColor.red
-      indicator.hidesWhenStopped = true
-      self.view.addSubview(indicator)
-      self.view.bringSubviewToFront(indicator)
-      indicator.startAnimating()
-      
-      DispatchQueue.global().async {
-        self.generatePuzzle()
-        DispatchQueue.main.async {
-          self.saveSetting()
-          indicator.stopAnimating()
-          self.performSegue(withIdentifier: identifier, sender: sender)
-        }
-      }
-      return false
-    }
-    return true
-  }
-  
-  // 他画面への移動時
-  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-    switch segue.identifier {
-    case "SelectPruneType":
-      let dst = segue.destination as! PruneTypesViewController
-      dst.selectedPruneType = pruneType
-    default:
-      break
-    }
-  }
-  
-  // 盤面タイプ選択画面からの戻り時のアクション
-  @IBAction func pruneTypesSelected(segue: UIStoryboardSegue) {
-    let bv = segue.source as! PruneTypesViewController
-    pruneType = bv.selectedPruneType!
-    pruneTypeLabel.text = pruneType.description
-  }
-  
-  // 盤面タイプ選択画面のキャンセル時のアクション
-  @IBAction func pruneTypesCanceled(segue: UIStoryboardSegue) {
-    // 何もしない
-  }
-  
-  // MARK: - Private
   /// パズルを生成する
   private func generatePuzzle() {
 

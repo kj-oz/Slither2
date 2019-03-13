@@ -300,17 +300,18 @@ class AppManager {
   /// コピー先のタイトルを得る
   ///
   /// - Parameters:
-  ///   - folder: 保存先のふフォルダ
+  ///   - folder: 保存先のフォルダ
   ///   - original: コピー元の問題
   /// - Returns: コピー先のタイトル（コピー元のタイトル(n)）
   private func copiedTitleOf(folder: Folder, original: String) -> String {
     var seed = original
     var number = 2
-    let range = original.range(of: "\\(\\d+\\)")
+    let range = original.range(of: "\\(\\d+\\)$", options: [.regularExpression, .backwards])
     if let range = range {
       seed = String(original[original.startIndex ..< range.lowerBound])
       number = Int(original[original.index(after: range.lowerBound)
         ..< original.index(before: range.upperBound)])!
+      number += 1
     }
     
     var newTitle = ""
@@ -339,12 +340,14 @@ let appTitle = "スリザー2"
 
 /// OKボタン一つの確認画面を表示する
 ///
-/// - parameter viewConroller 表示中のビューコントローラ
-/// - parameter message メッセージ文字列
-/// - parameter handler ボタンの押下後に実行されるハンドラ
+/// - Parameters:
+///   - viewController: 表示中のビューコントローラ
+///   - title: タイトル
+///   - message: メッセージ文字列
+///   - handler: ボタンの押下後に実行されるハンドラ
 func alert(viewController: UIViewController, title: String = appTitle,
            message: String, handler: (()->Void)? = nil) {
-  let alert = UIAlertController(title:appTitle, message: message, preferredStyle: UIAlertController.Style.alert)
+  let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
   let ok = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) { _ in
     handler?()
   }
@@ -356,13 +359,15 @@ func alert(viewController: UIViewController, title: String = appTitle,
 
 /// OKボタン、キャンセルボタンの確認画面を表示する
 ///
-/// - parameter viewConroller 表示中のビューコントローラ
-/// - parameter message メッセージ文字列
-/// - parameter handler いずれかのボタンの押下後に実行されるハンドラ
-/// 引数は、OKだったかどうか
+/// - Parameters:
+///   - viewController: 表示中のビューコントローラ
+///   - title: タイトル
+///   - message: メッセージ文字列
+///   - handler: いずれかのボタンの押下後に実行されるハンドラ
+///     引数は、OKだったかどうか
 func confirm(viewController: UIViewController, title: String = appTitle,
              message: String, handler: ((Bool)->Void)? = nil) {
-  let alert = UIAlertController(title:appTitle, message: message, preferredStyle: UIAlertController.Style.alert)
+  let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
   let ok = UIAlertAction(title: "OK", style: UIAlertAction.Style.default) { _ in
     handler?(true)
   }

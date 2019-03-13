@@ -184,10 +184,11 @@ class Puzzle : Hashable {
               width: width, height: height, genParams: "", genStats: "", data: data)
   }
   
-  /// 既存のファイルからの生成
-  /// 一覧表示必要な情報のみ取り込み、これまでの操作記録は実際に操作する際に読み込むた
+  /// 既存のファイルの読み込み（概要のみ）
   ///
-  /// - Parameter path: データファイルのパス
+  /// - Parameters:
+  ///   - folder: フォルダ
+  ///   - filename: ファイル名
   init(folder: Folder, filename: String) {
     self.folder = folder
     self.id = (filename as NSString).deletingPathExtension
