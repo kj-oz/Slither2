@@ -9,6 +9,7 @@
 import Foundation
 
 // MARK: - 盤面初期のチェック
+
 extension Solver {
   /// 角の数字により確定する辺を設定する
   ///

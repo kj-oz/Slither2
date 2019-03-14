@@ -87,27 +87,29 @@ enum PruneType: String {
   }
 }
 
+/// 盤面の数値の除去をおこなうクラス
 class Pruner {
+  /// 盤面除去のタイプ
   var pruneType: PruneType
   
+  /// 盤面（ループが確定した状態）
   let board: Board
   
   /// セルの数値の間引き順序（いくつかのセルを同時に間引くため配列の配列になっている）
   var pruneOrders: [[Int]] = []
   
-
-//  var originalNumbers: [Int] = []
-  
+  /// 与えられた盤面と数値除去タイプの剪定人を得る
+  ///
+  /// - Parameters:
+  ///   - board: 盤面
+  ///   - pruneType: 数値除去の対応
   init(board: Board, pruneType: PruneType) {
     self.board = board
     self.pruneType = pruneType
   }
   
+  /// 数値除去の順番を決める
   public func setupPruneOrder() {
-//    for cell in board.cells {
-//      originalNumbers.append(cell.onCount)
-//    }
-//
     let xc = board.width % 2 == 1 ? board.width / 2 : -1
     let yc = board.height % 2 == 1 ? board.height / 2 : -1
     

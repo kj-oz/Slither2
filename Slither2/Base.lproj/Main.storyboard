@@ -644,7 +644,7 @@
                                 <segue destination="PAp-hU-cjj" kind="unwind" identifier="GenerateCanceled" unwindAction="dialogCanceledWithSegue:" id="gDP-4v-6GQ"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" title="作成" id="gRT-51-K92">
+                        <barButtonItem key="rightBarButtonItem" title="生成" id="gRT-51-K92">
                             <connections>
                                 <segue destination="PAp-hU-cjj" kind="unwind" identifier="GenerateDone" unwindAction="puzzleGeneratedWithSegue:" id="oLP-bX-fp6"/>
                             </connections>

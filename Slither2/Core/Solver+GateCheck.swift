@@ -9,6 +9,7 @@
 import Foundation
 
 // MARK: - セル4隅のゲートに関するチェック
+
 extension Solver {
   /// 与えられたCellの四隅の斜めに接するCellとの関係のチェックを行う
   ///

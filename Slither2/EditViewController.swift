@@ -1,6 +1,6 @@
 //
 //  EditViewController.swift
-//  Slither
+//  Slither2
 //
 //  Created by KO on 2019/01/30.
 //  Copyright © 2019 KO. All rights reserved.

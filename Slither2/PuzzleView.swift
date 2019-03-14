@@ -1,6 +1,6 @@
 //
 //  PuzzleView.swift
-//  Slither
+//  Slither2
 //
 //  Created by KO on 2018/12/29.
 //  Copyright © 2018 KO. All rights reserved.

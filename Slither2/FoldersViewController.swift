@@ -1,6 +1,6 @@
 //
 //  FolderListViewControllerTableViewController.swift
-//  Slither
+//  Slither2
 //
 //  Created by KO on 2019/01/21.
 //  Copyright © 2019 KO. All rights reserved.
