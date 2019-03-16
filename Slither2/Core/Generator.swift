@@ -377,38 +377,6 @@ class Generator {
     return branches
   }
   
-//  /// 数値を間引く
-//  ///
-//  /// - Parameter solveOption: ソルバのオプション
-//  /// - Returns: 間引き後の数値の配列（間引かれた箇所は−1）
-//  public func pruneNumbers(solveOption: SolveOption, stepHandler: ((Int, Bool, Solver) -> ())?) -> [Int] {
-//    var originalNumbers: [Int] = []
-//    for cell in board.cells {
-//      originalNumbers.append(cell.onCount)
-//    }
-//
-//    var numbers = originalNumbers
-//    var pruneCount = 0
-//    for indecies in pruneOrders {
-//      pruneCount += 1
-//      for index in indecies {
-//        numbers[index] = -1
-//      }
-//      let newBoard = Board(width: board.width, height: board.height, numbers: numbers)
-//      let solver = Solver(board: newBoard)
-//
-//      let solved = solver.solve(option: solveOption)
-//      if !solved {
-//        for index in indecies {
-//          numbers[index] = originalNumbers[index]
-//        }
-//      }
-//      stepHandler?(pruneCount, solved, solver)
-//      debug("prune \(pruneCount): \(solved) \(solver.maxLevel) \(Int(solver.elapsed * 1000.0))")
-//    }
-//    return numbers
-//  }
-//
   /// 与えられたNodeから発生する分岐の配列を得る
   ///
   /// - Parameter node: 分岐の起点

@@ -24,6 +24,13 @@ import Foundation
 /// - quadShift: 田型4個ずつ（階段状）
 enum PruneType: String {
   case free = "F"
+  case vWideBorder = "WV"
+  case vThinBorder = "TV"
+  case hWideBorder = "WH"
+  case hThinBorder = "TH"
+  case dWideBorder = "WD"
+  case dThinBorder = "TD"
+  case check = "C"
   case xSymmetry = "X"
   case ySymmetry = "Y"
   case xySymmetry = "B"
@@ -36,6 +43,7 @@ enum PruneType: String {
   case dPairSymmetry = "DX"
   case quad = "Q"
   case quadShift = "QS"
+  case random1Cell = "R1"
   case random2Cell = "R2"
   case random4Cell = "R4"
   
@@ -44,6 +52,20 @@ enum PruneType: String {
     switch self {
     case .free:
       return "制約なし [F]"
+    case .vWideBorder:
+      return "太縦縞 [WV]"
+    case .vThinBorder:
+      return "細縦縞 [TV]"
+    case .hWideBorder:
+      return "太横縞 [WH]"
+    case .hThinBorder:
+      return "細横縞 [TH]"
+    case .dWideBorder:
+      return "太斜縞 [WD]"
+    case .dThinBorder:
+      return "細斜縞 [TD]"
+    case .check:
+      return "チェック [C]"
     case .xSymmetry:
       return "X対象 [X]"
     case .ySymmetry:
@@ -68,6 +90,8 @@ enum PruneType: String {
       return "田型4連 [Q]"
     case .quadShift:
       return "田型4連ずれ [QS]"
+    case .random1Cell:
+      return "1セル（任意）"
     case .random2Cell:
       return "2セル（任意）"
     case .random4Cell:
@@ -77,6 +101,8 @@ enum PruneType: String {
   
   public var realType: PruneType {
     switch self {
+    case .random1Cell:
+      return [.free, .vWideBorder, .vThinBorder, .hWideBorder, .hThinBorder].randomElement()!
     case .random2Cell:
       return [.xSymmetry, .ySymmetry, .pointSymmetry, .hPair, .dPair].randomElement()!
     case .random4Cell:
@@ -117,6 +143,42 @@ class Pruner {
     case .free:
       for i in 0 ..< board.cells.count {
         pruneOrders.append([i])
+      }
+    case .vWideBorder:
+      return prioritizedPruneOrder() { (x: Int, y: Int) in
+        let rx = board.width - x - 1
+        return ((rx < x ? rx : x) / 2) % 2 == 1
+      }
+    case .vThinBorder:
+      return prioritizedPruneOrder() { (x: Int, y: Int) in
+        let rx = board.width - x - 1
+        return (rx < x ? rx : x) % 2 == 1
+      }
+    case .hWideBorder:
+      return prioritizedPruneOrder() { (x: Int, y: Int) in
+        let ry = board.height - y - 1
+        return ((ry < y ? ry : y) / 2) % 2 == 1
+      }
+    case .hThinBorder:
+      return prioritizedPruneOrder() { (x: Int, y: Int) in
+        let ry = board.height - y - 1
+        return (ry < y ? ry : y) % 2 == 1
+      }
+    case .dWideBorder:
+      return prioritizedPruneOrder() { (x: Int, y: Int) in
+        let val = x - y
+        return (val / 2) % 2 != 0
+      }
+    case .dThinBorder:
+      return prioritizedPruneOrder() { (x: Int, y: Int) in
+        let val = x - y
+        return val % 2 != 0
+      }
+    case .check:
+      return prioritizedPruneOrder() { (x: Int, y: Int) in
+        let rx = board.width - x - 1
+        let ry = board.height - y - 1
+        return ((rx < x ? rx : x) / 2 + (ry < y ? ry : y) / 2) % 2 == 1
       }
     case .xSymmetry, .ySymmetry, .xySymmetry, .pointSymmetry:
       var xmax = board.width
@@ -298,5 +360,22 @@ class Pruner {
     return numbers
   }
   
+  private func prioritizedPruneOrder(predicate: ((_ x: Int, _ y: Int) -> Bool)) {
+    var indecies: [[Int]] = [[], []]
+    let xmax = board.width
+    let ymax = board.height
+    for y in 0 ..< ymax {
+      for x in 0 ..< xmax {
+        let index = y * board.width + x
+        indecies[predicate(x, y) ? 0 : 1].append(index)
+      }
+    }
+    for i in 0 ..< 2 {
+      indecies[i].shuffle()
+      for index in indecies[i] {
+        pruneOrders.append([index])
+      }
+    }
+  }
 }
 

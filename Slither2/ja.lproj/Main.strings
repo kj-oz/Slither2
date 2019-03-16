@@ -66,7 +66,7 @@
 "fLn-dO-WKJ.title" = "修正";
 
 /* Class = "UIBarButtonItem"; title = "作成"; ObjectID = "gRT-51-K92"; */
-"gRT-51-K92.title" = "作成";
+"gRT-51-K92.title" = "生成";
 
 /* Class = "UILabel"; text = "幅"; ObjectID = "jP7-Gq-Idj"; */
 "jP7-Gq-Idj.text" = "幅";

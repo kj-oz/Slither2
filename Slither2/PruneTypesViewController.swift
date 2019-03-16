@@ -14,7 +14,12 @@ class PruneTypesViewController: UITableViewController {
   /// 選択可能な盤面のタイプ
   let pruneTypes = [
     [
-      PruneType.free
+      PruneType.random1Cell,
+      PruneType.free,
+      PruneType.vWideBorder,
+      PruneType.vThinBorder,
+      PruneType.hWideBorder,
+      PruneType.hThinBorder
     ],[
       PruneType.random2Cell,
       PruneType.xSymmetry,

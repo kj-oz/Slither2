@@ -94,6 +94,11 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   // セグエ呼び出し前
   override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
     if identifier == "GenerateDone" {
+      guard let width = Int(widthText.text!), let height = Int(heightText.text!),
+        let solveTime = Int(solveTimeText.text!) else {
+          return false
+      }
+
       let indicator = UIActivityIndicatorView()
       indicator.style = .whiteLarge
       indicator.center = self.view.center
@@ -103,8 +108,20 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       self.view.bringSubviewToFront(indicator)
       indicator.startAnimating()
       
+      let title = titleText.text!
+      
+      var solveOption = SolveOption()
+      solveOption.doAreaCheck = areaCheckSwitch.isOn
+      solveOption.doTryOneStep = tryOneStepSwitch.isOn
+      solveOption.useCache = true
+      solveOption.doColorCheck = cellColorSwitch.isOn
+      solveOption.doGateCheck = gateCheckSwitch.isOn
+      solveOption.maxGuessLevel = 0
+      solveOption.elapsedSec = Double(solveTime) / 1000.0
+      
       DispatchQueue.global().async {
-        self.generatePuzzle()
+        self.generatePuzzle(width: width, height: height,
+                            title: title, solveOption: solveOption)
         DispatchQueue.main.async {
           self.saveSetting()
           indicator.stopAnimating()
@@ -132,6 +149,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     let bv = segue.source as! PruneTypesViewController
     pruneType = bv.selectedPruneType!
     pruneTypeLabel.text = pruneType.description
+    presetSegment.selectedSegmentIndex = 0
   }
   
   // 盤面タイプ選択画面のキャンセル時のアクション
@@ -254,22 +272,13 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   }
   
   /// パズルを生成する
-  private func generatePuzzle() {
-
-    guard let width = Int(widthText.text!), let height = Int(heightText.text!),
-          let solveTime = Int(solveTimeText.text!) else {
-      return
-    }
-    let title = titleText.text!
-
-    var solveOption = SolveOption()
-    solveOption.doAreaCheck = areaCheckSwitch.isOn
-    solveOption.doTryOneStep = tryOneStepSwitch.isOn
-    solveOption.useCache = true
-    solveOption.doColorCheck = cellColorSwitch.isOn
-    solveOption.doGateCheck = gateCheckSwitch.isOn
-    solveOption.maxGuessLevel = 0
-    solveOption.elapsedSec = Double(solveTime) / 1000.0
+  ///
+  /// - Parameters:
+  ///   - width: 幅
+  ///   - height: 高さ
+  ///   - title: タイトル
+  ///   - solveOption: 解法オプション
+  private func generatePuzzle(width: Int, height: Int, title: String, solveOption: SolveOption) {
 
     let realType = pruneType.realType
     let generator = Generator(width: width, height: height)
