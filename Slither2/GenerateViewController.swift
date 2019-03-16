@@ -33,6 +33,8 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
 
   /// 作成ボタン
   @IBOutlet weak var generateButton: UIBarButtonItem!
+  /// プログレスビュー
+  @IBOutlet weak var progressView: UIProgressView!
   
   /// 盤面の数値の除去パターン
   var pruneType: PruneType!
@@ -120,8 +122,19 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       solveOption.elapsedSec = Double(solveTime) / 1000.0
       
       DispatchQueue.global().async {
-        self.generatePuzzle(width: width, height: height,
-                            title: title, solveOption: solveOption)
+        self.generatePuzzle(width: width, height: height, title: title, solveOption: solveOption,
+          progressHandler: { count, total in
+            var progress = 0.0
+            let half = total / 2
+            if count < half {
+              progress = 0.1 + Double(count) / Double(half) * 0.3
+            } else {
+              progress = 0.4 + Double(count - half) / Double(half) * 0.6
+            }
+            DispatchQueue.main.async {
+              self.progressView.progress = Float(progress)
+            }
+        })
         DispatchQueue.main.async {
           self.saveSetting()
           indicator.stopAnimating()
@@ -278,12 +291,13 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   ///   - height: 高さ
   ///   - title: タイトル
   ///   - solveOption: 解法オプション
-  private func generatePuzzle(width: Int, height: Int, title: String, solveOption: SolveOption) {
+  private func generatePuzzle(width: Int, height: Int, title: String, solveOption: SolveOption,
+                              progressHandler: ((_ count: Int, _ total: Int) -> ())?) {
 
     let realType = pruneType.realType
     let generator = Generator(width: width, height: height)
-    let numbers = generator.generate(genOp: GenerateOption(),
-                                     pruneType: realType, solveOp: solveOption)
+    let numbers = generator.generate(genOp: GenerateOption(), pruneType: realType,
+                                     solveOp: solveOption, progressHandler: progressHandler)
     
     let genParam = realType.rawValue + "-" + solveOption.description
     let genStats = generator.stats.description

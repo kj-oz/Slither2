@@ -120,7 +120,8 @@ class Generator {
                       numbers: Array<Int>(repeating: -1, count: width * height))
   }
   
-  public func generate(genOp: GenerateOption, pruneType: PruneType, solveOp: SolveOption) -> [Int] {
+  public func generate(genOp: GenerateOption, pruneType: PruneType, solveOp: SolveOption,
+                       progressHandler: ((_ count: Int, _ total: Int) -> ())?) -> [Int] {
     stats = GenerateStatistics()
     stats.start()
     let _ = generateLoop(option: genOp)
@@ -142,6 +143,7 @@ class Generator {
       default:
         break
       }
+      progressHandler?(count, self.stats.pruneCount)
     })
     return numbers
   }
