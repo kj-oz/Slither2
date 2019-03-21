@@ -59,6 +59,9 @@ class AppManager {
   }
   private static var _sharedInstance: AppManager?
   
+  /// iPad Air2 の処理時間
+  let baseSolveTime = 130
+  
   /// フォルダの親フォルダのパス
   let rootDir: String
   
@@ -80,8 +83,14 @@ class AppManager {
   /// その時点で表示しているビューの種類
   var currentView = ViewType.list
   
-  /// 既存のパズルのIDのす初期値
+  /// 既存のパズルのIDの初期値
   var lastId = 190101001
+  
+  /// 最新の5回の規定パズルを解いた時間
+  var solveTimes: [Int] = []
+  
+  /// 最新5回のうち中間値3回分の平均値と基準値の比（速いマシンほど小さい値）
+  var timeFactor = 1.0
   
   // MARK: - 設定の読み込み、保存
   
@@ -127,7 +136,7 @@ class AppManager {
       currentView = ViewType(rawValue: lastViewStr) ?? .list
     }
     
-    // 前回起動時のフォルダ
+    // 前回開いていたフォルダ
     currentFolder = folders[0]
     if let lastFolderStr = UserDefaults.standard.string(forKey: "lastFolder") {
       for folder in folders {
@@ -148,10 +157,22 @@ class AppManager {
       }
     }
     
-    /// 最後に新規パズルのファイル名に利用した（パズルのID）
+    /// 最後に新規パズルのファイル名に利用した（パズルの）ID
     if let lastIdStr = UserDefaults.standard.string(forKey: "lastId") {
       lastId = Int(lastIdStr) ?? 190101001
     }
+    
+    /// パズルを解く時間を計測し、自動生成時の制限時間の係数を求める
+    if let solveTimesStr = UserDefaults.standard.string(forKey: "solveTimes") {
+      solveTimes = solveTimesStr.components(separatedBy: ",").map({Int($0) ?? 100})
+    }
+    /// 毎回計測し、最新の5回分のみ保持する
+    solveTimes.append(measureSolveTime())
+    if solveTimes.count > 5 {
+      solveTimes.remove(at: 0)
+    }
+    
+    timeFactor = calcTimeFactor(solveTimes: solveTimes)
   }
   
   /// ステータスを保存する
@@ -166,6 +187,8 @@ class AppManager {
     UserDefaults.standard.setValue(currentFolder.name, forKey: "lastFolder")
     UserDefaults.standard.setValue(currentView.rawValue, forKey: "lastView")
     UserDefaults.standard.setValue(String(lastId), forKey: "lastId")
+    let solveTimeStr = solveTimes.map({String($0)}).joined(separator: ",")
+    UserDefaults.standard.setValue(String(solveTimeStr), forKey: "solveTimes")
   }
 
   // MARK: - フォルダ、パズルの操作
@@ -277,7 +300,104 @@ class AppManager {
     return false
   }
   
+  // MARK: - 自動生成時の制限時間の算出
+  
+  /// パズルを解く時間（ms）を求める
+  ///
+  /// - Returns: パズルを解く時間（ms）
+  func measureSolveTime() -> Int {
+    let case1 = [
+      "14 24",
+      " 3  3  2011   ",
+      " 3  23   2  01",
+      " 3 23        2",
+      " 2    13  32 2",
+      " 2   13   0  1",
+      "     2   22   ",
+      " 331        3 ",
+      " 1 32 32302 1 ",
+      "            23",
+      "213  1 1     2",
+      "2 2  202 2 3  ",
+      "0        231  ",
+      "  332        1",
+      "  2 3 202  1 3",
+      "1     2 3  223",
+      "31            ",
+      " 3 02133 23 0 ",
+      " 1        112 ",
+      "   12   0     ",
+      "1  3   33   0 ",
+      "3 21  20    1 ",
+      "1        21 0 ",
+      "01  2   10  3 ",
+      "   3331  2  2 "
+    ]
+
+    let case2 = [
+      "14 24",
+      "  1 1  10 3 1 ",
+      "0 3 0 2 2  12 ",
+      "              ",
+      " 0101010101031",
+      "              ",
+      " 3  2  1 20   ",
+      "2  3 1 2   122",
+      "              ",
+      "1301010101010 ",
+      "             2",
+      "  3 3 1  0 121",
+      "22 2  2  1    ",
+      "    1  2  2 20",
+      "111 2  1 1 3  ",
+      "1             ",
+      " 0101010101031",
+      "              ",
+      "120   0 1 1  3",
+      "   13 2  2  3 ",
+      "              ",
+      "1301010101010 ",
+      "              ",
+      " 11  2 1 0 1 2",
+      " 1 1 10  1 1  "
+    ]
+    
+    var ms = measure(case1)
+    ms += measure(case2)
+
+    return ms
+  }
+  
+  /// 与えられたパズルを解き、かかった時間を通知する
+  ///
+  /// - Parameter lines: パズルの定義
+  /// - Returns: かかった時間（ms)
+  private func measure(_ lines: [String]) -> Int {
+    var option = SolveOption()
+    option.doAreaCheck = false
+    option.doTryOneStep = true
+    option.useCache = true
+    option.doColorCheck = true
+    option.doGateCheck = true
+    option.maxGuessLevel = 12
+    option.elapsedSec = 3600.0
+    
+    let solver = Solver(board: Board(lines: lines))
+    let _ = solver.solve(option: option)
+    
+    return Int(solver.elapsed * 1000)
+  }
+  
   // MARK: - ヘルパメソッド
+  
+  func calcTimeFactor(solveTimes: [Int]) -> Double {
+    var values = solveTimes
+    if solveTimes.count > 3 {
+      values = Array(solveTimes.sorted()[1 ..< solveTimes.count - 1])
+    }
+    let average = values.reduce(0, {$0 + $1}) / values.count
+    return Double(average) / Double(baseSolveTime)
+  }
   
   /// 次に生成するパズルのIDを得る
   ///

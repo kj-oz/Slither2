@@ -119,7 +119,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       solveOption.doColorCheck = cellColorSwitch.isOn
       solveOption.doGateCheck = gateCheckSwitch.isOn
       solveOption.maxGuessLevel = 0
-      solveOption.elapsedSec = Double(solveTime) / 1000.0
+      solveOption.elapsedSec = Double(solveTime) * AppManager.sharedInstance.timeFactor / 1000.0
       
       DispatchQueue.global().async {
         self.generatePuzzle(width: width, height: height, title: title, solveOption: solveOption,
@@ -254,6 +254,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   /// 盤面のサイズに応じて、回答を求める際の許容時間を変更する
   private func updateSolveTime() {
     if let width = Int(widthText.text!), let height = Int(heightText.text!) {
+      // iPadAir2で1セルあたり1msを目処として使用
       var solveTime = (width * height / 50) * 50
       if solveTime == 0 {
         solveTime = 10

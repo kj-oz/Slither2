@@ -44,6 +44,8 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     
     // データを読み込む
     let am = AppManager.sharedInstance
+    // alert(viewController: self, message: String(am.solveTimes.last!))
+    
     title = am.currentFolder.name
     navigationItem.title = title
     
