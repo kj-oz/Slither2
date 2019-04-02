@@ -121,15 +121,25 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       solveOption.maxGuessLevel = 0
       solveOption.elapsedSec = Double(solveTime) * AppManager.sharedInstance.timeFactor / 1000.0
       
+      var baseProgress = 0.0
+      
       DispatchQueue.global().async {
         self.generatePuzzle(width: width, height: height, title: title, solveOption: solveOption,
           progressHandler: { count, total in
             var progress = 0.0
-            let half = total / 2
-            if count < half {
-              progress = 0.1 + Double(count) / Double(half) * 0.3
+            if total == 0 {
+              // ループ生成時
+              progress = 0.05 * Double(count)
+              baseProgress = progress
             } else {
-              progress = 0.4 + Double(count - half) / Double(half) * 0.6
+              // 数値間引き時
+              let half = total / 2
+              if count < half {
+                progress = baseProgress + Double(count) / Double(half) * (1.0 - baseProgress) / 3.0
+              } else {
+                progress = baseProgress + (1.0 - baseProgress) / 3.0 +
+                  Double(count - half) / Double(half) * (1.0 - baseProgress) / 3.0  * 2.0
+              }
             }
             DispatchQueue.main.async {
               self.progressView.progress = Float(progress)
@@ -294,15 +304,17 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   ///   - solveOption: 解法オプション
   private func generatePuzzle(width: Int, height: Int, title: String, solveOption: SolveOption,
                               progressHandler: ((_ count: Int, _ total: Int) -> ())?) {
-
+    let am = AppManager.sharedInstance
     let realType = pruneType.realType
     let generator = Generator(width: width, height: height)
-    let numbers = generator.generate(genOp: GenerateOption(), pruneType: realType,
-                                     solveOp: solveOption, progressHandler: progressHandler)
-    
+    // パズルの生成パラメータは、iPAdAir2換算の時間制限を使用
     let genParam = realType.rawValue + "-" + solveOption.description
+    // 実際の生成時間制限は、機器毎の時間係数を乗じる
+    var solveOp = solveOption
+    solveOp.elapsedSec *= am.timeFactor
+    let numbers = generator.generate(genOp: GenerateOption(), pruneType: realType,
+                                     solveOp: solveOp, progressHandler: progressHandler)
     let genStats = generator.stats.description
-    let am = AppManager.sharedInstance
     let id = am.nextPuzzleId()
     let _ = Puzzle(folder: am.currentFolder,  id: id, title: title, width: width, height: height,
                    genParams: genParam, genStats: genStats, data: numbers)

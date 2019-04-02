@@ -331,7 +331,9 @@ class Pruner {
 
   /// 数値を間引く
   ///
-  /// - Parameter solveOption: ソルバのオプション
+  /// - Parameters:
+  ///   - solveOption: ソルバのオプション
+  ///   - stepHandler: 1回間引の可否を確認するたびに呼び出されるハンドラ、引数は回数、成功したかどうか、ソルバ
   /// - Returns: 間引き後の数値の配列（間引かれた箇所は−1）
   public func pruneNumbers(solveOption: SolveOption, stepHandler: ((Int, Bool, Solver) -> ())?) -> [Int] {
     var originalNumbers: [Int] = []

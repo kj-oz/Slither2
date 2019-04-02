@@ -120,11 +120,24 @@ class Generator {
                       numbers: Array<Int>(repeating: -1, count: width * height))
   }
   
+  /// ループの生成から数字の除去までの一連の処理を行い、パズルを生成する
+  ///
+  /// - Parameters:
+  ///   - genOp: ループ生成に関するいオプション
+  ///   - pruneType: 数字除去のタイプ
+  ///   - solveOp: パズル解明に対するオプション
+  ///   - progressHandler: 生成の進捗時に呼び出される処理
+  ///        引数は、count: 進度、total: 総数
+  ///        ループ生成のリトライ時には、totalが0、countが失敗の回数で呼び出される
+  ///        数字除去時には、totalが総除去回数、countが済んだ回数で呼び出される
+  /// - Returns: 盤面の状態
   public func generate(genOp: GenerateOption, pruneType: PruneType, solveOp: SolveOption,
                        progressHandler: ((_ count: Int, _ total: Int) -> ())?) -> [Int] {
     stats = GenerateStatistics()
     stats.start()
-    let _ = generateLoop(option: genOp)
+    let _ = generateLoop(option: genOp, retryHandler: { (count) in
+      progressHandler?(count, 0)
+    })
     
     let pruner = Pruner(board: board, pruneType: pruneType)
     pruner.setupPruneOrder()
@@ -150,9 +163,11 @@ class Generator {
   
   /// ループを生成する
   ///
-  /// - Parameter option: ループ生成オプション
+  /// - Parameters:
+  ///   - option: ループ生成オプション
+  ///   - retryHandler: リトライ時に呼び出されるハンドラ、引数はリトライ回数
   /// - Returns: ループ（Edgeの配列）
-  func generateLoop(option: GenerateOption) -> [Edge] {
+  func generateLoop(option: GenerateOption, retryHandler: ((Int) -> ())?) -> [Edge] {
     self.option = option
     minOnEdgeCount = Int(Double(board.edges.count) * option.loopLengthFraction)
     maxBlankEdgeCount = Int(Double(board.edges.count) * option.blankEdgeFraction)
@@ -183,6 +198,7 @@ class Generator {
         }
       }
       board.clear()
+      retryHandler?(retryCount)
     }
     dump(title: "☆ Loop Generated:")
     
