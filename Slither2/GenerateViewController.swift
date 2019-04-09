@@ -119,7 +119,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       solveOption.doColorCheck = cellColorSwitch.isOn
       solveOption.doGateCheck = gateCheckSwitch.isOn
       solveOption.maxGuessLevel = 0
-      solveOption.elapsedSec = Double(solveTime) * AppManager.sharedInstance.timeFactor / 1000.0
+      solveOption.elapsedSec = Double(solveTime) / 1000.0
       
       var baseProgress = 0.0
       var genProgress = 0.05
