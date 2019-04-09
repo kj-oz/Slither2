@@ -40,6 +40,9 @@ class Solver {
   /// エリアチェックで有効な手が見つかったかどうか
   var useAreaCheckResult = false
   
+  /// 1ステップトライ時の次のエッジのインデックス
+  private var nextTryEdgeIndex = 0
+  
   /// 与えられた盤面で初期化する
   ///
   /// - Parameter board: 盤面
@@ -159,14 +162,22 @@ class Solver {
   /// - Throws: 解の探索時例外
   private func tryOneStep() throws -> Bool {
     startNewStep(useCache: option.useCache)
-    for edge in (board.hEdges + board.vEdges) {
+    // shuffleとの比較の結果はほぼ同等
+    // 同じ順番よりは、特に長い時間がかかる場合に有利
+    let startIndex = nextTryEdgeIndex
+    repeat {
+      let edge = board.edges[nextTryEdgeIndex]
+      nextTryEdgeIndex += 1
+      if nextTryEdgeIndex == board.edges.count {
+        nextTryEdgeIndex = 0
+      }
       if edge.status == .unset {
         if try tryEdge(edge, to: .on) || tryEdge(edge, to: .off) {
           //print("★ Try One Step: true")
           return true
         }
       }
-    }
+    } while nextTryEdgeIndex != startIndex
     backToPreviousStep()
     //print("★ Try One Step: false")
     return false

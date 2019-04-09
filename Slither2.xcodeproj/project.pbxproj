@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3113D36B2259C1B0006E9F68 /* GeneratorrTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D3682259C1B0006E9F68 /* GeneratorrTests.swift */; };
+		3113D36C2259C1B0006E9F68 /* SolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D3692259C1B0006E9F68 /* SolverTests.swift */; };
+		3113D36D2259C1B0006E9F68 /* AreaCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D36A2259C1B0006E9F68 /* AreaCheckerTest.swift */; };
 		31C8802C22227F99008C0D99 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8802B22227F99008C0D99 /* AppDelegate.swift */; };
 		31C8802E22227F99008C0D99 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8802D22227F99008C0D99 /* ViewController.swift */; };
 		31C8803122227F99008C0D99 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 31C8802F22227F99008C0D99 /* Main.storyboard */; };
 		31C8803322227F9B008C0D99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31C8803222227F9B008C0D99 /* Assets.xcassets */; };
 		31C8803622227F9B008C0D99 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 31C8803422227F9B008C0D99 /* LaunchScreen.storyboard */; };
-		31C8804122227F9B008C0D99 /* Slither2Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804022227F9B008C0D99 /* Slither2Tests.swift */; };
 		31C88054222282DC008C0D99 /* PruneTypesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804D222282DB008C0D99 /* PruneTypesViewController.swift */; };
 		31C88055222282DC008C0D99 /* CGUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804E222282DB008C0D99 /* CGUtil.swift */; };
 		31C88056222282DC008C0D99 /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8804F222282DB008C0D99 /* EditViewController.swift */; };
@@ -48,6 +50,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3113D3682259C1B0006E9F68 /* GeneratorrTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratorrTests.swift; sourceTree = "<group>"; };
+		3113D3692259C1B0006E9F68 /* SolverTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolverTests.swift; sourceTree = "<group>"; };
+		3113D36A2259C1B0006E9F68 /* AreaCheckerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaCheckerTest.swift; sourceTree = "<group>"; };
 		31C8802822227F99008C0D99 /* Slither2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Slither2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		31C8802B22227F99008C0D99 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		31C8802D22227F99008C0D99 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -56,7 +61,6 @@
 		31C8803522227F9B008C0D99 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		31C8803722227F9B008C0D99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		31C8803C22227F9B008C0D99 /* Slither2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Slither2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		31C8804022227F9B008C0D99 /* Slither2Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Slither2Tests.swift; sourceTree = "<group>"; };
 		31C8804222227F9B008C0D99 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		31C8804B2222801D008C0D99 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		31C8804C2222801D008C0D99 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -148,7 +152,9 @@
 		31C8803F22227F9B008C0D99 /* Slither2Tests */ = {
 			isa = PBXGroup;
 			children = (
-				31C8804022227F9B008C0D99 /* Slither2Tests.swift */,
+				3113D36A2259C1B0006E9F68 /* AreaCheckerTest.swift */,
+				3113D3682259C1B0006E9F68 /* GeneratorrTests.swift */,
+				3113D3692259C1B0006E9F68 /* SolverTests.swift */,
 				31C8804222227F9B008C0D99 /* Info.plist */,
 			);
 			path = Slither2Tests;
@@ -304,7 +310,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				31C8804122227F9B008C0D99 /* Slither2Tests.swift in Sources */,
+				3113D36B2259C1B0006E9F68 /* GeneratorrTests.swift in Sources */,
+				3113D36D2259C1B0006E9F68 /* AreaCheckerTest.swift in Sources */,
+				3113D36C2259C1B0006E9F68 /* SolverTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -122,6 +122,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       solveOption.elapsedSec = Double(solveTime) * AppManager.sharedInstance.timeFactor / 1000.0
       
       var baseProgress = 0.0
+      var genProgress = 0.05
       
       DispatchQueue.global().async {
         self.generatePuzzle(width: width, height: height, title: title, solveOption: solveOption,
@@ -129,8 +130,9 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
             var progress = 0.0
             if total == 0 {
               // ループ生成時
-              progress = 0.05 * Double(count)
+              progress = baseProgress + genProgress
               baseProgress = progress
+              genProgress *= 0.5
             } else {
               // 数値間引き時
               let half = total / 2

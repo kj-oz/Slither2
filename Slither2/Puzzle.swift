@@ -141,7 +141,7 @@ class Puzzle : Hashable {
   
   /// アンドゥの取り消しが可能かどうか
   var canRedo: Bool {
-    return actions.count > 0 && currentIndex < actions.count && status == .solving
+    return currentIndex < actions.count - 1 && status == .solving
   }
 
   //MARK: - 初期化
@@ -425,7 +425,7 @@ class Puzzle : Hashable {
   
   /// アンドゥを取り消す
   func redo() {
-    if currentIndex < actions.count {
+    if currentIndex < actions.count - 1 {
       currentIndex += 1
       actions[currentIndex].redo()
       lastAction = nil
