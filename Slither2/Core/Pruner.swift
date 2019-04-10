@@ -206,37 +206,26 @@ class Pruner {
           pruneOrders.append(indecies)
         }
       }
-    case .hPair, .hPairSymmetry, .dPairCross, .quad:
-      var xmax = board.width
+    case .hPair, .dPairCross, .quad:
+      let xmax = board.width
       let ymax = board.height
-      if pruneType == .hPairSymmetry {
-        xmax = (board.width + 1) / 2
-      }
       var y = 0
       while y < ymax {
         var x = 0
         while x < xmax {
           let index = y * board.width + x
           var indecies = [index]
-          if x == xc {
-            if y != yc && (pruneType == .dPairCross || pruneType == .quad) {
+          if x == xmax - 1 {
+            if y != ymax - 1 && (pruneType == .dPairCross || pruneType == .quad) {
               indecies.append(index + board.width)
             }
             pruneOrders.append(indecies)
             x += 1
           } else {
-            if pruneType == .hPairSymmetry {
-              let xm = board.width - x - 1
-              indecies.append(y * board.width + xm)
-            }
-            if pruneType == .hPair || pruneType == .hPairSymmetry || pruneType == .quad {
+            if pruneType == .hPair || pruneType == .quad {
               indecies.append(index + 1)
-              if pruneType == .hPairSymmetry {
-                let xm = board.width - x - 2
-                indecies.append(y * board.width + xm)
-              }
             }
-            if y == yc {
+            if y == ymax - 1 {
               if pruneType == .dPairCross {
                 indecies.append(index + 1)
               }
@@ -257,7 +246,33 @@ class Pruner {
             x += 2
           }
         }
-        y += ((pruneType == .hPair || pruneType == .hPairSymmetry || y == yc) ? 1 : 2)
+        y += ((pruneType == .hPair || y == yc) ? 1 : 2)
+      }
+    case .hPairSymmetry:
+      let xmax = (board.width + 1) / 2
+      let ymax = board.height
+      var y = 0
+      while y < ymax {
+        var x = 0
+        while x < xmax {
+          let index = y * board.width + x
+          var indecies = [index]
+          if x == xc {
+            pruneOrders.append(indecies)
+            x += 1
+          } else {
+            let xm = board.width - x - 1
+            indecies.append(y * board.width + xm)
+            indecies.append(index + 1)
+            if x != xc - 1 {
+              let xm = board.width - x - 2
+              indecies.append(y * board.width + xm)
+            }
+            pruneOrders.append(indecies)
+            x += 2
+          }
+        }
+        y += 1
       }
     case .hPairShift, .quadShift:
       var y = 0
@@ -305,8 +320,8 @@ class Pruner {
           let y1 = y + 1
           if y1 < ymax && x1 < xmax {
             indecies.append(y1 * board.width + x1)
-            if pruneType == .dPairSymmetry {
-              let xm1 = board.width - x1 - 1
+            let xm1 = board.width - x1 - 1
+            if xm1 != x1 && pruneType == .dPairSymmetry {
               indecies.append(y1 * board.width + xm1)
             }
           }

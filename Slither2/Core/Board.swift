@@ -228,6 +228,7 @@ class Board {
   ///   - edge: 最初の方向のEdge
   /// - Returns: 連続線のedgeから見てnodeと逆側の末端のNode、連続線が閉じている場合にはnil
   func getLoopEnd(from node: Node, and edge: Edge) -> Node? {
+    var count = 0
     var nd = edge.anotherNode(of: node)
     var ed = edge
     while nd.onCount == 2 {
@@ -235,6 +236,11 @@ class Board {
       nd = ed.anotherNode(of: nd)
       
       if nd === node {
+        return nil
+      }
+      count += 1
+      if count == edges.count {
+        // 無限ループ防止
         return nil
       }
     }
