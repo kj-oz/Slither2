@@ -57,6 +57,8 @@ class PuzzleView: UIView {
   
   static let sliderWidth: CGFloat = 1.0
   
+  static let sliderRailWidth: CGFloat = 0.4
+  
   /// 盤面の情報の取得、設定を行うデリゲート
   var delegate: PuzzleViewDelegate?
   
@@ -125,14 +127,15 @@ class PuzzleView: UIView {
   
   /// 描画色
   var boardColor = UIColor(red: 0.95, green: 0.95, blue: 0.9, alpha: 1.0)
-  var erasableColor = UIColor(red: 0.0, green: 0.5, blue: 1.0, alpha: 1.0)
+  var erasableColor = UIColor(red: 0.0, green: 0.5, blue: 0.9, alpha: 1.0)
 //  var zoomAreaStrokeColor = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.2)
 //  var zoomAreaFillColor = UIColor(red:1.0, green:1.0, blue:0.0, alpha:0.1)
   var bgColor = UIColor.lightGray
   var trackColor = UIColor(red:0.0, green:1.0, blue:1.0, alpha:0.03)
-  var sliderColor = UIColor(red: 0.9, green: 0.9, blue: 0.8, alpha: 1.0)
-  var sliderRailColor = UIColor(red: 0.8, green: 0.8, blue: 0.7, alpha: 1.0)
-  var sliderAreaColor = UIColor(red: 0.7, green: 0.7, blue: 0.5, alpha: 1.0)
+  var sliderColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+  var sliderRailColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
+  var sliderAreaColor = UIColor(red: 0.0, green: 0.5, blue: 0.9, alpha: 1.0)
+  
 
   // MARK: - 初期化
   // コンストラクタ
@@ -445,6 +448,8 @@ class PuzzleView: UIView {
       var hasSliderH = false
       var hasSliderV = false
       let sliderW = PuzzleView.sliderWidth * zpitch
+      let sliderR0 = (PuzzleView.sliderWidth + PuzzleView.sliderRailWidth) * 0.5 * zpitch
+      let sliderRW = PuzzleView.sliderRailWidth * zpitch
       let sliderColor = self.sliderColor.cgColor
       let sliderRailColor = self.sliderRailColor.cgColor
       let sliderAreaColor = self.sliderAreaColor.cgColor
@@ -465,8 +470,8 @@ class PuzzleView: UIView {
         let rect = CGRect(x: 0, y: h - sliderW, width: w, height: sliderW)
         context.setFillColor(sliderColor)
         context.fill(rect)
-        let rrect = CGRect(x: wholeArea.origin.x, y: h - sliderW * 0.9,
-                           width: wholeArea.width, height: sliderW * 0.8)
+        let rrect = CGRect(x: wholeArea.origin.x, y: h - sliderR0,
+                           width: wholeArea.width, height: sliderRW)
         context.setFillColor(sliderRailColor)
         context.fill(rrect)
         hasSliderH = true
@@ -476,22 +481,22 @@ class PuzzleView: UIView {
         let rect = CGRect(x: w - sliderW, y: 0, width: sliderW, height: he)
         context.setFillColor(sliderColor)
         context.fill(rect)
-        let rrect = CGRect(x: w - sliderW * 0.9, y: wholeArea.origin.y,
-                           width: sliderW * 0.8, height: wholeArea.height)
+        let rrect = CGRect(x: w - sliderR0, y: wholeArea.origin.y,
+                           width: sliderRW, height: wholeArea.height)
         context.setFillColor(sliderRailColor)
         context.fill(rrect)
         hasSliderV = true
       }
       if (hasSliderH) {
-        let zrect = CGRect(x: zoomedArea.origin.x, y: h - sliderW * 0.9,
-                           width: zoomedArea.width, height: sliderW * 0.8)
+        let zrect = CGRect(x: zoomedArea.origin.x, y: h - sliderR0,
+                           width: zoomedArea.width, height: sliderRW)
         context.setFillColor(sliderAreaColor)
         context.fill(zrect)
         hasSliderH = true
       }
       if (hasSliderV) {
-        let zrect = CGRect(x: w - sliderW * 0.9, y: zoomedArea.origin.y,
-                           width: sliderW * 0.8, height: zoomedArea.height)
+        let zrect = CGRect(x: w - sliderR0, y: zoomedArea.origin.y,
+                           width: sliderRW, height: zoomedArea.height)
         context.setFillColor(sliderAreaColor)
         context.fill(zrect)
       }
@@ -1090,19 +1095,16 @@ class PuzzleView: UIView {
     let (xp, yp) = locationInPuzzle(point: point)
     var xi = Int(xp + 0.5)
     var yi = Int(yp + 0.5)
-    xi = clumpInt(value: xi, min: 0, max: board.width)
-    yi = clumpInt(value: yi, min: 0, max: board.height)
-    
-    var dx = (xp - CGFloat(xi)) * currentPitch
-    var dy = (yp - CGFloat(yi)) * currentPitch
-    if abs(dx) > r || abs(dy) > r {
+    if xi < 0 || xi > board.width || yi < 0 || yi > board.height {
       return nil
     }
-    
+
+    var dx = (xp - CGFloat(xi)) * currentPitch
+    var dy = (yp - CGFloat(yi)) * currentPitch
     if (abs(dx) < abs(dy)) {
       yi = Int(yp)
       if yi == board.height {
-        yi -= 1
+        return nil
       }
       dy = (yp - (CGFloat(yi) + 0.5)) * currentPitch
       if (dx * dx + dy * dy < r * r) {
@@ -1112,7 +1114,7 @@ class PuzzleView: UIView {
     } else {
       xi = Int(xp)
       if xi == board.width {
-        xi -= 1
+        return nil
       }
       dx = (xp - (CGFloat(xi) + 0.5)) * currentPitch
       if (dx * dx + dy * dy < r * r) {

@@ -388,6 +388,13 @@ class Puzzle : Hashable {
     lastActionTime = Date()
   }
   
+  /// Cellの数値変更のActionを追加する
+  ///
+  /// - Parameter action: アクション
+  func addAction(_ action: SetCellNumberAction) {
+    action.redo()
+  }
+  
   /// パズルを初期化する
   func clear() {
     currentIndex = -1

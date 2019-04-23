@@ -50,23 +50,26 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     navigationItem.title = title
     
     if am.restoring {
-      if am.currentView == .play {
+      if am.currentView == .play || am.currentView == .edit {
         if let currentPuzzle = am.currentPuzzle {
           if let puzzleIndex = am.currentFolder.puzzles.firstIndex(of: currentPuzzle) {
             tableView.selectRow(at: IndexPath(row: puzzleIndex, section: 0), animated: false, scrollPosition: .bottom)
-            performSegue(withIdentifier: "PlayPuzzle", sender: self)
+            if am.currentView == .play {
+              performSegue(withIdentifier: "PlayPuzzle", sender: self)
+            } else {
+              performSegue(withIdentifier: "EditPuzzle", sender: self)
+            }
           }
         }
-      } else if am.currentView == .edit {
-        //TODO 編集ビューの状態保存は将来対応予定
-        //self.editing = YES;
-        //[self performSegueWithIdentifier:@"EditProblem" sender:self];
       }
       am.restoring = false
-    } else if am.currentView == .play {
+    } else if am.currentView == .play || am.currentView == .edit {
       // Backボタンで戻った場合には、アクションは発生しないためここで処理
       if let currentPuzzle = am.currentPuzzle {
-        if let puzzleIndex = am.currentFolder.puzzles.firstIndex(of: currentPuzzle) {
+        if tableView.numberOfRows(inSection: 0) < am.currentFolder.puzzles.count {
+          // 入力ボタン→編集画面からの戻り時
+          tableView.reloadData()
+        } else if let puzzleIndex = am.currentFolder.puzzles.firstIndex(of: currentPuzzle) {
           let indexPath = IndexPath(row: puzzleIndex, section: 0)
           let cell = tableView.cellForRow(at: indexPath) as! PuzzleCell
           cell.setup(currentPuzzle)
@@ -123,7 +126,9 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
       copyButton.isEnabled = true
       deleteButton.isEnabled = true
     } else {
-      if puzzle.status != .editing {
+      if puzzle.status == .editing {
+        performSegue(withIdentifier: "EditPuzzle", sender: self)
+      } else {
         performSegue(withIdentifier: "PlayPuzzle", sender: self)
       }
     }
