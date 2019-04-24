@@ -121,15 +121,15 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
 
   // MARK: - PuzzleViewDelegateの実装
   
-  /// 拡大画面での表示位置（回転後の問題座標系）
-  var zoomedPoint: CGPoint {
-    get {
-      return puzzle?.zoomedPoint ?? CGPoint.zero
-    }
-    set {
-      puzzle?.zoomedPoint = newValue
-    }
-  }
+//  /// 拡大画面での表示位置（回転後の問題座標系）
+//  var zoomedPoint: CGPoint {
+//    get {
+//      return puzzle?.zoomedPoint ?? CGPoint.zero
+//    }
+//    set {
+//      puzzle?.zoomedPoint = newValue
+//    }
+//  }
   
   /// 線の連続入力の開始
   func lineBegan() {

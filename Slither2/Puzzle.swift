@@ -83,8 +83,8 @@ class Puzzle : Hashable {
   ///　最後に固定を実行したインデックス
   var fixedIndex = -1
   
-  ///　拡大表示時の拡大領域の中心位置
-  var zoomedPoint = CGPoint.zero
+//  ///　拡大表示時の拡大領域の中心位置
+//  var zoomedPoint = CGPoint.zero
   
   /// パス
   var path: String {
@@ -286,9 +286,9 @@ class Puzzle : Hashable {
           currentIndex = Int(value)!
         case "fixedIndex":
           fixedIndex = Int(value)!
-        case "zoomedPoint":
-          let sizes = value.split(separator: " ")
-          zoomedPoint = CGPoint(x: Double(sizes[0])!, y: Double(sizes[1])!)
+//        case "zoomedPoint":
+//          let sizes = value.split(separator: " ")
+//          zoomedPoint = CGPoint(x: Double(sizes[0])!, y: Double(sizes[1])!)
         default:
           break
         }
@@ -358,7 +358,7 @@ class Puzzle : Hashable {
     }
     lines.append("currentIndex: \(currentIndex)")
     lines.append("fixedIndex: \(fixedIndex)")
-    lines.append("zoomedPoint: \(zoomedPoint.x) \(zoomedPoint.y)")
+//    lines.append("zoomedPoint: \(zoomedPoint.x) \(zoomedPoint.y)")
     try! lines.joined(separator: "\r\n").write(toFile: path, atomically: true, encoding: .utf8)
   }
 

@@ -71,28 +71,28 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
   
   @IBAction func doneTapped(_ sender: Any) {
     let solver = Solver(board: puzzle.board)
-    if solver.solve(option: <#T##SolveOption#>) {
-      let msg = "問題が完成しました。"
-      alert(viewController: self, message: msg)
-
-      puzzle.status = .notStarted
-      puzzle.save()
-    } else {
-      
-    }
+//    if solver.solve(option: <#T##SolveOption#>) {
+//      let msg = "問題が完成しました。"
+//      alert(viewController: self, message: msg)
+//
+//      puzzle.status = .notStarted
+//      puzzle.save()
+//    } else {
+//
+//    }
   }
   
   // MARK: - PuzzleViewDelegateの実装
   
-  /// 拡大画面での表示位置（回転後の問題座標系）
-  var zoomedPoint: CGPoint {
-    get {
-      return puzzle?.zoomedPoint ?? CGPoint.zero
-    }
-    set {
-      puzzle?.zoomedPoint = newValue
-    }
-  }
+//  /// 拡大画面での表示位置（回転後の問題座標系）
+//  var zoomedPoint: CGPoint {
+//    get {
+//      return puzzle?.zoomedPoint ?? CGPoint.zero
+//    }
+//    set {
+//      puzzle?.zoomedPoint = newValue
+//    }
+//  }
   
   /// 線の連続入力の開始
   func lineBegan() {

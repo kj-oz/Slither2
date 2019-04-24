@@ -18,6 +18,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="640"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <view key="tableFooterView" contentMode="scaleToFill" id="N7i-3u-ixc" customClass="PuzzleView" customModule="Slither2" customModuleProvider="target">
+                            <rect key="frame" x="0.0" y="72" width="320" height="698"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="FolderCell" id="SWU-3S-VVA" customClass="EditableBasicCell" customModule="Slither2" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="320" height="44"/>
@@ -160,9 +165,9 @@
                                     </segue>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="修正" id="i19-vl-rJW">
+                            <barButtonItem title="名称変更" id="i19-vl-rJW">
                                 <connections>
-                                    <segue destination="N3Q-cj-Koq" kind="show" identifier="EditPuzzle" id="3Bj-FH-eIZ"/>
+                                    <action selector="renameButtonTapped:" destination="TfQ-8s-kNp" id="jSC-9b-RGe"/>
                                 </connections>
                             </barButtonItem>
                             <barButtonItem title="複製" id="kPK-Tv-UWF">
@@ -205,9 +210,10 @@
                         <outlet property="folderButton" destination="tLE-3f-oh7" id="5cv-6O-OKX"/>
                         <outlet property="generateButton" destination="qWt-U1-HCA" id="vxK-Za-JMj"/>
                         <outlet property="inputButton" destination="vao-Ea-z4H" id="49P-bi-qpa"/>
-                        <outlet property="modifyButton" destination="i19-vl-rJW" id="Kzd-KW-tDl"/>
                         <outlet property="moveButton" destination="hcB-lp-Ncl" id="0Nw-Ld-u26"/>
+                        <outlet property="renameButton" destination="i19-vl-rJW" id="Kzd-KW-tDl"/>
                         <segue destination="Zgi-pP-djp" kind="show" identifier="PlayPuzzle" id="ILb-Xv-dhB"/>
+                        <segue destination="N3Q-cj-Koq" kind="show" identifier="EditPuzzle" id="dP6-1h-h0e"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="E5Q-u1-MZ5" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -222,17 +228,17 @@
                         <rect key="frame" x="0.0" y="0.0" width="1024" height="768"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="N7i-3u-ixc" customClass="PuzzleView" customModule="Slither2" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="70" width="1024" height="648"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="GZk-cw-sKb" customClass="PuzzleView" customModule="Slither2" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="70" width="1024" height="698"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="N7i-3u-ixc" firstAttribute="leading" secondItem="zBQ-gf-Z4W" secondAttribute="leading" id="Sz1-lF-ytB"/>
-                            <constraint firstItem="N7i-3u-ixc" firstAttribute="bottom" secondItem="zBQ-gf-Z4W" secondAttribute="bottom" id="WRm-55-MWt"/>
-                            <constraint firstItem="N7i-3u-ixc" firstAttribute="top" secondItem="zBQ-gf-Z4W" secondAttribute="top" id="i3W-I4-JaP"/>
-                            <constraint firstItem="N7i-3u-ixc" firstAttribute="trailing" secondItem="zBQ-gf-Z4W" secondAttribute="trailing" id="z8j-LP-mGF"/>
+                            <constraint firstItem="GZk-cw-sKb" firstAttribute="trailing" secondItem="zBQ-gf-Z4W" secondAttribute="trailing" id="9Ik-gn-LMr"/>
+                            <constraint firstItem="GZk-cw-sKb" firstAttribute="leading" secondItem="zBQ-gf-Z4W" secondAttribute="leading" id="Li1-y5-0fG"/>
+                            <constraint firstAttribute="bottom" secondItem="GZk-cw-sKb" secondAttribute="bottom" id="ODv-JV-uQt"/>
+                            <constraint firstItem="GZk-cw-sKb" firstAttribute="top" secondItem="zBQ-gf-Z4W" secondAttribute="top" id="PV6-Ay-E2J"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="zBQ-gf-Z4W"/>
                     </view>
@@ -246,7 +252,7 @@
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
-                        <outlet property="puzzleView" destination="N7i-3u-ixc" id="fz2-10-YQk"/>
+                        <outlet property="puzzleView" destination="GZk-cw-sKb" id="E8O-WI-5RG"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kZN-kM-9fV" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -21,8 +21,8 @@ enum PuzzleViewMode {
 
 /// パズルビューのデリゲート
 protocol PuzzleViewDelegate {
-  /// 拡大画面での表示位置（回転後の問題座標系）
-  var zoomedPoint: CGPoint { get set }
+//  /// 拡大画面での表示位置（回転後の問題座標系）
+//  var zoomedPoint: CGPoint { get set }
   
   /// 線の連続入力の開始
   func lineBegan()
@@ -70,6 +70,8 @@ class PuzzleView: UIView {
   
   /// 拡大画面での表示範囲（回転後の問題座標系）
   var zoomedArea: CGRect = CGRect.zero
+  
+  var zoomedPoint: CGPoint = CGPoint.zero
   
   /// 各種ジェスチャーリコグナイザ
   var panGr: UIPanGestureRecognizer?
@@ -812,7 +814,7 @@ class PuzzleView: UIView {
     calculateOverallParameter()
     calculateZoomedParameter()
     
-    setZoomedAreaTo(center: delegate!.zoomedPoint)
+    setZoomedAreaTo(center: zoomedPoint)
     
     if zoomed {
       currentPitch = zpitch
@@ -991,7 +993,7 @@ class PuzzleView: UIView {
   /// - Parameter rect: 領域を指定する長方形（問題座標系）
   func setZoomedAreaTo(rect: CGRect) {
     zoomedArea = clumpRect(rect: rect, border: zoomableArea)
-    delegate!.zoomedPoint = CGPoint(x: zoomedArea.midX, y: zoomedArea.midY)
+    zoomedPoint = CGPoint(x: zoomedArea.midX, y: zoomedArea.midY)
     if rotated {
       zx0 = -zoomedArea.origin.y * zpitch
       zy0 = self.frame.size.height + zoomedArea.origin.x * zpitch

@@ -11,8 +11,8 @@ import UIKit
 /// パズル一覧を表示するビュー
 class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
   
-  /// 修正ボタン
-  @IBOutlet var modifyButton: UIBarButtonItem!
+  /// 名称変更ボタン
+  @IBOutlet var renameButton: UIBarButtonItem!
   /// 複写ボタン
   @IBOutlet var copyButton: UIBarButtonItem!
   /// 移動ボタン
@@ -87,7 +87,7 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     generateButton = nil
     inputButton = nil
     moveButton = nil
-    modifyButton = nil
+    renameButton = nil
     copyButton = nil
     deleteButton = nil
   }
@@ -121,7 +121,7 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     let puzzle = am.currentFolder.puzzles[indexPath.row]
     am.currentPuzzle = puzzle
     if isEditing {
-      modifyButton.isEnabled = self.tableView.indexPathsForSelectedRows?.count == 1
+      renameButton.isEnabled = self.tableView.indexPathsForSelectedRows?.count == 1
       moveButton.isEnabled = true
       copyButton.isEnabled = true
       deleteButton.isEnabled = true
@@ -138,7 +138,7 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
   override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
     if isEditing {
       let count: Int? = self.tableView.indexPathsForSelectedRows?.count
-      modifyButton.isEnabled = count == 1
+      renameButton.isEnabled = count == 1
       if count == nil {
         moveButton.isEnabled = false
         copyButton.isEnabled = false
@@ -214,6 +214,34 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     tableView.reloadData()
   }
   
+  // 名称変更ボタン押下
+  @IBAction func renameButtonTapped(_ sender: Any) {
+    let puzzle = selectedPuzzles()[0]
+    let dialog = UIAlertController(title: appTitle,
+                                   message: "名称とメモを入力して[変更]をタップしください。", preferredStyle: .alert)
+    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.alphabet;
+      $0.placeholder = "名称"; $0.text = puzzle.title})
+    dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.alphabet;
+      $0.placeholder = "高さ"; $0.text = puzzle.genParams})
+    dialog.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
+    dialog.addAction(UIAlertAction(title: "変更", style: .default, handler: { (_) in
+      if let nameStr = dialog.textFields![0].text {
+        puzzle.title = nameStr
+        puzzle.genParams = dialog.textFields![1].text ?? ""
+        puzzle.save()
+        let am = AppManager.sharedInstance
+        if let puzzleIndex = am.currentFolder.puzzles.firstIndex(of: puzzle) {
+          let indexPath = IndexPath(row: puzzleIndex, section: 0)
+          let cell = self.tableView.cellForRow(at: indexPath) as! PuzzleCell
+          cell.setup(puzzle)
+        }
+      }
+    }))
+    dialog.popoverPresentationController?.sourceView = view
+    dialog.popoverPresentationController?.sourceRect = view.frame
+    present(dialog, animated: true, completion: nil)
+  }
+  
   // MARK: - ナビゲーション
   
   // セグエの実行の直前
@@ -252,10 +280,10 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
   /// ナビゲーションバー上のボタンを状況に応じて更新する.
   func updateNavigationItems(for editing: Bool) {
     if editing {
-      navigationItem.leftBarButtonItems = [moveButton, modifyButton, copyButton, deleteButton]
+      navigationItem.leftBarButtonItems = [moveButton, renameButton, copyButton, deleteButton]
       navigationItem.rightBarButtonItems = [editButtonItem]
       moveButton.isEnabled = false
-      modifyButton.isEnabled = false
+      renameButton.isEnabled = false
       copyButton.isEnabled = false
       deleteButton.isEnabled = false
     } else {
