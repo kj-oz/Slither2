@@ -52,10 +52,10 @@ class ViewController: UIViewController {
     option.doGateCheck = true
     option.maxGuessLevel = 12
     option.elapsedSec = 3600.0
-    let _ = solver.solve(option: option)
+    let result = solver.solve(option: option)
     
-    print(String(format: "Basic:Elapsed: %.0f ms", solver.elapsed * 1000))
-    print(" Max Level:\(solver.maxLevel)")
+    print(String(format: "Basic:Elapsed: %.0f ms", result.elapsed * 1000))
+    print(" Max Level:\(result.maxLevel)")
   }
   
   func testHard1() {
@@ -87,10 +87,10 @@ class ViewController: UIViewController {
     option.doGateCheck = true
     option.maxGuessLevel = 12
     option.elapsedSec = 3600.0
-    let _ = solver.solve(option: option)
+    let result = solver.solve(option: option)
 
-    print(String(format: "Hard1:Elapsed: %.0f ms", solver.elapsed * 1000))
-    print(" Max Level:\(solver.maxLevel)")
+    print(String(format: "Hard1:Elapsed: %.0f ms", result.elapsed * 1000))
+    print(" Max Level:\(result.maxLevel)")
  }
   
   func testHard2() {
@@ -132,10 +132,10 @@ class ViewController: UIViewController {
     option.doGateCheck = true
     option.maxGuessLevel = 12
     option.elapsedSec = 3600.0
-    let _ = solver.solve(option: option)
+    let result = solver.solve(option: option)
     
-    print(String(format: "Hard2:Elapsed: %.0f ms", solver.elapsed * 1000))
-    print(" Max Level:\(solver.maxLevel)")
+    print(String(format: "Hard2:Elapsed: %.0f ms", result.elapsed * 1000))
+    print(" Max Level:\(result.maxLevel)")
   }
   
   func testBug1() {
@@ -177,10 +177,10 @@ class ViewController: UIViewController {
     option.doGateCheck = true
     option.maxGuessLevel = 12
     option.elapsedSec = 3600.0
-    let _ = solver.solve(option: option)
+    let result = solver.solve(option: option)
 
-    print(String(format: "Bug1:Elapsed: %.0f ms", solver.elapsed * 1000))
-    print(" Max Level:\(solver.maxLevel)")
+    print(String(format: "Bug1:Elapsed: %.0f ms", result.elapsed * 1000))
+    print(" Max Level:\(result.maxLevel)")
   }
 }
 

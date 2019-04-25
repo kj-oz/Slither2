@@ -145,8 +145,8 @@ class Generator {
     
     stats.measure()
     
-    let numbers = pruner.pruneNumbers(solveOption: solveOp, stepHandler: { (count, solved, solver) in
-      if solved && solver.useAreaCheckResult {
+    let numbers = pruner.pruneNumbers(solveOption: solveOp, stepHandler: { (count, result) in
+      if result.solved && result.useAreaCheckResult {
         self.stats.areaCheckUsed += 1
       }
       switch count {

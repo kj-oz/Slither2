@@ -350,7 +350,7 @@ class Pruner {
   ///   - solveOption: ソルバのオプション
   ///   - stepHandler: 1回間引の可否を確認するたびに呼び出されるハンドラ、引数は回数、成功したかどうか、ソルバ
   /// - Returns: 間引き後の数値の配列（間引かれた箇所は−1）
-  public func pruneNumbers(solveOption: SolveOption, stepHandler: ((Int, Bool, Solver) -> ())?) -> [Int] {
+  public func pruneNumbers(solveOption: SolveOption, stepHandler: ((Int, SolveResult) -> ())?) -> [Int] {
     var originalNumbers: [Int] = []
     for cell in board.cells {
       originalNumbers.append(cell.onCount)
@@ -366,13 +366,13 @@ class Pruner {
       let newBoard = Board(width: board.width, height: board.height, numbers: numbers)
       let solver = Solver(board: newBoard)
       
-      let solved = solver.solve(option: solveOption)
-      if !solved {
+      let result = solver.solve(option: solveOption)
+      if !result.solved {
         for index in indecies {
           numbers[index] = originalNumbers[index]
         }
       }
-      stepHandler?(pruneCount, solved, solver)
+      stepHandler?(pruneCount, result)
     }
     return numbers
   }

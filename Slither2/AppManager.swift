@@ -383,9 +383,9 @@ class AppManager {
     option.elapsedSec = 3600.0
     
     let solver = Solver(board: Board(lines: lines))
-    let _ = solver.solve(option: option)
+    let result = solver.solve(option: option)
     
-    return Int(solver.elapsed * 1000)
+    return Int(result.elapsed * 1000)
   }
   
   // MARK: - ヘルパメソッド

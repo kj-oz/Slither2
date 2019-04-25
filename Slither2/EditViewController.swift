@@ -71,15 +71,32 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
   
   @IBAction func doneTapped(_ sender: Any) {
     let solver = Solver(board: puzzle.board)
-//    if solver.solve(option: <#T##SolveOption#>) {
-//      let msg = "問題が完成しました。"
-//      alert(viewController: self, message: msg)
-//
-//      puzzle.status = .notStarted
-//      puzzle.save()
-//    } else {
-//
-//    }
+    var option = SolveOption()
+    option.doAreaCheck = true
+    option.doTryOneStep = true
+    option.useCache = true
+    option.doColorCheck = true
+    option.doGateCheck = true
+    option.maxGuessLevel = 120
+    option.elapsedSec = 120.0
+
+    let result = solver.solve(option: option)
+    if result.solved {
+      let msg = "問題が完成しました。"
+      alert(viewController: self, message: msg)
+
+      puzzle.status = .notStarted
+      puzzle.save()
+    } else {
+      switch result.reason {
+      case .multiloop:
+        let msg = "複数の解答が存在します。"
+        alert(viewController: self, message: msg)
+      default:
+        let msg = "解答が存在しません。"
+        alert(viewController: self, message: msg)
+      }
+    }
   }
   
   // MARK: - PuzzleViewDelegateの実装

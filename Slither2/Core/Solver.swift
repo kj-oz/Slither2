@@ -22,23 +22,22 @@ class Solver {
   /// 現在のステップ
   var currentStep = Step()
   
-//  /// 得られたルートの配列
-//  var loops: [[Edge]] = []
-  
   /// 解を求める際の設定
   var option: SolveOption = SolveOption()
   
   /// 解を求める際の締切
   var timelimit = Date().addingTimeInterval(3600.0)
   
-  /// 処理に要した時間
-  var elapsed = 0.0
+//  /// 処理に要した時間
+//  var elapsed = 0.0
+//
+//  /// ブランチの再帰呼び出し時の最大レベル
+//  var maxLevel = 0
+//
+//  /// エリアチェックで有効な手が見つかったかどうか
+//  var useAreaCheckResult = false
   
-  /// ブランチの再帰呼び出し時の最大レベル
-  var maxLevel = 0
-  
-  /// エリアチェックで有効な手が見つかったかどうか
-  var useAreaCheckResult = false
+  var result = SolveResult()
   
   /// 1ステップトライ時の次のエッジのインデックス
   private var nextTryEdgeIndex = 0
@@ -112,9 +111,9 @@ class Solver {
   ///
   /// - Parameter option: 解探索のオプション
   /// - Returns: 問題が正常に解けたかどうか
-  func solve(option: SolveOption) -> Bool {
+  func solve(option: SolveOption) -> SolveResult {
     let startTime = Date()
-    useAreaCheckResult = false
+    result = SolveResult()
     timelimit = startTime.addingTimeInterval(option.elapsedSec)
     self.option = option
     do {
@@ -125,17 +124,19 @@ class Solver {
       try checkSurroundingElements(trying: false)
     } catch {
       //dump(title: "★ catch with init")
-      elapsed = Date().timeIntervalSince(startTime)
+      result.elapsed = Date().timeIntervalSince(startTime)
       let exception = error as! SolveException
       if exception.reason == .finished {
-        return true
+        result.solved = true
+        return result
       }
-      return false
+      return result
     }
     //dump(title: "★ after init")
     if option.maxGuessLevel == 0 {
-      elapsed = Date().timeIntervalSince(startTime)
-      return false
+      result.elapsed = Date().timeIntervalSince(startTime)
+      result.reason = .nological
+      return result
     }
     
     // ロジカルには解けず、深さ優先で枝を探索
@@ -151,9 +152,15 @@ class Solver {
     
     if branches.count > 0 {
       tryBranches(branches)
+      if loop != nil {
+        result.solved = true
+      }
+    } else {
+      result.reason = .multiloop
     }
-    elapsed = Date().timeIntervalSince(startTime)
-    return true
+    
+    result.elapsed = Date().timeIntervalSince(startTime)
+    return result
   }
   
   /// 試しに1ステップだけ未設定のEdgeをOnまたはOffに設定して、エラーになればその逆の状態に確定させる.
@@ -259,7 +266,7 @@ class Solver {
   private func tryBranches(_ branches: BranchBuffer) {
     var branchStack: [BranchBuffer] = [branches]
     var level = 1
-    maxLevel = 1
+    result.maxLevel = 1
     while level > 0 {
       //print("★ level=\(level) steps=\(steps.count) branchStatck=\(branchStack.count)")
       if steps.count == level - 1 {
@@ -281,11 +288,13 @@ class Solver {
           let exception = error as! SolveException
           if exception.reason == .finished {
             if loop != nil {
+              result.reason = .multiloop
               return
             }
             loop = board.loop
           } else if exception.reason == .timeover {
             loop = nil
+            result.reason = .noloop
             return
           }
           currentStep.rewind()
@@ -293,14 +302,15 @@ class Solver {
         }
         if level == option.maxGuessLevel {
           loop = nil
+          result.reason = .noloop
           return
         }
         let newRoot = board.getLoopEnd(from: branch.root, and: branch.edge)
         let newBranches = createBranches(from: newRoot!)
         branchStack.append(newBranches)
         level += 1
-        if level > maxLevel {
-          maxLevel = level
+        if level > result.maxLevel {
+          result.maxLevel = level
         }
         addDepth = true
         break
@@ -446,7 +456,7 @@ class Solver {
         }
         if option.doAreaCheck {
           if try checkArea() {
-            useAreaCheckResult = true
+            result.useAreaCheckResult = true
             continue
           }
         }

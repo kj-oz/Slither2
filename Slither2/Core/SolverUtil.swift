@@ -15,15 +15,47 @@ struct SolveException: Error {
   /// - failed: 何らかの矛盾が発生した
   /// - finished: 正解が見つかった
   /// - cacheHit: キャッシュにヒットした
+  /// - timeover: 制限時間オーバー
   enum Reason {
     case failed
     case finished
     case cacheHit
     case timeover
   }
+  
+  /// 例外の理由
   let reason: SolveException.Reason
 }
 
+struct SolveResult {
+  /// 解けなかった理由
+  ///
+  /// - noloop: 正解が存在しない
+  /// - multiloop: 複数の解が存在する
+  /// - nological: 理詰めでは解けない
+  /// - solved: 解けた
+  enum Reason {
+    case noloop
+    case multiloop
+    case nological
+    case solved
+  }
+
+  /// 問題が解けたかどうか
+  var solved = false
+  
+  /// 解けなかった理由
+  var reason: Reason = .solved
+  
+  /// 処理に要した時間
+  var elapsed = 0.0
+  
+  /// ブランチの再帰呼び出し時の最大レベル
+  var maxLevel = 0
+  
+  /// エリアチェックで有効な手が見つかったかどうか
+  var useAreaCheckResult = false
+}
 
 /// ルートが枝分かれ可能な箇所からの個々の分岐
 struct Branch {

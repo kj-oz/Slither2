@@ -41,11 +41,11 @@ class SolverTests: XCTestCase {
     option.doGateCheck = true
     option.maxGuessLevel = 120
     option.elapsedSec = 3600.0
-    let solved = solver.solve(option: option)
+    let result = solver.solve(option: option)
 
-    print(String(format: "Basic:Elapsed: %.0f ms", solver.elapsed * 1000))
-    print(" Max Level:\(solver.maxLevel)")
-    XCTAssertTrue(solved)
+    print(String(format: "Basic:Elapsed: %.0f ms", result.elapsed * 1000))
+    print(" Max Level:\(result.maxLevel)")
+    XCTAssertTrue(result.solved)
   }
   
   func testHard1() {
@@ -77,11 +77,11 @@ class SolverTests: XCTestCase {
     option.doGateCheck = true
     option.maxGuessLevel = 120
     option.elapsedSec = 3600.0
-    let solved = solver.solve(option: option)
+    let result = solver.solve(option: option)
 
-    print(String(format: "Hard1:Elapsed: %.0f ms", solver.elapsed * 1000))
-    print(" Max Level:\(solver.maxLevel)")
-    XCTAssertTrue(solved)
+    print(String(format: "Hard1:Elapsed: %.0f ms", result.elapsed * 1000))
+    print(" Max Level:\(result.maxLevel)")
+    XCTAssertTrue(result.solved)
   }
   
   func testHard2() {
@@ -123,11 +123,11 @@ class SolverTests: XCTestCase {
     option.doGateCheck = true
     option.maxGuessLevel = 120
     option.elapsedSec = 3600.0
-    let solved = solver.solve(option: option)
+    let result = solver.solve(option: option)
 
-    print(String(format: "Hard2:Elapsed: %.0f ms", solver.elapsed * 1000))
-    print(" Max Level:\(solver.maxLevel)")
-    XCTAssertTrue(solved)
+    print(String(format: "Hard2:Elapsed: %.0f ms", result.elapsed * 1000))
+    print(" Max Level:\(result.maxLevel)")
+    XCTAssertTrue(result.solved)
   }
   
   func testBug1() {
@@ -169,19 +169,11 @@ class SolverTests: XCTestCase {
     option.doGateCheck = true
     option.maxGuessLevel = 120
     option.elapsedSec = 3600.0
-    let solved = solver.solve(option: option)
+    let result = solver.solve(option: option)
 
     
-    print(String(format: "Bug1:Elapsed: %.0f ms", solver.elapsed * 1000))
-    print(" Max Level:\(solver.maxLevel)")
-    XCTAssertTrue(solved)
-  }
-
-//  func testPerformanceExample() {
-//    // This is an example of a performance test case.
-////    self.measure {
-////      // Put the code you want to measure the time of here.
-////    }
-//  }
-  
+    print(String(format: "Bug1:Elapsed: %.0f ms", result.elapsed * 1000))
+    print(" Max Level:\(result.maxLevel)")
+    XCTAssertTrue(result.solved)
+  }  
 }
