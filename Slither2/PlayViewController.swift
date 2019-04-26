@@ -35,6 +35,8 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   /// 開始時刻
   var start = Date()
   
+  var lastSaved: Date?
+  
   // MARK: - UIViewController
   
   // ビューロード時
@@ -140,6 +142,15 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     puzzle.addAction(action as! SetEdgeStatusAction)
     undoButton.isEnabled = true
     puzzleView.setNeedsDisplay()
+    let now = Date()
+    if let lastSaved = lastSaved {
+      if now.timeIntervalSince(lastSaved) > 10.0 {
+        puzzle.save()
+        self.lastSaved = now
+      }
+    } else {
+      self.lastSaved = now
+    }
   }
 
   /// 線の連続入力の終了

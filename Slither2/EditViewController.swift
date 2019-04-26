@@ -16,6 +16,8 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
   /// パズル
   var puzzle: Puzzle!
     
+  var lastSaved: Date?
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     let am = AppManager.sharedInstance
@@ -120,6 +122,15 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
     puzzle.addAction(action as! SetCellNumberAction)
     if puzzle.status != .editing {
       puzzle.status = .editing
+    }
+    let now = Date()
+    if let lastSaved = lastSaved {
+      if now.timeIntervalSince(lastSaved) > 10.0 {
+        puzzle.save()
+        self.lastSaved = now
+      }
+    } else {
+      self.lastSaved = now
     }
     puzzleView.setNeedsDisplay()
   }

@@ -34,30 +34,21 @@ class PuzzleCell: UITableViewCell {
     }
     
     if puzzle.status == .solved {
-      setEnabled(true, color: UIColor.black)
-    } else if !isEditing && puzzle.status == .editing {
-      setEnabled(false, color: UIColor.black)
+      setColor(UIColor.black)
+    } else if puzzle.status == .editing {
+      setColor(UIColor.gray)
     } else {
-      setEnabled(true, color: UIColor(red: 0.0, green: 0.5, blue: 1.0, alpha: 1.0))
+      setColor(UIColor(red: 0.0, green: 0.5, blue: 1.0, alpha: 1.0))
     }
   }
   
-  /// セルのenable/disableとenableの場合の色を設定する
+  /// セルの文字の色を設定する
   ///
-  /// - Parameters:
-  ///   - enabled: enable/disable
-  ///   - color: enabeの場合の文字色
-  func setEnabled(_ enabled: Bool, color: UIColor) {
-    titleLabel.isEnabled = enabled
-    sizeLabel.isEnabled = enabled
-    difficultyLabel.isEnabled = enabled
-    statusLabel.isEnabled = enabled
-    
-    if enabled {
-      titleLabel.textColor = color
-      sizeLabel.textColor = color
-      difficultyLabel.textColor = color
-      statusLabel.textColor = color
-    }
+  /// - Parameter color: 文字色
+  func setColor(_ color: UIColor) {
+    titleLabel.textColor = color
+    sizeLabel.textColor = color
+    difficultyLabel.textColor = color
+    statusLabel.textColor = color
   }
 }
