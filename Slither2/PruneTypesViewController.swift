@@ -14,12 +14,17 @@ class PruneTypesViewController: UITableViewController {
   /// 選択可能な盤面のタイプ
   let pruneTypes = [
     [
-      PruneType.random1Cell,
-      PruneType.free,
+      PruneType.randomSCell,
       PruneType.vWideBorder,
       PruneType.vThinBorder,
       PruneType.hWideBorder,
       PruneType.hThinBorder
+    ],[
+      PruneType.random1Cell,
+      PruneType.free,
+      PruneType.dWideBorder,
+      PruneType.dThinBorder,
+      PruneType.check
     ],[
       PruneType.random2Cell,
       PruneType.xSymmetry,
@@ -83,7 +88,7 @@ class PruneTypesViewController: UITableViewController {
   // セクションヘッダ文字列
   override func tableView(_ tableView: UITableView,
                  titleForHeaderInSection section: Int) -> String? {
-    return ["1セル", "2セル", "4セル"][section]
+    return ["1セル（難問）","1セル", "2セル", "4セル"][section]
   }
   
   // セル

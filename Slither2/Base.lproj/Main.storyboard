@@ -446,10 +446,10 @@
                                                 <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="KV9-iw-neE">
                                                     <rect key="frame" x="20" y="8" width="280" height="29"/>
                                                     <segments>
-                                                        <segment title="手動"/>
-                                                        <segment title="易"/>
-                                                        <segment title="中"/>
-                                                        <segment title="難"/>
+                                                        <segment title="初級"/>
+                                                        <segment title="中級"/>
+                                                        <segment title="上級"/>
+                                                        <segment title="難問"/>
                                                     </segments>
                                                     <connections>
                                                         <action selector="presetChanged:" destination="PQF-7M-6QV" eventType="valueChanged" id="6CM-qR-BrU"/>

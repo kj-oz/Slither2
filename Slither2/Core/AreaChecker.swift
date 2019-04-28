@@ -301,6 +301,10 @@ class AreaChecker {
     var areaChanged = true
     areaChangedLoop: while areaChanged {
       
+      if Date().compare(solver.timelimit) == .orderedDescending {
+        throw SolveException(reason: .timeover)
+      }
+
       // 逆端の接するエリアが同じ端点が複数ある場合には、その2つのエリアを統合する
       areaChanged = false
       mergeCheckLoop: for area in areas {

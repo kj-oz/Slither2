@@ -66,10 +66,10 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   // テキスト欄の変更時
   func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
     if textField == solveTimeText {
-      presetSegment.selectedSegmentIndex = 0
+      presetSegment.selectedSegmentIndex = -1
     } else if textField === widthText || textField === heightText {
-      if presetSegment.selectedSegmentIndex > 0 &&
-        isInt(of: widthText) && isInt(of: heightText) {
+      if presetSegment.selectedSegmentIndex >= 0 &&
+          isInt(of: widthText) && isInt(of: heightText) {
         updateSolveTime()
       }
     }
@@ -81,14 +81,14 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
 
   // プリセットセグメント変更時
   @IBAction func presetChanged(_ sender: Any) {
-    if presetSegment.selectedSegmentIndex > 0 {
+    if presetSegment.selectedSegmentIndex >= 0 {
       setOptions(of: presetSegment.selectedSegmentIndex)
     }
   }
 
   // 解法オプションのスイッチの変更時
   @IBAction func solveOptionChanged(_ sender: Any) {
-    presetSegment.selectedSegmentIndex = 0
+    presetSegment.selectedSegmentIndex = -1
   }
   
   // MARK: - Navigation
@@ -174,7 +174,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     let bv = segue.source as! PruneTypesViewController
     pruneType = bv.selectedPruneType!
     pruneTypeLabel.text = pruneType.description
-    presetSegment.selectedSegmentIndex = 0
+    presetSegment.selectedSegmentIndex = -1
   }
   
   // 盤面タイプ選択画面のキャンセル時のアクション
@@ -190,7 +190,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     heightText.text = UserDefaults.standard.string(forKey: "genHeight") ?? "10"
     let level = Int(UserDefaults.standard.string(forKey: "genLevel") ?? "2")!
     presetSegment.selectedSegmentIndex = level
-    if level > 0 {
+    if level >= 0 {
       setOptions(of: level)
     } else {
       let solveOpStr = UserDefaults.standard.string(forKey: "genSolveOp") ?? ""
@@ -210,7 +210,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     UserDefaults.standard.set(heightText.text, forKey: "genHeight")
     let level = presetSegment.selectedSegmentIndex
     UserDefaults.standard.set(String(level), forKey: "genLevel")
-    if level == 0 {
+    if level == UISegmentedControl.noSegment {
       var solveOpStr = ""
       if gateCheckSwitch.isOn {
         solveOpStr += "G"
@@ -236,15 +236,18 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   private func setOptions(of level: Int) {
     var solveOpStr = ""
     switch level {
-    case 1:
+    case 0:
       solveOpStr = "G"
       pruneType = PruneType.random4Cell
-    case 2:
+    case 1:
       solveOpStr = "GC"
       pruneType = PruneType.random2Cell
-    case 3:
+    case 2:
       solveOpStr = "GCT"
-      pruneType = PruneType.random2Cell
+      pruneType = PruneType.random1Cell
+    case 3:
+      solveOpStr = "GCTA"
+      pruneType = PruneType.randomSCell
     default:
       break
     }
@@ -270,6 +273,9 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       var solveTime = (width * height / 50) * 50
       if solveTime == 0 {
         solveTime = 10
+      }
+      if presetSegment.selectedSegmentIndex == 3 {
+        solveTime *= 2
       }
       solveTimeText.text = String(solveTime)
     }

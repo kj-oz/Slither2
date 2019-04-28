@@ -43,6 +43,7 @@ enum PruneType: String {
   case dPairSymmetry = "DX"
   case quad = "Q"
   case quadShift = "QS"
+  case randomSCell = "RS"
   case random1Cell = "R1"
   case random2Cell = "R2"
   case random4Cell = "R4"
@@ -53,19 +54,19 @@ enum PruneType: String {
     case .free:
       return "制約なし [F]"
     case .vWideBorder:
-      return "太縦縞 [WV]"
+      return "太縦縞優先 [WV]"
     case .vThinBorder:
-      return "細縦縞 [TV]"
+      return "細縦縞優先 [TV]"
     case .hWideBorder:
-      return "太横縞 [WH]"
+      return "太横縞優先 [WH]"
     case .hThinBorder:
-      return "細横縞 [TH]"
+      return "細横縞優先 [TH]"
     case .dWideBorder:
-      return "太斜縞 [WD]"
+      return "太斜縞優先 [WD]"
     case .dThinBorder:
-      return "細斜縞 [TD]"
+      return "細斜縞優先 [TD]"
     case .check:
-      return "チェック [C]"
+      return "チェック優先 [C]"
     case .xSymmetry:
       return "X対象 [X]"
     case .ySymmetry:
@@ -90,6 +91,8 @@ enum PruneType: String {
       return "田型4連 [Q]"
     case .quadShift:
       return "田型4連ずれ [QS]"
+    case .randomSCell:
+      return "難問（任意）"
     case .random1Cell:
       return "1セル（任意）"
     case .random2Cell:
@@ -101,8 +104,10 @@ enum PruneType: String {
   
   public var realType: PruneType {
     switch self {
+    case .randomSCell:
+      return [.vWideBorder, .vThinBorder, .hWideBorder, .hThinBorder].randomElement()!
     case .random1Cell:
-      return [.free, .vWideBorder, .vThinBorder, .hWideBorder, .hThinBorder].randomElement()!
+      return [.free, .dWideBorder, .dThinBorder, .check].randomElement()!
     case .random2Cell:
       return [.xSymmetry, .ySymmetry, .pointSymmetry, .hPair, .dPair].randomElement()!
     case .random4Cell:
