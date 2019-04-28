@@ -143,17 +143,17 @@ struct SolveOption {
   
   public var description : String {
     var result = ""
-    if doAreaCheck {
-      result += "A"
-    }
-    if doTryOneStep {
-      result += useCache ? "T" : "t"
+    if doGateCheck {
+      result += "G"
     }
     if doColorCheck {
       result += "C"
     }
-    if doGateCheck {
-      result += "G"
+    if doTryOneStep {
+      result += useCache ? "T" : "t"
+    }
+    if doAreaCheck {
+      result += "A"
     }
     if maxGuessLevel > 0 {
       result += "L\(maxGuessLevel)"

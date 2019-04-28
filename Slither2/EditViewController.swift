@@ -101,6 +101,18 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
     }
   }
   
+  // 画面の回転を許容する方向
+  override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    return .all
+  }
+  
+  // 画面が回転する直前に呼び出される
+  override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    super.viewWillTransition(to: size, with: coordinator)
+    
+    puzzleView.setNeedsDisplay()
+  }
+  
   // MARK: - PuzzleViewDelegateの実装
   
 //  /// 拡大画面での表示位置（回転後の問題座標系）

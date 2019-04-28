@@ -310,7 +310,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     let realType = pruneType.realType
     let generator = Generator(width: width, height: height)
     // パズルの生成パラメータは、iPAdAir2換算の時間制限を使用
-    let genParam = realType.rawValue + "-" + solveOption.description
+    let genParam = solveOption.description + "-" + realType.rawValue
     // 実際の生成時間制限は、機器毎の時間係数を乗じる
     var solveOp = solveOption
     solveOp.elapsedSec *= am.timeFactor
