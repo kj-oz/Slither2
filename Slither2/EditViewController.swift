@@ -71,7 +71,7 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
     }
   }
   
-  @IBAction func doneTapped(_ sender: Any) {
+  @IBAction func checkTapped(_ sender: Any) {
     let solver = Solver(board: puzzle.board)
     var option = SolveOption()
     option.doAreaCheck = true
@@ -149,5 +149,14 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
   
   /// 線の連続入力の終了
   func lineEnded() {
+  }
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if (segue.identifier == "ShowHelp") {
+      let hv = segue.destination as? HelpViewController
+      let bundle = Bundle.main
+      let url: URL? = bundle.url(forResource: "editview", withExtension: "html", subdirectory: "www")
+      hv!.url = url
+    }
   }
 }

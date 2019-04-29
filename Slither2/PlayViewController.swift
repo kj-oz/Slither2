@@ -259,6 +259,16 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     undoButton.isEnabled = false
     puzzleView.setNeedsDisplay()
   }
+  
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if (segue.identifier == "ShowHelp") {
+      let hv = segue.destination as? HelpViewController
+      let bundle = Bundle.main
+      let url: URL? = bundle.url(forResource: "playview", withExtension: "html", subdirectory: "www")
+      hv!.url = url
+    }
+  }
+
 
   // MARK: - ヘルパメソッド
   

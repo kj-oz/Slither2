@@ -100,7 +100,7 @@ class AppManager {
     let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
     rootDir = URL(fileURLWithPath: paths[0]).absoluteURL.path
     debugPrint("** Application start")
-    debugPrint(String(format: " document directory:%s", rootDir))
+    debugPrint(String(format: " document directory:%@", rootDir))
     
     let fm = FileManager.default
     var dirs: [String] = []

@@ -26,6 +26,9 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
   /// 入力ボタン
   @IBOutlet var inputButton: UIBarButtonItem!
   
+  /// ヘルプボタン
+  @IBOutlet weak var helpButton: UIBarButtonItem!
+  
   // MARK: - UIViewController
 
   // ビューのロード時
@@ -257,9 +260,14 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
       let nc = segue.destination as! UINavigationController
       let fv = nc.visibleViewController as! FoldersViewController
       fv.delegate = self
+    } else if (segue.identifier == "ShowHelp") {
+      let hv = segue.destination as? HelpViewController
+      let bundle = Bundle.main
+      let url: URL? = bundle.url(forResource: "puzzlesview", withExtension: "html", subdirectory: "www")
+      hv!.url = url
     }
   }
-  
+
   // 自動生成が完了したとき
   @IBAction func puzzleGenerated(segue: UIStoryboardSegue) {
     tableView.reloadData()
@@ -281,14 +289,14 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
   func updateNavigationItems(for editing: Bool) {
     if editing {
       navigationItem.leftBarButtonItems = [moveButton, renameButton, copyButton, deleteButton]
-      navigationItem.rightBarButtonItems = [editButtonItem]
+      navigationItem.rightBarButtonItems = [helpButton, editButtonItem]
       moveButton.isEnabled = false
       renameButton.isEnabled = false
       copyButton.isEnabled = false
       deleteButton.isEnabled = false
     } else {
       navigationItem.leftBarButtonItems = [folderButton]
-      navigationItem.rightBarButtonItems = [generateButton, inputButton, editButtonItem]
+      navigationItem.rightBarButtonItems = [helpButton, generateButton, inputButton, editButtonItem]
     }
   }
   

@@ -18,7 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="640"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <view key="tableFooterView" contentMode="scaleToFill" id="N7i-3u-ixc" customClass="PuzzleView" customModule="Slither2" customModuleProvider="target">
+                        <view key="tableFooterView" contentMode="scaleToFill" misplaced="YES" id="N7i-3u-ixc" customClass="PuzzleView" customModule="Slither2" customModuleProvider="target">
                             <rect key="frame" x="0.0" y="72" width="320" height="698"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -189,6 +189,13 @@
                             </barButtonItem>
                         </leftBarButtonItems>
                         <rightBarButtonItems>
+                            <barButtonItem title="Item" image="help" id="pHw-gs-feV">
+                                <connections>
+                                    <segue destination="eRq-j7-9A3" kind="popoverPresentation" identifier="ShowHelp" popoverAnchorBarButtonItem="pHw-gs-feV" id="8pC-Gy-Geb">
+                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                    </segue>
+                                </connections>
+                            </barButtonItem>
                             <barButtonItem title="生成" id="qWt-U1-HCA">
                                 <connections>
                                     <segue destination="KCc-Bc-CQR" kind="popoverPresentation" popoverAnchorBarButtonItem="qWt-U1-HCA" id="kYl-HH-LRy">
@@ -209,6 +216,7 @@
                         <outlet property="deleteButton" destination="MlS-LP-PzD" id="yKs-Zd-2sB"/>
                         <outlet property="folderButton" destination="tLE-3f-oh7" id="5cv-6O-OKX"/>
                         <outlet property="generateButton" destination="qWt-U1-HCA" id="vxK-Za-JMj"/>
+                        <outlet property="helpButton" destination="pHw-gs-feV" id="U38-lW-g5e"/>
                         <outlet property="inputButton" destination="vao-Ea-z4H" id="49P-bi-qpa"/>
                         <outlet property="moveButton" destination="hcB-lp-Ncl" id="0Nw-Ld-u26"/>
                         <outlet property="renameButton" destination="i19-vl-rJW" id="Kzd-KW-tDl"/>
@@ -244,11 +252,20 @@
                     </view>
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="DYY-4I-fXJ">
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="gK5-qe-Adl">
-                            <connections>
-                                <action selector="doneTapped:" destination="N3Q-cj-Koq" id="S0h-p9-hEL"/>
-                            </connections>
-                        </barButtonItem>
+                        <rightBarButtonItems>
+                            <barButtonItem title="Item" image="help" id="uLc-gp-YEi">
+                                <connections>
+                                    <segue destination="eRq-j7-9A3" kind="popoverPresentation" identifier="ShowHelp" popoverAnchorBarButtonItem="uLc-gp-YEi" id="pV2-Xm-wTG">
+                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                    </segue>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Item" image="check" id="gK5-qe-Adl">
+                                <connections>
+                                    <action selector="checkTapped:" destination="N3Q-cj-Koq" id="S0h-p9-hEL"/>
+                                </connections>
+                            </barButtonItem>
+                        </rightBarButtonItems>
                     </navigationItem>
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
@@ -283,12 +300,19 @@
                     </view>
                     <navigationItem key="navigationItem" id="KVW-gO-sA8">
                         <rightBarButtonItems>
-                            <barButtonItem systemItem="fastForward" id="ldA-Q5-2f2">
+                            <barButtonItem title="Item" image="help" id="DDc-q3-bSP">
+                                <connections>
+                                    <segue destination="eRq-j7-9A3" kind="popoverPresentation" identifier="ShowHelp" popoverAnchorBarButtonItem="DDc-q3-bSP" id="nTd-ip-emt">
+                                        <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                    </segue>
+                                </connections>
+                            </barButtonItem>
+                            <barButtonItem title="Item" image="redo" id="ldA-Q5-2f2">
                                 <connections>
                                     <action selector="redoButtonTapped:" destination="Zgi-pP-djp" id="e6z-zg-88c"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem systemItem="rewind" id="D9t-pg-10y">
+                            <barButtonItem title="Item" image="undo" id="D9t-pg-10y">
                                 <connections>
                                     <action selector="undoButtonTapped:" destination="Zgi-pP-djp" id="z33-zc-xb6"/>
                                 </connections>
@@ -310,6 +334,38 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YnX-24-zwo" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1597" y="159"/>
+        </scene>
+        <!--Help View Controller-->
+        <scene sceneID="HLm-Yy-8MY">
+            <objects>
+                <viewController id="eRq-j7-9A3" customClass="HelpViewController" customModule="Slither2" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ykU-gO-cTQ">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="640"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lgb-IB-P8W">
+                                <rect key="frame" x="0.0" y="20" width="320" height="620"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </webView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="lgb-IB-P8W" firstAttribute="bottom" secondItem="3Ph-8Z-Ai6" secondAttribute="bottom" id="D9x-PI-lSR"/>
+                            <constraint firstItem="lgb-IB-P8W" firstAttribute="leading" secondItem="3Ph-8Z-Ai6" secondAttribute="leading" id="jvA-Zm-A9H"/>
+                            <constraint firstItem="lgb-IB-P8W" firstAttribute="top" secondItem="3Ph-8Z-Ai6" secondAttribute="top" id="r62-HW-sYZ"/>
+                            <constraint firstItem="lgb-IB-P8W" firstAttribute="trailing" secondItem="3Ph-8Z-Ai6" secondAttribute="trailing" id="xSe-C1-Qow"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="3Ph-8Z-Ai6"/>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="640"/>
+                    <connections>
+                        <outlet property="webView" destination="lgb-IB-P8W" id="7ge-Hl-1YH"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8oi-2f-VxC" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2328.515625" y="169.53125"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="O9A-xz-6wv">
@@ -335,7 +391,7 @@
         <scene sceneID="Bhf-CY-W5q">
             <objects>
                 <tableViewController id="PQF-7M-6QV" customClass="GenerateViewController" customModule="Slither2" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="HiI-xF-N43">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="plain" separatorStyle="default" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="HiI-xF-N43">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="640"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -809,7 +865,14 @@
             <point key="canvasLocation" x="644.53125" y="-662.5"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="check" width="20" height="20"/>
+        <image name="help" width="20" height="20"/>
+        <image name="redo" width="20" height="20"/>
+        <image name="undo" width="20" height="20"/>
+    </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Rhj-pn-DAx"/>
+        <segue reference="8pC-Gy-Geb"/>
     </inferredMetricsTieBreakers>
 </document>
