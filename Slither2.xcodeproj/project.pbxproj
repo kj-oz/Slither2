@@ -36,6 +36,8 @@
 		31C8807722228495008C0D99 /* Solver+InitCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806C22228476008C0D99 /* Solver+InitCheck.swift */; };
 		31C8807822228495008C0D99 /* Solver+GateCheck.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806D22228476008C0D99 /* Solver+GateCheck.swift */; };
 		31C8807922228495008C0D99 /* Action.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8806E22228476008C0D99 /* Action.swift */; };
+		31CF03142276A2BD00F5447E /* www in Resources */ = {isa = PBXBuildFile; fileRef = 31CF03132276A2BD00F5447E /* www */; };
+		31CF03162276A30900F5447E /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31CF03152276A30900F5447E /* HelpViewController.swift */; };
 		31F15C002233A56100471AA2 /* Pruner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31F15BFF2233A56100471AA2 /* Pruner.swift */; };
 /* End PBXBuildFile section */
 
@@ -85,6 +87,8 @@
 		31C8806C22228476008C0D99 /* Solver+InitCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Solver+InitCheck.swift"; sourceTree = "<group>"; };
 		31C8806D22228476008C0D99 /* Solver+GateCheck.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Solver+GateCheck.swift"; sourceTree = "<group>"; };
 		31C8806E22228476008C0D99 /* Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Action.swift; sourceTree = "<group>"; };
+		31CF03132276A2BD00F5447E /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
+		31CF03152276A30900F5447E /* HelpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
 		31F15BFF2233A56100471AA2 /* Pruner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pruner.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -141,10 +145,12 @@
 				31C88050222282DB008C0D99 /* FoldersViewController.swift */,
 				31C88052222282DB008C0D99 /* GenerateViewController.swift */,
 				31C8805B2222831E008C0D99 /* PlayViewController.swift */,
+				31CF03132276A2BD00F5447E /* www */,
 				31C8805E2222831E008C0D99 /* Puzzle.swift */,
 				31C8805F2222831E008C0D99 /* PuzzleCell.swift */,
 				31C8805C2222831E008C0D99 /* PuzzlesViewController.swift */,
 				31C8805D2222831E008C0D99 /* PuzzleView.swift */,
+				31CF03152276A30900F5447E /* HelpViewController.swift */,
 			);
 			path = Slither2;
 			sourceTree = "<group>";
@@ -259,6 +265,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				31CF03142276A2BD00F5447E /* www in Resources */,
 				31C8803622227F9B008C0D99 /* LaunchScreen.storyboard in Resources */,
 				31C8803322227F9B008C0D99 /* Assets.xcassets in Resources */,
 				31C8803122227F99008C0D99 /* Main.storyboard in Resources */,
@@ -293,6 +300,7 @@
 				31F15C002233A56100471AA2 /* Pruner.swift in Sources */,
 				31C88059222282DC008C0D99 /* GenerateViewController.swift in Sources */,
 				31C88056222282DC008C0D99 /* EditViewController.swift in Sources */,
+				31CF03162276A30900F5447E /* HelpViewController.swift in Sources */,
 				31C880612222831E008C0D99 /* PuzzlesViewController.swift in Sources */,
 				31C8802E22227F99008C0D99 /* ViewController.swift in Sources */,
 				31C8807322228495008C0D99 /* Generator.swift in Sources */,
