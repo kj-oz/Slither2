@@ -102,6 +102,7 @@ class AppManager {
     debugPrint("** Application start")
     debugPrint(String(format: " document directory:%@", rootDir))
     
+
     let fm = FileManager.default
     var dirs: [String] = []
     let files = try! fm.contentsOfDirectory(atPath: rootDir)
@@ -114,9 +115,19 @@ class AppManager {
       }
     }
     if dirs.count == 0 {
-      try? fm.createDirectory(atPath: (rootDir as NSString).appendingPathComponent("Folder1"),
-                              withIntermediateDirectories: false, attributes: nil)
-      dirs = ["Folder1"]
+      // アプリにバンドルされたサンプル問題集の展開
+      let sampleDir = (rootDir as NSString).appendingPathComponent("サンプル")
+      try? fm.createDirectory(atPath: sampleDir, withIntermediateDirectories: false, attributes: nil)
+      let bundle = Bundle.main
+      let samples = bundle.paths(forResourcesOfType: "slp", inDirectory: "sample")
+      for sample in samples {
+        let filename = (rootDir as NSString).lastPathComponent
+        do {
+          try fm.moveItem(atPath: sample,
+                        toPath: (sampleDir as NSString).appendingPathComponent(filename))
+        } catch {}
+      }
+      dirs = ["サンプル"]
     }
     
     // 存在するフォルダ群をもとにデータを構築する

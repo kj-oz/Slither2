@@ -1,0 +1,22 @@
+title: 15X10中級
+size: 15 10
+genParams: GC-150-H
+genStats: 80,2234,703,829,836,820,0
+numbers:
+  1222  01  11 
+22      10  22 
+11  11    12  1
+  31  22    11 
+  102201  21   
+02        1002 
+    11  023113 
+32  23  22     
+      23  13233
+01111222      1
+status: notStarted
+elapsedSecond: 0
+resetCount: 0
+fixCount: 0
+actions: 0
+currentIndex: -1
+fixedIndex: -1

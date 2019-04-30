@@ -1,0 +1,22 @@
+title: 15X10上級
+size: 15 10
+genParams: GCT-150-TD
+genStats: 150,858,1354,1850,3233,5839,0
+numbers:
+ 2  211 1     1
+    2 12  1   0
+ 20   0 1 2 221
+  13 1 3 3 2   
+1 2   0  22 102
+ 1 123  13 2 2 
+2 3   2   2   3
+         1 1 1 
+1211221 1 3 1 1
+ 1     3 1   2 
+status: notStarted
+elapsedSecond: 0
+resetCount: 0
+fixCount: 0
+actions: 0
+currentIndex: -1
+fixedIndex: -1
