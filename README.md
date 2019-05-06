@@ -41,4 +41,4 @@ Copyright &copy; 2019 Kj Oz
 [Blogger]: http://?????
 [MIT]: http://www.opensource.org/licenses/mit-license.php
 [Wikipedia]: http://ja.wikipedia.org/wiki/スリザーリンク
-[SLPlayer]: https://github.com/kj-oz/SLPlayer
+[SLPlayer]: https://github.com/kj-oz/SLPlayer# Slither2Doc
