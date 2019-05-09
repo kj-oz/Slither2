@@ -637,40 +637,8 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="INz-8M-4As">
-                                        <rect key="frame" x="0.0" y="436" width="320" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="INz-8M-4As" id="4XH-1w-GRD">
-                                            <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="領域出入り [A]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TU8-ga-Glz">
-                                                    <rect key="frame" x="16" y="11.5" width="225" height="21"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4bG-kd-foS">
-                                                    <rect key="frame" x="251" y="6.5" width="51" height="31"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="49" id="dEi-gq-nYK"/>
-                                                    </constraints>
-                                                    <connections>
-                                                        <action selector="solveOptionChanged:" destination="PQF-7M-6QV" eventType="valueChanged" id="jHg-oh-5cd"/>
-                                                    </connections>
-                                                </switch>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="4bG-kd-foS" firstAttribute="leading" secondItem="TU8-ga-Glz" secondAttribute="trailing" constant="10" id="72x-Lz-UXd"/>
-                                                <constraint firstItem="4bG-kd-foS" firstAttribute="centerY" secondItem="4XH-1w-GRD" secondAttribute="centerY" id="BP0-hd-r37"/>
-                                                <constraint firstItem="TU8-ga-Glz" firstAttribute="centerY" secondItem="4XH-1w-GRD" secondAttribute="centerY" id="fuV-7f-zSF"/>
-                                                <constraint firstItem="TU8-ga-Glz" firstAttribute="leading" secondItem="4XH-1w-GRD" secondAttribute="leadingMargin" id="spg-pd-6vQ"/>
-                                                <constraint firstAttribute="trailing" secondItem="4bG-kd-foS" secondAttribute="trailing" constant="20" id="vjQ-C9-tjf"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="8lT-zM-eJF">
-                                        <rect key="frame" x="0.0" y="480" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="436" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="8lT-zM-eJF" id="wIg-qB-zC5">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
@@ -700,7 +668,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" textLabel="zYO-8r-3nK" detailTextLabel="B5g-1D-Wph" style="IBUITableViewCellStyleValue1" id="Bkn-zL-d73">
-                                        <rect key="frame" x="0.0" y="524" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="480" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Bkn-zL-d73" id="ThO-GB-INN">
                                             <rect key="frame" x="0.0" y="0.0" width="286" height="43.5"/>
@@ -727,7 +695,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="gxE-UW-smM">
-                                        <rect key="frame" x="0.0" y="568" width="320" height="44"/>
+                                        <rect key="frame" x="0.0" y="524" width="320" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="gxE-UW-smM" id="MCU-1F-jvY">
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
@@ -755,7 +723,6 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="areaCheckSwitch" destination="4bG-kd-foS" id="lDs-10-1ax"/>
                         <outlet property="cellColorSwitch" destination="Eft-Gu-j3S" id="LMS-6D-kPT"/>
                         <outlet property="gateCheckSwitch" destination="OUn-jQ-zp0" id="zMu-iX-u67"/>
                         <outlet property="generateButton" destination="gRT-51-K92" id="fzC-nN-JYQ"/>
@@ -866,10 +833,10 @@
         </scene>
     </scenes>
     <resources>
-        <image name="check" width="20" height="20"/>
-        <image name="help" width="20" height="20"/>
-        <image name="redo" width="20" height="20"/>
-        <image name="undo" width="20" height="20"/>
+        <image name="check" width="314.18182373046875" height="360"/>
+        <image name="help" width="314.18182373046875" height="314.18182373046875"/>
+        <image name="redo" width="28" height="22.5"/>
+        <image name="undo" width="28" height="22.5"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Rhj-pn-DAx"/>

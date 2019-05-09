@@ -24,8 +24,8 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   @IBOutlet weak var cellColorSwitch: UISwitch!
   /// 回答チェック時、1ステップだけの仮置きを使用するかどうかのスイッチ
   @IBOutlet weak var tryOneStepSwitch: UISwitch!
-  /// 回答チェック時、領域のチェックを使用するかどうかのスイッチ
-  @IBOutlet weak var areaCheckSwitch: UISwitch!
+  ///// 回答チェック時、領域のチェックを使用するかどうかのスイッチ
+  //@IBOutlet weak var areaCheckSwitch: UISwitch!
   /// 回答チェック時の許容時間(ms)の入力欄
   @IBOutlet weak var solveTimeText: UITextField!
   /// 盤面の除去パターン名
@@ -113,7 +113,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       let title = titleText.text!
       
       var solveOption = SolveOption()
-      solveOption.doAreaCheck = areaCheckSwitch.isOn
+      solveOption.doAreaCheck = false
       solveOption.doTryOneStep = tryOneStepSwitch.isOn
       solveOption.useCache = true
       solveOption.doColorCheck = cellColorSwitch.isOn
@@ -197,7 +197,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       gateCheckSwitch.isOn = solveOpStr.firstIndex(of: "G") != nil
       cellColorSwitch.isOn = solveOpStr.firstIndex(of: "C") != nil
       tryOneStepSwitch.isOn = solveOpStr.firstIndex(of: "T") != nil
-      areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
+      //areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
       solveTimeText.text = UserDefaults.standard.string(forKey: "genSolveTime") ?? "100"
       pruneType = PruneType(rawValue: UserDefaults.standard.string(forKey: "genPruneType") ?? "R4")
       pruneTypeLabel.text = pruneType.description
@@ -221,9 +221,9 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       if tryOneStepSwitch.isOn {
         solveOpStr += "T"
       }
-      if areaCheckSwitch.isOn {
-        solveOpStr += "A"
-      }
+      //if areaCheckSwitch.isOn {
+      //  solveOpStr += "A"
+      //}
       UserDefaults.standard.set(solveOpStr, forKey: "genSolveOp")
       UserDefaults.standard.set(solveTimeText.text, forKey: "genSolveTime")
       UserDefaults.standard.set(pruneType.rawValue, forKey: "genPruneType")
@@ -237,16 +237,16 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     var solveOpStr = ""
     switch level {
     case 0:
-      solveOpStr = "G"
+      solveOpStr = ""
       pruneType = PruneType.random4Cell
     case 1:
-      solveOpStr = "GC"
+      solveOpStr = "G"
       pruneType = PruneType.random2Cell
     case 2:
-      solveOpStr = "GCT"
+      solveOpStr = "GC"
       pruneType = PruneType.random1Cell
     case 3:
-      solveOpStr = "GCTA"
+      solveOpStr = "GCT"
       pruneType = PruneType.randomSCell
     default:
       break
@@ -254,7 +254,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     gateCheckSwitch.isOn = solveOpStr.firstIndex(of: "G") != nil
     cellColorSwitch.isOn = solveOpStr.firstIndex(of: "C") != nil
     tryOneStepSwitch.isOn = solveOpStr.firstIndex(of: "T") != nil
-    areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
+    //areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
     pruneTypeLabel.text = pruneType.description
     
     updateSolveTime()

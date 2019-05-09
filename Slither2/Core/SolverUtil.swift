@@ -158,7 +158,10 @@ struct SolveOption {
     if maxGuessLevel > 0 {
       result += "L\(maxGuessLevel)"
     }
-    result += "-\(Int(elapsedSec * 1000.0))"
+    if result.count > 0 {
+      result += "-"
+    }
+    result += "\(Int(elapsedSec * 1000.0))"
     return result
   }
 }
