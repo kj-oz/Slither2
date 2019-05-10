@@ -29,6 +29,10 @@ struct SetEdgeStatusAction : Action {
   var newStatus: EdgeStatus
   
   /// 指定のエッジの状態を指定の状態に変更する
+  ///
+  /// - Parameters:
+  ///   - edge: 対象のエッジ
+  ///   - status: 変更後のステータス
   init(edge: Edge, status: EdgeStatus) {
     self.edge = edge
     self.newStatus = status

@@ -32,6 +32,7 @@ class Board {
   /// 両方向Edgeの配列
   var edges: [Edge] = []
   
+  /// 数字のみの配列
   var numbers: [Int] {
     return cells.map({ $0.number })
   }

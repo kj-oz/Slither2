@@ -11,17 +11,29 @@ import Foundation
 /// 盤面の数値の除去パターン
 ///
 /// - free: パターンなし
+/// - vWideBorder: 縦方向の太縦縞優先
+/// - vThinBorder: 縦方向の細縦縞優先
+/// - hWideBorder: 横方向の太縦縞優先
+/// - hThinBorder: 横方向の細縦縞優先
+/// - dWideBorder: 斜め方向の太縦縞優先
+/// - dThinBorder: 斜め方向の細縦縞優先
+/// - check: 2マス幅チェック優先
 /// - xSymmetry: X軸対称
 /// - ySymmetry: Y軸対称
 /// - xySymmetry: XY軸対称
 /// - pointSymmetry: 点対称
 /// - hPair: 横2個ずつ（同一列）
 /// - hPairShift: 横2個ずつ（階段状）
+/// - hPairSymmetry: 横2個ずつ（同一列、X軸対称）
 /// - dPair: 斜め2個ずつ（同一方向）
 /// - dPairCross: 斜め2個ずつ（X型）
 /// - dPairSymmetry: 斜め2個ずつ（同一方向、X軸対称）
 /// - quad: 田型4個ずつ（同一列）
 /// - quadShift: 田型4個ずつ（階段状）
+/// - randomSCell: ランダムに難問パターン（縦横の縞優先）を選択
+/// - random1Cell: ランダムに1セル単位のパターンを選択
+/// - random2Cell: ランダムに2セル単位のパターンを選択
+/// - random4Cell: ランダムに4セル単位のパターンを選択
 enum PruneType: String {
   case free = "F"
   case vWideBorder = "WV"
@@ -102,6 +114,7 @@ enum PruneType: String {
     }
   }
   
+  /// 実際に割り当てる除去パターン（ランダム系のパターンに実際のパターンを割り当て）
   public var realType: PruneType {
     switch self {
     case .randomSCell:
@@ -382,6 +395,9 @@ class Pruner {
     return numbers
   }
   
+  /// セルの座標と与えられた関数から、優先かどうかを判断し、優先のものを早めに除去する
+  ///
+  /// - Parameter predicate: セルの座標を元に優先かどうかを判断する関数
   private func prioritizedPruneOrder(predicate: ((_ x: Int, _ y: Int) -> Bool)) {
     var indecies: [[Int]] = [[], []]
     let xmax = board.width

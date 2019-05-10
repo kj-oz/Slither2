@@ -34,22 +34,30 @@ struct GenerateOption {
   var blankEdgeFraction = 0.05
 }
 
+/// ループ生成時の統計情報
 struct GenerateStatistics {
+  /// 各計測時の所要秒数の配列（ループ生成、除去Q1、Q2、Q3、Q4）
   var elapsed: [Int] = []
+  /// 除去した数
   var pruneCount = 0
+  /// 除去した数の中で領域チェックが有効だった数
   var areaCheckUsed = 0
+  /// 前回計測時の時刻
   var prev = Date()
   
+  /// 統計情報の開始
   mutating func start() {
     prev = Date()
   }
   
+  /// 前回計測時からの時間を測定し保存する
   mutating func measure() {
     let now = Date()
     elapsed.append(Int(now.timeIntervalSince(prev) * 1000.0))
     prev = now
   }
   
+  /// 統計情報の文字列
   var description: String {
     return String(format: "%d,%d,%d,%d,%d,%d,%d", pruneCount, elapsed[0], elapsed[1], elapsed[2],
                   elapsed[3], elapsed[4], areaCheckUsed)
