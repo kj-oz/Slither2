@@ -29,13 +29,14 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   /// パズルタイトル
   var puzzleTitle = ""
   
-  /// タイマー
-  var timer: Timer?
+  /// 経過時間更新用タイマー
+  var elapsedLabaelUpdateTimer: Timer?
   
-  /// 開始時刻
-  var start = Date()
+  /// 経過時間の開始時刻
+  var elapsedStart:  Date?
   
-  var lastSaved: Date?
+//  /// 前回保存時の時刻
+//  var lastSaved: Date?
   
   // MARK: - UIViewController
   
@@ -44,13 +45,19 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     super.viewDidLoad()
     let am = AppManager.sharedInstance
     puzzle = am.currentPuzzle!
+    print("viewDidLoad:" + puzzle.id)
     if puzzle.status == .notStarted {
       puzzle.status = .solving
     } else if puzzle.actions.count == 0 {
       puzzle.loadActions()
     }
     puzzleTitle = "\(puzzle.title)  (\(puzzle.sizeString))  "
-
+    
+    // 念の為計時関係の初期化
+    elapsedLabaelUpdateTimer = nil
+    elapsedStart = nil
+//    lastSaved = nil
+    
     // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
     puzzleView.delegate = self
     puzzleView.mode = puzzle.status == .solved ? .view : .play
@@ -64,6 +71,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   
   // ビュー表示直後
   override func viewDidAppear(_ animated: Bool) {
+    print("viewDidAppear:" + puzzle.id)
     super.viewDidAppear(animated)
     
     updateButtonStatus()
@@ -72,6 +80,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   
   // ビューが消える直前
   override func viewWillDisappear(_ animated: Bool) {
+    print("viewWillDisappear:" + puzzle.id)
     super.viewWillDisappear(animated)
     stopPlay()
   }
@@ -80,45 +89,43 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   
   /// アプリケーションがバックグラウンドにまわった直後
   @objc func applicationDidEnterBackground() {
+    print("applicationDidEnterBackground:" + puzzle.id)
     stopPlay()
   }
   
   /// アプリケーションがフォアグラウンドに戻る直前
   @objc func applicationWillEnterForeground() {
+    print("applicationWillEnterForeground:" + puzzle.id)
     startPlay()
   }
 
-  
   /// プレイを開始する.
   func startPlay() {
+    print("startPlay:" + puzzle.id)
     if puzzle.status == .solved {
       return
     }
-    start = Date()
+    elapsedStart = Date()
     updateElapsedlabel()
     
-    timer = Timer.scheduledTimer(timeInterval: 0.5, target: self,
+    elapsedLabaelUpdateTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self,
                                  selector: #selector(self.updateElapsedlabel), userInfo: nil, repeats: true)
   }
   
   /// プレイを中断する.
   func stopPlay() {
-    if puzzle.status != .solved {
-      timer!.invalidate()
-      
+    print("stopPlay:" + puzzle.id)
+    if puzzle.status == .solved {
+      return
+    }
+    elapsedLabaelUpdateTimer!.invalidate()
+    if let start = elapsedStart {
       let now = Date()
       let t: TimeInterval = now.timeIntervalSince(start)
-      switch puzzle.status {
-      case .solving:
-        puzzle.elapsedSecond += Int(t)
-      case .notStarted:
-        puzzle.status = .solving
-        puzzle.elapsedSecond = Int(t)
-      default:
-        break
-      }
+      puzzle.elapsedSecond += Int(t)
+      puzzle.save()
+      elapsedStart = nil
     }
-    puzzle.save()
   }
 
   // 画面の回転を許容する方向
@@ -135,16 +142,6 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   
   // MARK: - PuzzleViewDelegateの実装
   
-//  /// 拡大画面での表示位置（回転後の問題座標系）
-//  var zoomedPoint: CGPoint {
-//    get {
-//      return puzzle?.zoomedPoint ?? CGPoint.zero
-//    }
-//    set {
-//      puzzle?.zoomedPoint = newValue
-//    }
-//  }
-  
   /// 線の連続入力の開始
   func lineBegan() {
   }
@@ -155,13 +152,13 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     undoButton.isEnabled = true
     puzzleView.setNeedsDisplay()
     let now = Date()
-    if let lastSaved = lastSaved {
-      if now.timeIntervalSince(lastSaved) > 10.0 {
+    if let start = elapsedStart {
+      let t: TimeInterval = now.timeIntervalSince(start)
+      if t > 10.0 {
+        puzzle.elapsedSecond += Int(t)
         puzzle.save()
-        self.lastSaved = now
+        elapsedStart = now
       }
-    } else {
-      self.lastSaved = now
     }
   }
 
@@ -172,17 +169,12 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
       if endNode == nil {
         let loopStatus = puzzle.board.getLoopStatus(including: edge)
         if loopStatus == .finished {
-          timer?.invalidate()
-          
-          let now = Date()
-          let t: TimeInterval = now.timeIntervalSince(start)
+          puzzle.fix()
+          stopPlay()
           
           puzzle.status = .solved
-          let sec = puzzle.elapsedSecond + Int(t)
-          puzzle.elapsedSecond = sec
-          puzzle.fix()
           updateButtonStatus()
-          let msg = "正解です。所要時間 \(elapsedlabelString(sec))"
+          let msg = "正解です。所要時間 \(puzzle.elapsedTimeString))"
           alert(viewController: self, message: msg)
         } else if loopStatus == .cellError {
           alert(viewController: self, title: "ループエラー", message: "条件に合致しないセルがあります。")
@@ -281,10 +273,12 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   
   /// 画面のタイトルを更新する
   @objc func updateElapsedlabel() {
-    let now = Date()
-    let t = now.timeIntervalSince(start)
-    let sec = puzzle.elapsedSecond + Int(t)
-    navigationItem.title = "\(puzzleTitle)\(elapsedlabelString(sec))"
+    if let start = elapsedStart {
+      let now = Date()
+      let t = now.timeIntervalSince(start)
+      let sec = puzzle.elapsedSecond + Int(t)
+      navigationItem.title = "\(puzzleTitle)\(elapsedlabelString(sec))"
+    }
   }
   
   /// 経過時間文字列を得る
