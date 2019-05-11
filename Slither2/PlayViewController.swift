@@ -35,9 +35,6 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   /// 経過時間の開始時刻
   var elapsedStart:  Date?
   
-//  /// 前回保存時の時刻
-//  var lastSaved: Date?
-  
   // MARK: - UIViewController
   
   // ビューロード時
@@ -56,7 +53,6 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     // 念の為計時関係の初期化
     elapsedLabaelUpdateTimer = nil
     elapsedStart = nil
-//    lastSaved = nil
     
     // 本来awakeFromNibで設定するはずだが、そのタイミングでは何故かいずれもnil
     puzzleView.delegate = self
@@ -73,7 +69,6 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   override func viewDidAppear(_ animated: Bool) {
     print("viewDidAppear:" + puzzle.id)
     super.viewDidAppear(animated)
-    
     updateButtonStatus()
     startPlay()
   }
@@ -85,6 +80,18 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     stopPlay()
   }
 
+  // 画面の回転を許容する方向
+  override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    return .all
+  }
+  
+  // 画面が回転する直前に呼び出される
+  override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    super.viewWillTransition(to: size, with: coordinator)
+    
+    puzzleView.setNeedsDisplay()
+  }
+  
   // MARK: - アプリケーションのアクティブ化・非アクティブ化
   
   /// アプリケーションがバックグラウンドにまわった直後
@@ -128,18 +135,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     }
   }
 
-  // 画面の回転を許容する方向
-  override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-    return .all
-  }
-  
-  // 画面が回転する直前に呼び出される
-  override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    super.viewWillTransition(to: size, with: coordinator)
-    
-    puzzleView.setNeedsDisplay()
-  }
-  
+
   // MARK: - PuzzleViewDelegateの実装
   
   /// 線の連続入力の開始
@@ -252,6 +248,10 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     puzzleView.setNeedsDisplay()
   }
   
+  
+  // MARK: - Navigation
+  
+  // ヘルプ画面表示時
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if (segue.identifier == "ShowHelp") {
       let hv = segue.destination as? HelpViewController

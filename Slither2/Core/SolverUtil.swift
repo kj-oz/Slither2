@@ -27,6 +27,7 @@ struct SolveException: Error {
   let reason: SolveException.Reason
 }
 
+/// パズルを解いた結果
 struct SolveResult {
   /// 解けなかった理由
   ///
@@ -101,46 +102,33 @@ class BranchBuffer {
   }
 }
 
+/// パズルを解く際のオプション
 struct SolveOption {
-  /// 領域チェックを行う/行ったかどうか
+  /// 領域チェックを行うかどうか
   var doAreaCheck = false
   
-  /// 1ステップだけの仮置きを行う/行ったかどうか
+  /// 1ステップだけの仮置きを行うかどうか
   var doTryOneStep = true
   
-  /// セルのコーナーの通過チェックを行う/行ったかどうか
+  /// セルのコーナーの通過チェックを行うかどうか
   var doGateCheck = true
   
-  /// セルの色（内外）のチェックを行う/行ったかどうか
+  /// セルの色（内外）のチェックを行うかどうか
   var doColorCheck = true
   
-  /// 1ステップだけの仮置きの際、キャッシュを利用する/したかどうか
+  /// 1ステップだけの仮置きの際、キャッシュを利用するかどうか
   var useCache = true
   
   /// デバッグ出力をおこなうかどうか
   var debug = false
   
-  /// 許容/実行処理時間（秒）
+  /// 許容処理時間（秒）
   var elapsedSec = 0.0
   
-  /// 再帰探索の許容/実行最大レベル（再帰探索無し:0）
+  /// 再帰探索の許容最大レベル（再帰探索無し:0）
   var maxGuessLevel = 0
   
-//  /// 記録保持用に、メンバーを初期化したSolveOptionを返す
-//  ///
-//  /// - Returns: 記録保持用にメンバーを初期化したSolveOption
-//  static func initForRecord() -> SolveOption {
-//    var record = SolveOption()
-//    record.doAreaCheck = false
-//    record.doColorCheck = false
-//    record.doTryOneStep = false
-//    record.doGateCheck = false
-//    record.useCache = false
-//    record.maxGuessLevel = 0
-//    record.elapsedSec = 0.0
-//    return record
-//  }
-  
+  /// オプションを表現する文字列
   public var description : String {
     var result = ""
     if doGateCheck {

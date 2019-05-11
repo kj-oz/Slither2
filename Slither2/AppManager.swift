@@ -47,7 +47,6 @@ class Folder {
   }
 }
 
-
 /// アプリケーションのフォルダ等を管理するマネージャ
 class AppManager {
   /// シングルトンオブジェクト
@@ -59,7 +58,7 @@ class AppManager {
   }
   private static var _sharedInstance: AppManager?
   
-  /// iPad Air2 の処理時間
+  /// iPad Air2 での計測用パズルの処理時間
   let baseSolveTime = 130
   
   /// フォルダの親フォルダのパス
@@ -86,7 +85,7 @@ class AppManager {
   /// 既存のパズルのIDの初期値
   var lastId = 190101001
   
-  /// 最新の5回の規定パズルを解いた時間
+  /// 最新の5回の計測用パズルを解いた時間
   var solveTimes: [Int] = []
   
   /// 最新5回のうち中間値3回分の平均値と基準値の比（速いマシンほど小さい値）
@@ -313,7 +312,7 @@ class AppManager {
   
   // MARK: - 自動生成時の制限時間の算出
   
-  /// パズルを解く時間（ms）を求める
+  /// 計測用パズルを解く時間（ms）を求める
   ///
   /// - Returns: パズルを解く時間（ms）
   func measureSolveTime() -> Int {
@@ -401,6 +400,10 @@ class AppManager {
   
   // MARK: - ヘルパメソッド
   
+  /// 最新の5回の計測用パズルを解いた時間から、（iPad Air2が1.0としたときの）マシンの性能比を求める
+  ///
+  /// - Parameter solveTimes: 最新5回の処理時間
+  /// - Returns: 性能比
   func calcTimeFactor(solveTimes: [Int]) -> Double {
     var values = solveTimes
     if solveTimes.count > 3 {

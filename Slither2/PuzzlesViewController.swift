@@ -9,7 +9,8 @@
 import UIKit
 
 /// パズル一覧を表示するビュー
-class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
+class PuzzlesViewController: UITableViewController,
+    FoldersViewDelegate, UIPopoverPresentationControllerDelegate {
   
   /// 名称変更ボタン
   @IBOutlet var renameButton: UIBarButtonItem!
@@ -252,19 +253,22 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
     debugPrint(">>")
     let am = AppManager.sharedInstance
     
-    if (segue.identifier == "PlayPuzzle") {
+    if segue.identifier == "PlayPuzzle" {
       am.currentView = .play
-    } else if (segue.identifier == "EditPuzzle") {
+    } else if segue.identifier == "EditPuzzle" {
       am.currentView = .edit
-    } else if (segue.identifier == "ShowFolders") {
+    } else if segue.identifier == "ShowFolders" {
       let nc = segue.destination as! UINavigationController
       let fv = nc.visibleViewController as! FoldersViewController
       fv.delegate = self
-    } else if (segue.identifier == "ShowHelp") {
+    } else if segue.identifier == "ShowHelp" {
       let hv = segue.destination as? HelpViewController
       let bundle = Bundle.main
       let url: URL? = bundle.url(forResource: "puzzlesview", withExtension: "html", subdirectory: "www")
       hv!.url = url
+    } else if segue.identifier == "GeneratePuzzle" {
+      let nc = segue.destination as! UINavigationController
+      nc.popoverPresentationController?.delegate = self
     }
   }
 
@@ -281,6 +285,11 @@ class PuzzlesViewController: UITableViewController, FoldersViewDelegate {
   // 呼び出した画面がキャンセルされたとき
   @IBAction func dialogCanceled(segue: UIStoryboardSegue) {
     // 何もしない
+  }
+  
+  // 生成画面は外をタップしても消せない
+  func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool {
+    return false
   }
     
   // MARK: - ヘルパメソッド

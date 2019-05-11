@@ -28,15 +28,7 @@ class Solver {
   /// 解を求める際の締切
   var timelimit = Date().addingTimeInterval(3600.0)
   
-//  /// 処理に要した時間
-//  var elapsed = 0.0
-//
-//  /// ブランチの再帰呼び出し時の最大レベル
-//  var maxLevel = 0
-//
-//  /// エリアチェックで有効な手が見つかったかどうか
-//  var useAreaCheckResult = false
-  
+  /// 解を求めた結果
   var result = SolveResult()
   
   /// 1ステップトライ時の次のエッジのインデックス

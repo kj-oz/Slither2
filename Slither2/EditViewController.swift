@@ -15,9 +15,13 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
   
   /// パズル
   var puzzle: Puzzle!
-    
+  
+  /// 最後に保存した時刻
   var lastSaved: Date?
   
+  // MARK: - UIViewController
+  
+  // ビューロード時
   override func viewDidLoad() {
     super.viewDidLoad()
     let am = AppManager.sharedInstance
@@ -47,6 +51,18 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
     stopPlay()
   }
   
+  // 画面の回転を許容する方向
+  override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    return .all
+  }
+  
+  // 画面が回転する直前に呼び出される
+  override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    super.viewWillTransition(to: size, with: coordinator)
+    
+    puzzleView.setNeedsDisplay()
+  }
+  
   // MARK: - アプリケーションのアクティブ化・非アクティブ化
   
   /// アプリケーションがバックグラウンドにまわった直後
@@ -58,10 +74,10 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
   @objc func applicationWillEnterForeground() {
     startPlay()
   }
-  
-  
+    
   /// プレイを開始する.
   func startPlay() {
+    lastSaved = Date()
   }
   
   /// プレイを中断する.
@@ -71,6 +87,37 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
     }
   }
   
+
+  // MARK: - PuzzleViewDelegateの実装
+  
+  /// 線の連続入力の開始
+  func lineBegan() {
+  }
+  
+  /// 何らかの操作が行われた時の発生するイベント
+  func actionDone(_ action: Action) {
+    puzzle.addAction(action as! SetCellNumberAction)
+    if puzzle.status != .editing {
+      puzzle.status = .editing
+    }
+    if let lastSaved = lastSaved {
+      let now = Date()
+      if now.timeIntervalSince(lastSaved) > 10.0 {
+        puzzle.save()
+        self.lastSaved = now
+      }
+    }
+    puzzleView.setNeedsDisplay()
+  }
+  
+  /// 線の連続入力の終了
+  func lineEnded() {
+  }
+  
+
+  // MARK: - ボタンのアクション
+  
+  /// チェックボタンタップ時
   @IBAction func checkTapped(_ sender: Any) {
     let solver = Solver(board: puzzle.board)
     var option = SolveOption()
@@ -81,12 +128,12 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
     option.doGateCheck = true
     option.maxGuessLevel = 120
     option.elapsedSec = 120.0
-
+    
     let result = solver.solve(option: option)
     if result.solved {
       let msg = "問題が完成しました。"
       alert(viewController: self, message: msg)
-
+      
       puzzle.status = .notStarted
       puzzle.save()
     } else {
@@ -101,56 +148,10 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
     }
   }
   
-  // 画面の回転を許容する方向
-  override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-    return .all
-  }
+
+  // MARK: - Navigation
   
-  // 画面が回転する直前に呼び出される
-  override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    super.viewWillTransition(to: size, with: coordinator)
-    
-    puzzleView.setNeedsDisplay()
-  }
-  
-  // MARK: - PuzzleViewDelegateの実装
-  
-//  /// 拡大画面での表示位置（回転後の問題座標系）
-//  var zoomedPoint: CGPoint {
-//    get {
-//      return puzzle?.zoomedPoint ?? CGPoint.zero
-//    }
-//    set {
-//      puzzle?.zoomedPoint = newValue
-//    }
-//  }
-  
-  /// 線の連続入力の開始
-  func lineBegan() {
-  }
-  
-  /// 何らかの操作が行われた時の発生するイベント
-  func actionDone(_ action: Action) {
-    puzzle.addAction(action as! SetCellNumberAction)
-    if puzzle.status != .editing {
-      puzzle.status = .editing
-    }
-    let now = Date()
-    if let lastSaved = lastSaved {
-      if now.timeIntervalSince(lastSaved) > 10.0 {
-        puzzle.save()
-        self.lastSaved = now
-      }
-    } else {
-      self.lastSaved = now
-    }
-    puzzleView.setNeedsDisplay()
-  }
-  
-  /// 線の連続入力の終了
-  func lineEnded() {
-  }
-  
+  // ヘルプ画面表示時
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if (segue.identifier == "ShowHelp") {
       let hv = segue.destination as? HelpViewController
