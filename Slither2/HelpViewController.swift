@@ -9,17 +9,21 @@
 import UIKit
 
 class HelpViewController: UIViewController, UIWebViewDelegate {
-  
-  
+  // webビュー
   @IBOutlet weak var webView: UIWebView!
   
+  // 表示するヘルプHTMLのURL
   var url: URL?
   
+  // MARK: - UIViewController
+  
+  // ビューロード時
   override func viewDidLoad() {
     super.viewDidLoad()
     webView.delegate = self
   }
   
+  // ビュー表示直前
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     if let url = url {
@@ -27,8 +31,9 @@ class HelpViewController: UIViewController, UIWebViewDelegate {
     }
   }
 
-  //pragma mark UIWebDelegate
+  // MARK: - UIWebViewDelegate
   
+  // 新しいアドレスへの移動の直前
   func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
     let url: URL? = request.url
     if url?.isFileURL == nil {

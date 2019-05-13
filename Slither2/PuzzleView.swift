@@ -21,9 +21,6 @@ enum PuzzleViewMode {
 
 /// パズルビューのデリゲート
 protocol PuzzleViewDelegate {
-//  /// 拡大画面での表示位置（回転後の問題座標系）
-//  var zoomedPoint: CGPoint { get set }
-  
   /// 線の連続入力の開始
   func lineBegan()
   
@@ -38,9 +35,14 @@ protocol PuzzleViewDelegate {
 
 /// スリザーリンク専用のビュー
 class PuzzleView: UIView {
+  /// Pan実行時の処理
+  ///
+  /// - none: なし
+  /// - slideH: 水平スライダの操作
+  /// - slideV: 垂直スライダの操作
+  /// - line: 線の作成
   enum PanMode {
     case none
-    case pan
     case slideH
     case slideV
     case line
@@ -55,8 +57,10 @@ class PuzzleView: UIView {
   /// 拡大表示時の最小ピッチ（ピクセル単位）
   static let touchablePitch: CGFloat =  44.0
   
+  /// スライダの枠の幅
   static let sliderWidth: CGFloat = 1.0
   
+  /// スライダのレール部の幅
   static let sliderRailWidth: CGFloat = 0.4
   
   /// 盤面の情報の取得、設定を行うデリゲート
@@ -71,6 +75,7 @@ class PuzzleView: UIView {
   /// 拡大画面での表示範囲（回転後の問題座標系）
   var zoomedArea: CGRect = CGRect.zero
   
+  /// 拡大画面の中心座標（回転後の問題座標系）
   var zoomedPoint: CGPoint = CGPoint.zero
   
   /// 各種ジェスチャーリコグナイザ
@@ -91,14 +96,16 @@ class PuzzleView: UIView {
   /// 線の連続入力時の直前にたどった辺（微小のドラッグをタップとして扱うため）
   var prevEdge: Edge?
   
+  /// Pan実行時の処理
   var panMode = PanMode.none
   
   /// ズーム中かどうか
   var zoomed  = true
   
-  ///
+  /// 現在のビューでのピッチ
   var currentPitch: CGFloat = 0.0
   
+  /// 現在のビューでの（画面座標系での）パズル原点の座標
   var currentOrigin: CGPoint = CGPoint.zero
   
   /// 回転しているかどうか
@@ -130,8 +137,6 @@ class PuzzleView: UIView {
   /// 描画色
   var boardColor = UIColor(red: 0.95, green: 0.95, blue: 0.9, alpha: 1.0)
   var erasableColor = UIColor(red: 0.0, green: 0.5, blue: 0.9, alpha: 1.0)
-//  var zoomAreaStrokeColor = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.2)
-//  var zoomAreaFillColor = UIColor(red:1.0, green:1.0, blue:0.0, alpha:0.1)
   var bgColor = UIColor.lightGray
   var trackColor = UIColor(red:0.0, green:1.0, blue:1.0, alpha:0.03)
   var sliderColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
@@ -140,6 +145,7 @@ class PuzzleView: UIView {
   
 
   // MARK: - 初期化
+  
   // コンストラクタ
   required init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
@@ -158,8 +164,7 @@ class PuzzleView: UIView {
     self.addGestureRecognizer(pinchGr!)
     self.addGestureRecognizer(tap1Gr!)
     self.addGestureRecognizer(tap2Gr!)
-//
-//    // 定数
+
     zpitch = PuzzleView.touchablePitch
     r = zpitch * 0.5;
   }
@@ -173,13 +178,9 @@ class PuzzleView: UIView {
     rotated = isRotated()
 
     adjusted = false
-//    zoomed = true
-//    currentPitch = zpitch
     // この時点では、ツールバーがある前提のビューのサイズとなるので
     // adjustZoomedArea()は実行不可
     zoomed = false
-//    currentPitch = apitch
-//    currentOrigin = CGPoint(x: ax0, y: ay0)
   }
   
   /// MARK: - 描画
@@ -191,8 +192,6 @@ class PuzzleView: UIView {
     }
     let boardColor = self.boardColor.cgColor
     let erasableColor = self.erasableColor.cgColor
-//    let zoomAreaStrokeColor = self.zoomAreaStrokeColor.cgColor;
-//    let zoomAreaFillColor = self.zoomAreaFillColor.cgColor;
     let bgColor = self.bgColor.cgColor;
     let trackColor = self.trackColor.cgColor;
     
@@ -236,55 +235,8 @@ class PuzzleView: UIView {
       
       drawBoard(context: context, rotate: rotated, erasableColor: erasableColor, editing: editing)
       
-
       if zoomed {
-//        context.setFillColor(bgColor)
-//        context.fill(CGRect(x: 0.0, y: 0.0, width: w, height: h))
-//
-//        context.setFillColor(boardColor)
-//        var boardRect: CGRect
-//        let margin = (PuzzleView.margin - PuzzleView.boderWidth) * zpitch;
-//        if rotated {
-//          boardRect = CGRect(x: zx0 - margin, y: zy0 - CGFloat(board.width) * zpitch - margin,
-//                             width: CGFloat(board.height) * zpitch + margin * 2,
-//                             height: CGFloat(board.width) * zpitch + margin * 2)
-//        } else {
-//          boardRect = CGRect(x: zx0 - margin, y: zy0 - margin,
-//                             width: CGFloat(board.width) * zpitch + margin * 2,
-//                             height: CGFloat(board.height) * zpitch + margin * 2)
-//        }
-//        context.fill(boardRect)
-//
-//        // タッチの余韻描画
-//        context.setFillColor(trackColor)
-//        for track in tracks {
-//          context.fillEllipse(in: CGRect(x: track.x - r, y: track.y - r, width: 2 * r, height: 2 * r))
-//        }
-//
-//        drawBoard(context: context, rotate: rotated, erasableColor: erasableColor, editing: editing)
-        
         drawSlider(context: context, rotate: rotated)
-      } else {
-//        context.setFillColor(bgColor)
-//        context.fill(CGRect(x: 0, y: 0, width: w, height: h))
-//
-//        let borderW = PuzzleView.boderWidth * apitch
-//        context.setFillColor(boardColor)
-//        context.fill(CGRect(x: borderW, y: borderW, width: w - 2 * borderW, height: h - 2 * borderW))
-//
-//        // タッチの余韻描画
-//        context.setFillColor(trackColor)
-//        for track in tracks {
-//          context.fillEllipse(in: CGRect(x: track.x - r, y: track.y - r, width: 2 * r, height: 2 * r))
-//        }
-//
-//        drawBoard(context: context, rotate: rotated, erasableColor: erasableColor, editing: editing)
-//
-//        context.setFillColor(zoomAreaFillColor)
-//        context.setStrokeColor(zoomAreaStrokeColor)
-//        let rect = zoomedAreaInView()
-//        context.fill(rect)
-//        context.stroke(rect)
       }
     }
   }
@@ -293,8 +245,6 @@ class PuzzleView: UIView {
   ///
   /// - Parameters:
   ///   - context: コンテキスト
-  ///   - origin: 原点
-  ///   - pitch: セルのピッチ
   ///   - rotate: 回転しているかどうか
   ///   - erasableColor: 削除可能な線の色
   ///   - editing: 編集中かどうか
@@ -438,6 +388,11 @@ class PuzzleView: UIView {
     }
   }
   
+  /// スライダを描画する
+  ///
+  /// - Parameters:
+  ///   - context: コンテキスト
+  ///   - rotate: 回転しているかどうか
   private func drawSlider(context: CGContext, rotate: Bool) {
     guard let board = board else {
       return
@@ -504,84 +459,6 @@ class PuzzleView: UIView {
       }
     }
   }
-//  private func drawSlider(context: CGContext, origin: CGPoint, rotate: Bool) {
-//    guard let board = board else {
-//      return
-//    }
-//    if zoomed {
-//      let x0 = origin.x
-//      let y0 = origin.y
-//      var x: CGFloat = 0.0
-//      var y: CGFloat = 0.0
-//      let bgColor = self.bgColor.cgColor;
-//
-//      let w = self.frame.size.width
-//      let h = self.frame.size.height
-//      let sliderW = PuzzleView.sliderWidth * zpitch
-//      let lineW = 0.06 * zpitch
-//      let sliderColor = self.sliderColor.cgColor
-//      var bothSlider = true
-//      if (!rotated && !fixH || rotated && !fixV) {
-//        let rect = CGRect(x: 0, y: h - sliderW, width: w, height: sliderW)
-//        context.setFillColor(sliderColor)
-//        context.fill(rect)
-//        if rotated {
-//          let x = w - sliderW * 0.65
-//          for u in 0 ... board.width {
-//            y = y0 + CGFloat(u) * zpitch
-//            context.setFillColor(bgColor)
-//            context.setStrokeColor(bgColor)
-//            let rect = CGRect(x: x, y: y-lineW*0.5, width: sliderW * 0.3, height: lineW)
-//            context.fill(rect)
-//          }
-//        } else {
-//          let y = h - sliderW * 0.65
-//          for u in 0 ... board.width {
-//            x = x0 + CGFloat(u) * zpitch
-//            context.setFillColor(bgColor)
-//            context.setStrokeColor(bgColor)
-//            let rect = CGRect(x: x-lineW*0.5, y: y, width: lineW, height: sliderW * 0.3)
-//            context.fill(rect)
-//          }
-//        }
-//      } else {
-//        bothSlider = false
-//      }
-//
-//      if (!rotated && !fixV || rotated && !fixH) {
-//        let rect = CGRect(x: w - sliderW, y: 0, width: sliderW, height: h)
-//        context.setFillColor(sliderColor)
-//        context.fill(rect)
-//        if rotated {
-//          let y = h - sliderW * 0.65
-//          for v in 0 ... board.height {
-//            x = x0 + CGFloat(v) * zpitch
-//            context.setFillColor(bgColor)
-//            context.setStrokeColor(bgColor)
-//            let rect = CGRect(x: x-lineW*0.5, y: y, width: lineW, height: sliderW * 0.3)
-//            context.fill(rect)
-//          }
-//        } else {
-//          let x = w - sliderW * 0.65
-//          for v in 0 ... board.height {
-//            y = y0 + CGFloat(v) * zpitch
-//            context.setFillColor(bgColor)
-//            context.setStrokeColor(bgColor)
-//            let rect = CGRect(x: x, y: y-lineW*0.5, width: sliderW * 0.3, height: lineW)
-//            context.fill(rect)
-//          }
-//        }
-//      } else {
-//        bothSlider = false
-//      }
-//
-//      if bothSlider {
-//        context.setFillColor(bgColor)
-//        let rect = CGRect(x: w - sliderW, y: h - sliderW, width: sliderW, height: sliderW)
-//        context.fill(rect)
-//      }
-//    }
-//  }
 
   /// 線無しを示すバツを描画する
   ///
@@ -606,7 +483,7 @@ class PuzzleView: UIView {
   
   // MARK: - プライベートメソッド（ジェスチャー）
   
-  // パン：1本指　拡大時-線、全体表示時-ズーム位置移動、２本指　拡大時-スクロール
+  // パン
   @objc func panned(_ sender: Any) {
     if mode == .play {
       if panGr!.state == .began {
@@ -654,21 +531,7 @@ class PuzzleView: UIView {
       } else {
         setZoomedAreaTo(rect: zoomedArea.offsetBy(dx:  translation.x / apitch, dy: translation.y / apitch))
       }
-      setNeedsDisplay()
     }
-    
-//    var translation = panGr!.translation(in: self)
-//    panGr!.setTranslation(CGPoint.zero, in: self)
-//    if panMode == .slideH {
-//      translation.y = 0
-//    } else {
-//      translation.x = 0
-//    }
-//    if rotated {
-//      setZoomedAreaTo(rect: zoomedArea.offsetBy(dx: translation.y / zpitch, dy: -translation.x / zpitch))
-//    } else {
-//      setZoomedAreaTo(rect: zoomedArea.offsetBy(dx: -translation.x / zpitch, dy: -translation.y / zpitch))
-//    }
     setNeedsDisplay()
   }
   
@@ -824,35 +687,6 @@ class PuzzleView: UIView {
       currentOrigin = CGPoint(x: ax0, y: ay0)
     }
     r = currentPitch * 0.5
-    
-//    let zoomedPoint = delegate!.zoomedPoint
-//    let cx = zoomedPoint.x
-//    let cy = zoomedPoint.y
-//
-//    var (zoomedW, zoomedH) = sizeInZoomedPuzzle()
-//    if !fixH {
-//      zoomedH -= PuzzleView.sliderWidth
-//    }
-//    if !fixV {
-//      zoomedW -= PuzzleView.sliderWidth
-//    }
-//    var x0 = cx - 0.5 * zoomedW
-//    var y0 = cy - 0.5 * zoomedH
-//    if !fixH {
-//      if x0 < 0 {
-//        x0 = -PuzzleView.margin
-//      } else if x0 + zoomedW > CGFloat(board.width) {
-//        x0 = CGFloat(board.width) + PuzzleView.margin - zoomedW
-//      }
-//    }
-//    if !fixV {
-//      if y0 < 0 {
-//        y0 = -PuzzleView.margin
-//      } else if y0 + zoomedH > CGFloat(board.height) {
-//        y0 = CGFloat(board.height) + PuzzleView.margin - zoomedH
-//      }
-//    }
-//    self.setZoomedAreaTo(rect: CGRect(x: x0, y: y0, width: zoomedW, height: zoomedH))
     
     adjusted = true
   }

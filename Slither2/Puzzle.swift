@@ -83,9 +83,6 @@ class Puzzle : Hashable {
   ///　最後に固定を実行したインデックス
   var fixedIndex = -1
   
-//  ///　拡大表示時の拡大領域の中心位置
-//  var zoomedPoint = CGPoint.zero
-  
   /// パス
   var path: String {
     return (folder.path as NSString).appendingPathComponent(filename)
@@ -128,7 +125,7 @@ class Puzzle : Hashable {
     }
   }
   
-  /// 解くのに掛かった時間（と固定回数、初期化回数）の文字列（H:mm:ss 固定:f 初期化:i）
+  /// 解くのに掛かった時間の文字列（H:mm:ss）
   var elapsedTimeString: String {
     return String(format: "%d:%02d:%02d", elapsedSecond / 3600,
                   (elapsedSecond % 3600) / 60, elapsedSecond % 60)
@@ -286,9 +283,6 @@ class Puzzle : Hashable {
           currentIndex = Int(value)!
         case "fixedIndex":
           fixedIndex = Int(value)!
-//        case "zoomedPoint":
-//          let sizes = value.split(separator: " ")
-//          zoomedPoint = CGPoint(x: Double(sizes[0])!, y: Double(sizes[1])!)
         default:
           break
         }
@@ -358,7 +352,6 @@ class Puzzle : Hashable {
     }
     lines.append("currentIndex: \(currentIndex)")
     lines.append("fixedIndex: \(fixedIndex)")
-//    lines.append("zoomedPoint: \(zoomedPoint.x) \(zoomedPoint.y)")
     try! lines.joined(separator: "\r\n").write(toFile: path, atomically: true, encoding: .utf8)
   }
 

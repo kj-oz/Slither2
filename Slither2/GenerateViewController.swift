@@ -237,13 +237,13 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     var solveOpStr = ""
     switch level {
     case 0:
-      solveOpStr = ""
+      solveOpStr = "G"
       pruneType = PruneType.random4Cell
     case 1:
-      solveOpStr = "G"
+      solveOpStr = "GC"
       pruneType = PruneType.random2Cell
     case 2:
-      solveOpStr = "GC"
+      solveOpStr = "GCT"
       pruneType = PruneType.random1Cell
     case 3:
       solveOpStr = "GCT"
