@@ -189,7 +189,7 @@
                             </barButtonItem>
                         </leftBarButtonItems>
                         <rightBarButtonItems>
-                            <barButtonItem title="Item" image="help" id="pHw-gs-feV">
+                            <barButtonItem image="help" id="pHw-gs-feV">
                                 <connections>
                                     <segue destination="eRq-j7-9A3" kind="popoverPresentation" identifier="ShowHelp" popoverAnchorBarButtonItem="pHw-gs-feV" id="8pC-Gy-Geb">
                                         <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
@@ -253,14 +253,14 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="DYY-4I-fXJ">
                         <rightBarButtonItems>
-                            <barButtonItem title="Item" image="help" id="uLc-gp-YEi">
+                            <barButtonItem image="help" id="uLc-gp-YEi">
                                 <connections>
                                     <segue destination="eRq-j7-9A3" kind="popoverPresentation" identifier="ShowHelp" popoverAnchorBarButtonItem="uLc-gp-YEi" id="pV2-Xm-wTG">
                                         <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                                     </segue>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Item" image="check" id="gK5-qe-Adl">
+                            <barButtonItem image="check" id="gK5-qe-Adl">
                                 <connections>
                                     <action selector="checkTapped:" destination="N3Q-cj-Koq" id="S0h-p9-hEL"/>
                                 </connections>
@@ -300,19 +300,19 @@
                     </view>
                     <navigationItem key="navigationItem" id="KVW-gO-sA8">
                         <rightBarButtonItems>
-                            <barButtonItem title="Item" image="help" id="DDc-q3-bSP">
+                            <barButtonItem image="help" id="DDc-q3-bSP">
                                 <connections>
                                     <segue destination="eRq-j7-9A3" kind="popoverPresentation" identifier="ShowHelp" popoverAnchorBarButtonItem="DDc-q3-bSP" id="nTd-ip-emt">
                                         <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
                                     </segue>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Item" image="redo" id="ldA-Q5-2f2">
+                            <barButtonItem image="redo" id="ldA-Q5-2f2">
                                 <connections>
                                     <action selector="redoButtonTapped:" destination="Zgi-pP-djp" id="e6z-zg-88c"/>
                                 </connections>
                             </barButtonItem>
-                            <barButtonItem title="Item" image="undo" id="D9t-pg-10y">
+                            <barButtonItem image="undo" id="D9t-pg-10y">
                                 <connections>
                                     <action selector="undoButtonTapped:" destination="Zgi-pP-djp" id="z33-zc-xb6"/>
                                 </connections>

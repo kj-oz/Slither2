@@ -23,7 +23,23 @@ enum ViewType: String {
 /// パズルを保存するフォルダを表すクラス
 class Folder {
   /// 含んでいるパズル
-  var puzzles: [Puzzle] = []
+  private var _puzzles: [Puzzle]!
+  var puzzles: [Puzzle] {
+    get {
+      if _puzzles == nil {
+        _puzzles = []
+        let fm = FileManager.default
+        let files = try! fm.contentsOfDirectory(atPath: path)
+        for file in files {
+          self.puzzles.append(Puzzle(folder: self, filename: file))
+        }
+      }
+      return _puzzles
+    }
+    set {
+      _puzzles = newValue
+    }
+  }
   
   /// フォルダへのパス
   var path: String
@@ -38,12 +54,30 @@ class Folder {
   /// - Parameter path: パス
   init(path: String) {
     self.path = path
-    
-    let fm = FileManager.default
-    let files = try! fm.contentsOfDirectory(atPath: path)
-    for file in files {
-      puzzles.append(Puzzle(folder: self, filename: file))
+  }
+  
+  /// 指定のパズルを除去する
+  ///
+  /// - Parameter puzzles: パズル
+  func remove(_ puzzles: [Puzzle]) {
+    for puzzle in puzzles {
+      self.puzzles.remove(at: _puzzles.firstIndex(of: puzzle)!)
     }
+  }
+  
+  /// 指定のパズルを追加する
+  ///
+  /// - Parameter puzzles: パズル
+  func add(_ puzzles: [Puzzle]) {
+    for puzzle in puzzles {
+      puzzle.folder = self
+    }
+    self.puzzles.append(contentsOf: puzzles)
+  }
+  
+  /// パズルの並び順をidの昇順に並び替える
+  func reorder() {
+    self.puzzles.sort(by: {$0.id < $1.id})
   }
 }
 
@@ -219,14 +253,13 @@ class AppManager {
       let toFile = (toDir as NSString).appendingPathComponent(puzzleName)
       do {
         try fm.moveItem(atPath: fromFile, toPath: toFile)
-        currentFolder.puzzles.remove(at: currentFolder.puzzles.firstIndex(of: puzzle)!)
-        to.puzzles.append(puzzle)
-        puzzle.folder = to
       } catch {
         return false
       }
     }
-    to.puzzles.sort(by: {$0.id < $1.id})
+    currentFolder.remove(puzzles)
+    to.add(puzzles)
+    to.reorder()
     return true
   }
   
@@ -250,11 +283,11 @@ class AppManager {
     for puzzle in puzzles {
       do {
         try fm.removeItem(atPath: puzzle.path)
-        currentFolder.puzzles.remove(at: currentFolder.puzzles.firstIndex(of: puzzle)!)
       } catch {
         return false
       }
     }
+    currentFolder.remove(puzzles)
     return true
   }
 

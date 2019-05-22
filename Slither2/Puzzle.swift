@@ -164,7 +164,7 @@ class Puzzle : Hashable {
     self.genStats = genStats
     status = genParams.count > 0 ? .notStarted : .editing
     save()
-    folder.puzzles.append(self)
+    folder.add([self])
   }
   
   /// 空のパズルの新規作成
@@ -319,7 +319,7 @@ class Puzzle : Hashable {
     fixCount = 0
     actions = []
     save()
-    folder.puzzles.append(self)
+    folder.add([self])
   }
   
   //MARK: - 保存

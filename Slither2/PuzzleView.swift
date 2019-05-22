@@ -49,7 +49,7 @@ class PuzzleView: UIView {
   }
   
   /// 問題の末端の点からの余白（問題座標系）
-  static let margin: CGFloat = 1.0
+  static let margin: CGFloat = 1.5
   
   /// 拡大表示時の端部のグレー表示幅（問題座標系）
   static let boderWidth: CGFloat = 0.2
@@ -604,7 +604,7 @@ class PuzzleView: UIView {
       } else {
         return
       }
-    } else if scale > 1 && !zoomed {
+    } else if scale > 1 && !zoomed && (!fixH || !fixV) {
       let (cx, cy) = locationInPuzzle(point: pinchGr!.location(in: self))
       setZoomedAreaTo(center: CGPoint(x: cx, y: cy))
       
@@ -783,6 +783,10 @@ class PuzzleView: UIView {
     } else {
       zymin = h - (CGFloat(board.height) + PuzzleView.margin)
       zymax = PuzzleView.margin
+      if rotated {
+        zxmin += PuzzleView.sliderWidth
+        zxmax += PuzzleView.sliderWidth
+      }
     }
     
     zoomableArea = CGRect(x: -zxmax, y: -zymax, width: zxmax + w - zxmin, height: zymax + h - zymin)
@@ -806,8 +810,9 @@ class PuzzleView: UIView {
     var x0 = cx - 0.5 * zoomedW
     var y0 = cy - 0.5 * zoomedH
     if !fixH {
-      if x0 < 0 {
-        x0 = -PuzzleView.margin
+      let base = rotated ? PuzzleView.sliderWidth : 0.0
+      if x0 < base {
+        x0 = base - PuzzleView.margin
       } else if x0 + zoomedW > CGFloat(board.width) {
         x0 = CGFloat(board.width) + PuzzleView.margin - zoomedW
       }
@@ -850,7 +855,7 @@ class PuzzleView: UIView {
     var h: CGFloat
     if rotated {
       x = ax0 + zoomedArea.origin.y * apitch
-      y = ay0 - (zoomedArea.origin.x + zoomedArea.size.width) * apitch
+      y = ay0 - (PuzzleView.sliderWidth + zoomedArea.origin.x + zoomedArea.size.width) * apitch
       w = zoomedArea.size.height * apitch
       h = zoomedArea.size.width * apitch
     } else {

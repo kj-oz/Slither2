@@ -48,7 +48,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     } else if puzzle.actions.count == 0 {
       puzzle.loadActions()
     }
-    puzzleTitle = "\(puzzle.title)  \(puzzle.sizeString)  \(puzzle.genParams)  "
+    puzzleTitle = "\(puzzle.title)   \(puzzle.sizeString)  \(puzzle.genParams)   "
     
     // 念の為計時関係の初期化
     elapsedLabaelUpdateTimer = nil
@@ -166,9 +166,9 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
         let loopStatus = puzzle.board.getLoopStatus(including: edge)
         if loopStatus == .finished {
           puzzle.fix()
+          puzzle.status = .solved
           stopPlay()
           
-          puzzle.status = .solved
           updateButtonStatus()
           let msg = "正解です。所要時間 \(puzzle.elapsedTimeString)"
           alert(viewController: self, message: msg)
