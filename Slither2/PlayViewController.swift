@@ -122,11 +122,8 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   /// プレイを中断する.
   func stopPlay() {
     print("stopPlay:" + puzzle.id)
-    if puzzle.status == .solved {
-      return
-    }
-    elapsedLabaelUpdateTimer!.invalidate()
     if let start = elapsedStart {
+      elapsedLabaelUpdateTimer!.invalidate()
       let now = Date()
       let t: TimeInterval = now.timeIntervalSince(start)
       puzzle.elapsedSecond += Int(t)
