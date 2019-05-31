@@ -154,11 +154,13 @@ class AppManager {
       let bundle = Bundle.main
       let samples = bundle.paths(forResourcesOfType: "slp", inDirectory: "sample")
       for sample in samples {
-        let filename = (rootDir as NSString).lastPathComponent
+        let filename = (sample as NSString).lastPathComponent
         do {
-          try fm.moveItem(atPath: sample,
+          try fm.copyItem(atPath: sample,
                         toPath: (sampleDir as NSString).appendingPathComponent(filename))
-        } catch {}
+        } catch {
+          print(error)
+        }
       }
       dirs = ["サンプル"]
     }

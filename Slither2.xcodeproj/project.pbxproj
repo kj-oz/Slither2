@@ -10,6 +10,7 @@
 		3113D36B2259C1B0006E9F68 /* GeneratorrTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D3682259C1B0006E9F68 /* GeneratorrTests.swift */; };
 		3113D36C2259C1B0006E9F68 /* SolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D3692259C1B0006E9F68 /* SolverTests.swift */; };
 		3113D36D2259C1B0006E9F68 /* AreaCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D36A2259C1B0006E9F68 /* AreaCheckerTest.swift */; };
+		3142F864229ED2AF00A0EAFE /* sample in Resources */ = {isa = PBXBuildFile; fileRef = 3142F863229ED2AF00A0EAFE /* sample */; };
 		31B9BCCA2278359A00C1675A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31B9BCC92278359A00C1675A /* Assets.xcassets */; };
 		31C8802C22227F99008C0D99 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8802B22227F99008C0D99 /* AppDelegate.swift */; };
 		31C8803122227F99008C0D99 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 31C8802F22227F99008C0D99 /* Main.storyboard */; };
@@ -54,6 +55,7 @@
 		3113D3682259C1B0006E9F68 /* GeneratorrTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratorrTests.swift; sourceTree = "<group>"; };
 		3113D3692259C1B0006E9F68 /* SolverTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolverTests.swift; sourceTree = "<group>"; };
 		3113D36A2259C1B0006E9F68 /* AreaCheckerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaCheckerTest.swift; sourceTree = "<group>"; };
+		3142F863229ED2AF00A0EAFE /* sample */ = {isa = PBXFileReference; lastKnownFileType = folder; path = sample; sourceTree = "<group>"; };
 		31B9BCC92278359A00C1675A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		31C8802822227F99008C0D99 /* Slither2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Slither2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		31C8802B22227F99008C0D99 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -129,6 +131,7 @@
 		31C8802A22227F99008C0D99 /* Slither2 */ = {
 			isa = PBXGroup;
 			children = (
+				3142F863229ED2AF00A0EAFE /* sample */,
 				31B9BCC92278359A00C1675A /* Assets.xcassets */,
 				31C8802B22227F99008C0D99 /* AppDelegate.swift */,
 				31C8802F22227F99008C0D99 /* Main.storyboard */,
@@ -262,6 +265,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3142F864229ED2AF00A0EAFE /* sample in Resources */,
 				31CF03142276A2BD00F5447E /* www in Resources */,
 				31C8803622227F9B008C0D99 /* LaunchScreen.storyboard in Resources */,
 				31B9BCCA2278359A00C1675A /* Assets.xcassets in Resources */,
