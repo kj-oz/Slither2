@@ -61,8 +61,8 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
 
     // アプリケーションライフサイクルの通知受信
     let nc = NotificationCenter.default
-    nc.addObserver(self, selector: #selector(self.applicationDidEnterBackground), name: NSNotification.Name("applicationDidEnterBackground"), object: nil)
-    nc.addObserver(self, selector: #selector(self.applicationWillEnterForeground), name: NSNotification.Name("applicationWillEnterForeground"), object: nil)
+    nc.addObserver(self, selector: #selector(self.applicationWillResignActive), name: NSNotification.Name("applicationWillResignActive"), object: nil)
+    nc.addObserver(self, selector: #selector(self.applicationDidBecomeActive), name: NSNotification.Name("applicationDidBecomeActive"), object: nil)
   }
   
   // ビュー表示直後
@@ -95,15 +95,15 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   // MARK: - アプリケーションのアクティブ化・非アクティブ化
   
   /// アプリケーションがバックグラウンドにまわった直後
-  @objc func applicationDidEnterBackground() {
-    print("applicationDidEnterBackground:" + puzzle.id)
-    stopPlay()
+  @objc func applicationDidBecomeActive() {
+    print("applicationDidBecomeActive:" + puzzle.id)
+    startPlay()
   }
   
   /// アプリケーションがフォアグラウンドに戻る直前
-  @objc func applicationWillEnterForeground() {
-    print("applicationWillEnterForeground:" + puzzle.id)
-    startPlay()
+  @objc func applicationWillResignActive() {
+    print("applicationWillResignActive:" + puzzle.id)
+    stopPlay()
   }
 
   /// プレイを開始する.

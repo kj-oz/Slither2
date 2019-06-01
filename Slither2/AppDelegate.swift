@@ -29,14 +29,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   func applicationWillResignActive(_ application: UIApplication) {
     let n = Notification(name: NSNotification.Name("applicationWillResignActive"), object: self)
     NotificationCenter.default.post(n)
+    // 状態の保存
+    am.saveStatus()
   }
 
   // バックグラウンドにまわった直後
   func applicationDidEnterBackground(_ application: UIApplication) {
     let n = Notification(name: NSNotification.Name("applicationDidEnterBackground"), object: self)
     NotificationCenter.default.post(n)
-    // 状態の保存
-    am.saveStatus()
   }
 
   // フォアグラウンドにまわる直前
