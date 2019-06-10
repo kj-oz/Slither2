@@ -11,6 +11,9 @@
 		3113D36C2259C1B0006E9F68 /* SolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D3692259C1B0006E9F68 /* SolverTests.swift */; };
 		3113D36D2259C1B0006E9F68 /* AreaCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D36A2259C1B0006E9F68 /* AreaCheckerTest.swift */; };
 		3142F864229ED2AF00A0EAFE /* sample in Resources */ = {isa = PBXBuildFile; fileRef = 3142F863229ED2AF00A0EAFE /* sample */; };
+		3142F86822A6B0A600A0EAFE /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3142F86722A6B0A500A0EAFE /* Logger.swift */; };
+		3142F86D22A6B77700A0EAFE /* DateUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3142F86B22A6B77600A0EAFE /* DateUtil.swift */; };
+		3142F86E22A6B77700A0EAFE /* FileUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3142F86C22A6B77700A0EAFE /* FileUtil.swift */; };
 		31B9BCCA2278359A00C1675A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31B9BCC92278359A00C1675A /* Assets.xcassets */; };
 		31C8802C22227F99008C0D99 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31C8802B22227F99008C0D99 /* AppDelegate.swift */; };
 		31C8803122227F99008C0D99 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 31C8802F22227F99008C0D99 /* Main.storyboard */; };
@@ -56,6 +59,9 @@
 		3113D3692259C1B0006E9F68 /* SolverTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolverTests.swift; sourceTree = "<group>"; };
 		3113D36A2259C1B0006E9F68 /* AreaCheckerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaCheckerTest.swift; sourceTree = "<group>"; };
 		3142F863229ED2AF00A0EAFE /* sample */ = {isa = PBXFileReference; lastKnownFileType = folder; path = sample; sourceTree = "<group>"; };
+		3142F86722A6B0A500A0EAFE /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		3142F86B22A6B77600A0EAFE /* DateUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateUtil.swift; sourceTree = "<group>"; };
+		3142F86C22A6B77700A0EAFE /* FileUtil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileUtil.swift; sourceTree = "<group>"; };
 		31B9BCC92278359A00C1675A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		31C8802822227F99008C0D99 /* Slither2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Slither2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		31C8802B22227F99008C0D99 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -151,6 +157,9 @@
 				31C8805C2222831E008C0D99 /* PuzzlesViewController.swift */,
 				31C8805D2222831E008C0D99 /* PuzzleView.swift */,
 				31CF03152276A30900F5447E /* HelpViewController.swift */,
+				3142F86722A6B0A500A0EAFE /* Logger.swift */,
+				3142F86B22A6B77600A0EAFE /* DateUtil.swift */,
+				3142F86C22A6B77700A0EAFE /* FileUtil.swift */,
 			);
 			path = Slither2;
 			sourceTree = "<group>";
@@ -247,7 +256,9 @@
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				en,
 				Base,
+				ja,
 			);
 			mainGroup = 31C8801F22227F99008C0D99;
 			productRefGroup = 31C8802922227F99008C0D99 /* Products */;
@@ -302,13 +313,16 @@
 				31C88059222282DC008C0D99 /* GenerateViewController.swift in Sources */,
 				31C88056222282DC008C0D99 /* EditViewController.swift in Sources */,
 				31CF03162276A30900F5447E /* HelpViewController.swift in Sources */,
+				3142F86E22A6B77700A0EAFE /* FileUtil.swift in Sources */,
 				31C880612222831E008C0D99 /* PuzzlesViewController.swift in Sources */,
 				31C8807322228495008C0D99 /* Generator.swift in Sources */,
 				31C88057222282DC008C0D99 /* FoldersViewController.swift in Sources */,
 				31C8807622228495008C0D99 /* Elements.swift in Sources */,
 				31C880642222831E008C0D99 /* PuzzleCell.swift in Sources */,
+				3142F86822A6B0A600A0EAFE /* Logger.swift in Sources */,
 				31C8802C22227F99008C0D99 /* AppDelegate.swift in Sources */,
 				31C880632222831E008C0D99 /* Puzzle.swift in Sources */,
+				3142F86D22A6B77700A0EAFE /* DateUtil.swift in Sources */,
 				31C88054222282DC008C0D99 /* PruneTypesViewController.swift in Sources */,
 				31C88055222282DC008C0D99 /* CGUtil.swift in Sources */,
 			);

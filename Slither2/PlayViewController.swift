@@ -35,14 +35,19 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   /// 経過時間の開始時刻
   var elapsedStart:  Date?
   
+  var logger: Logger!
+
   // MARK: - UIViewController
   
   // ビューロード時
   override func viewDidLoad() {
     super.viewDidLoad()
+    
     let am = AppManager.sharedInstance
+    logger = am.logger
+    logger.log("** PlayViewController viewDidLoad")
+
     puzzle = am.currentPuzzle!
-    print("viewDidLoad:" + puzzle.id)
     if puzzle.status == .notStarted {
       puzzle.status = .solving
     } else if puzzle.actions.count == 0 {
@@ -58,6 +63,14 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     puzzleView.delegate = self
     puzzleView.mode = puzzle.status == .solved ? .view : .play
     puzzleView.setBoard(puzzle.board)
+  }
+  
+  // ビュー表示直後
+  override func viewDidAppear(_ animated: Bool) {
+    logger.log("** PlayViewController viewDidAppear")
+    super.viewDidAppear(animated)
+    updateButtonStatus()
+    startPlay()
 
     // アプリケーションライフサイクルの通知受信
     let nc = NotificationCenter.default
@@ -65,19 +78,17 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     nc.addObserver(self, selector: #selector(self.applicationDidBecomeActive), name: NSNotification.Name("applicationDidBecomeActive"), object: nil)
   }
   
-  // ビュー表示直後
-  override func viewDidAppear(_ animated: Bool) {
-    print("viewDidAppear:" + puzzle.id)
-    super.viewDidAppear(animated)
-    updateButtonStatus()
-    startPlay()
-  }
-  
   // ビューが消える直前
   override func viewWillDisappear(_ animated: Bool) {
-    print("viewWillDisappear:" + puzzle.id)
+    logger.log("** PlayViewController viewWillDisappear")
     super.viewWillDisappear(animated)
     stopPlay()
+
+    // アプリケーションライフサイクルの通知受信解除
+    // Viewのload/unloadのタイミングで処理すると、一度表示したビューの計時がずっと残るためこちらに移動
+    let nc = NotificationCenter.default
+    nc.removeObserver(self, name: NSNotification.Name("applicationWillResignActive"), object: nil)
+    nc.removeObserver(self, name: NSNotification.Name("applicationDidBecomeActive"), object: nil)
   }
 
   // 画面の回転を許容する方向
@@ -92,23 +103,27 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     puzzleView.setNeedsDisplay()
   }
   
+  deinit {
+    logger.log("** PlayViewController deinit")
+  }
+  
   // MARK: - アプリケーションのアクティブ化・非アクティブ化
   
   /// アプリケーションがバックグラウンドにまわった直後
   @objc func applicationDidBecomeActive() {
-    print("applicationDidBecomeActive:" + puzzle.id)
+    logger.log("** PlayViewController applicationDidBecomeActive")
     startPlay()
   }
   
   /// アプリケーションがフォアグラウンドに戻る直前
   @objc func applicationWillResignActive() {
-    print("applicationWillResignActive:" + puzzle.id)
+    logger.log("** PlayViewController applicationWillResignActive")
     stopPlay()
   }
 
   /// プレイを開始する.
   func startPlay() {
-    print("startPlay:" + puzzle.id)
+    logger.log("□□ startPlay:" + puzzle.id)
     if puzzle.status == .solved {
       return
     }
@@ -121,7 +136,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   
   /// プレイを中断する.
   func stopPlay() {
-    print("stopPlay:" + puzzle.id)
+    logger.log("□□ stopPlay:" + puzzle.id)
     if let start = elapsedStart {
       elapsedLabaelUpdateTimer!.invalidate()
       let now = Date()
@@ -129,6 +144,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
       puzzle.elapsedSecond += Int(t)
       puzzle.save()
       elapsedStart = nil
+      logger.log("■■ saved:\(puzzle.id) \(Int(t))")
     }
   }
 
@@ -150,6 +166,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
       if t > 10.0 {
         puzzle.elapsedSecond += Int(t)
         puzzle.save()
+        logger.log("■■ saved:\(puzzle.id) \(Int(t))")
         elapsedStart = now
       }
     }

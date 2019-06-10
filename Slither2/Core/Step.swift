@@ -1,6 +1,6 @@
 //
 //  Step.swift
-//  Slither
+//  Slither2
 //
 //  Created by KO on 2018/11/09.
 //  Copyright © 2018年 KO. All rights reserved.

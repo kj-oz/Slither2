@@ -30,11 +30,16 @@ class PuzzlesViewController: UITableViewController,
   /// ヘルプボタン
   @IBOutlet weak var helpButton: UIBarButtonItem!
   
+  var logger: Logger!
+  
   // MARK: - UIViewController
 
   // ビューのロード時
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    logger = AppManager.sharedInstance.logger
+    logger.log("PuzzlesViewController viewDidLoad")
     
     // 編集ボタンの追加
     self.navigationItem.rightBarButtonItems?.append(editButtonItem)
@@ -45,7 +50,8 @@ class PuzzlesViewController: UITableViewController,
   /// ビューが画面に表示された直後
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    
+    logger.log("PuzzlesViewController viewDidApear")
+
     // データを読み込む
     let am = AppManager.sharedInstance
     // alert(viewController: self, message: String(am.solveTimes.last!))

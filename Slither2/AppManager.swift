@@ -92,6 +92,8 @@ class AppManager {
   }
   private static var _sharedInstance: AppManager?
   
+  
+  
   /// iPad Air2 での計測用パズルの処理時間
   let baseSolveTime = 130
   
@@ -125,14 +127,23 @@ class AppManager {
   /// 最新5回のうち中間値3回分の平均値と基準値の比（速いマシンほど小さい値）
   var timeFactor = 1.0
   
+  /** ログ保持用のディレクトリ */
+  var logDirectory = ""
+  
+  /** ログ */
+  var logger: Logger!
+
   // MARK: - 設定の読み込み、保存
   
   /// プライベートなコンストラクタ
   /// 各種設定を読み込む
   private init() {
-    let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-    rootDir = URL(fileURLWithPath: paths[0]).absoluteURL.path
-    debugPrint("** Application start")
+    let paths0 = NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true)
+    logger = Logger(dir: paths0[0], prefix: "SL", rotationDays: 1, maxBackups: 7)
+
+    let paths1 = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+    rootDir = URL(fileURLWithPath: paths1[0]).absoluteURL.path
+    logger.log("Application start")
     debugPrint(String(format: " document directory:%@", rootDir))
     
 

@@ -237,10 +237,10 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     var solveOpStr = ""
     switch level {
     case 0:
-      solveOpStr = "G"
+      solveOpStr = "GC"
       pruneType = PruneType.random4Cell
     case 1:
-      solveOpStr = "GC"
+      solveOpStr = "GCT"
       pruneType = PruneType.random2Cell
     case 2:
       solveOpStr = "GCT"
@@ -274,7 +274,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       if solveTime == 0 {
         solveTime = 10
       }
-      if presetSegment.selectedSegmentIndex == 3 {
+      if presetSegment.selectedSegmentIndex >= 2 {
         solveTime *= 2
       }
       solveTimeText.text = String(solveTime)
