@@ -26,8 +26,8 @@ enum PuzzleStatus : String {
 /// パズルとそれを解いている過程の情報を保持するクラス
 class Puzzle : Hashable {
   /// (Hashable)
-  var hashValue: Int {
-    return id.hashValue
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(id.hashValue)
   }
   
   /// (Hashable)

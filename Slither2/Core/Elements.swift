@@ -120,11 +120,11 @@ enum LoopStatus: Int {
 class Cell : Hashable {
   
   /// (Hashable)
-  var hashValue: Int {
+  func hash(into hasher: inout Hasher) {
     let node = vEdges[0].nodes[0]
-    return node.x << 8 + node.y
+    hasher.combine(node.x << 8 + node.y)
   }
-  
+    
   /// (Hashable)
   static func == (lhs: Cell, rhs: Cell) -> Bool {
     return lhs === rhs
@@ -197,8 +197,8 @@ class Cell : Hashable {
 /// Nodeの状態を表すクラス
 class Node : Hashable {
   /// (Hashable)
-  var hashValue: Int {
-    return x << 8 + y
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(x << 8 + y)
   }
   
   /// (Hashable)
@@ -285,9 +285,9 @@ class Node : Hashable {
 /// Edgeを表すクラス
 class Edge : Hashable {
   /// (Hashable)
-  var hashValue: Int {
+  func hash(into hasher: inout Hasher) {
     let node = nodes[0]
-    return node.x << 8 + node.y + (horizontal ? 1 << 16 : 0)
+    hasher.combine(node.x << 8 + node.y + (horizontal ? 1 << 16 : 0))
   }
   
   /// (Hashable)

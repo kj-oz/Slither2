@@ -18,8 +18,8 @@ class EdgeSet: Hashable {
   let hash: Int
   
   /// (Hashable)
-  var hashValue: Int {
-    return hash
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(hash)
   }
   
   /// (Hashable)
