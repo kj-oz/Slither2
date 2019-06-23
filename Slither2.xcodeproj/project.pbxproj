@@ -244,9 +244,11 @@
 				TargetAttributes = {
 					31C8802722227F99008C0D99 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 					};
 					31C8803B22227F9B008C0D99 = {
 						CreatedOnToolsVersion = 10.1;
+						LastSwiftMigration = 1020;
 						TestTargetID = 31C8802722227F99008C0D99;
 					};
 				};
@@ -499,7 +501,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = kj.okzk.Slither2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Debug;
@@ -517,7 +519,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = kj.okzk.Slither2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 2;
 			};
 			name = Release;
@@ -537,7 +539,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = kj.okzk.Slither2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Slither2.app/Slither2";
 			};
@@ -558,7 +560,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = kj.okzk.Slither2Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Slither2.app/Slither2";
 			};

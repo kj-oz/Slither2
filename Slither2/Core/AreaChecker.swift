@@ -429,7 +429,7 @@ class AreaChecker {
       area.terminals.append(point)
       gotNewTerminal = true
     }
-    if let index = area.gates.index(of: point) {
+    if let index = area.gates.firstIndex(of: point) {
       area.gates.remove(at: index)
     }
     for nextPoint in point.nextPoints {
@@ -547,7 +547,7 @@ class AreaChecker {
     }
     to.gates.append(contentsOf: from.gates)
     to.terminals.append(contentsOf: from.terminals)
-    areas.remove(at: areas.index(of: from)!)
+    areas.remove(at: areas.firstIndex(of: from)!)
   }
   
   /// エリアチェックの状況を出力する
