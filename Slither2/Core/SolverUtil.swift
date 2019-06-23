@@ -16,11 +16,13 @@ struct SolveException: Error {
   /// - finished: 正解が見つかった
   /// - cacheHit: キャッシュにヒットした
   /// - timeover: 制限時間オーバー
+  /// - stepover: 1ステップトライ時の延長エッジ数の制限オーバー
   enum Reason {
     case failed
     case finished
     case cacheHit
     case timeover
+    case stepover
   }
   
   /// 例外の理由
@@ -50,6 +52,9 @@ struct SolveResult {
   
   /// 処理に要した時間
   var elapsed = 0.0
+  
+  /// tryOneStepでのtry後の連鎖エッジ数
+  var tryingChainCount = 0
   
   /// ブランチの再帰呼び出し時の最大レベル
   var maxLevel = 0
@@ -107,8 +112,8 @@ struct SolveOption {
   /// 領域チェックを行うかどうか
   var doAreaCheck = false
   
-  /// 1ステップだけの仮置きを行うかどうか
-  var doTryOneStep = true
+  /// 1ステップだけの仮置きを行う際の先読みのレベル
+  var tryOneStepLevel = 1
   
   /// セルのコーナーの通過チェックを行うかどうか
   var doGateCheck = true
@@ -137,8 +142,9 @@ struct SolveOption {
     if doColorCheck {
       result += "C"
     }
-    if doTryOneStep {
+    if tryOneStepLevel > 0 {
       result += useCache ? "T" : "t"
+      result += "\(tryOneStepLevel)"
     }
     if doAreaCheck {
       result += "A"

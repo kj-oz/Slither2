@@ -23,7 +23,10 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   /// 回答チェック時、セルの色のチェックを使用するかどうかのスイッチ
   @IBOutlet weak var cellColorSwitch: UISwitch!
   /// 回答チェック時、1ステップだけの仮置きを使用するかどうかのスイッチ
-  @IBOutlet weak var tryOneStepSwitch: UISwitch!
+  //@IBOutlet weak var tryOneStepSwitch: UISwitch!
+  /// 回答チェック時、1ステップだけの仮置きをどの程度使用するかのセグメント
+  /// （0:使用しない、1:仮置き後の判定までの延長が2%まで、2:制限なし）
+  @IBOutlet weak var tryOneStepSegment: UISegmentedControl!
   ///// 回答チェック時、領域のチェックを使用するかどうかのスイッチ
   //@IBOutlet weak var areaCheckSwitch: UISwitch!
   /// 回答チェック時の許容時間(ms)の入力欄
@@ -114,7 +117,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       
       var solveOption = SolveOption()
       solveOption.doAreaCheck = false
-      solveOption.doTryOneStep = tryOneStepSwitch.isOn
+      solveOption.tryOneStepLevel = tryOneStepSegment.selectedSegmentIndex
       solveOption.useCache = true
       solveOption.doColorCheck = cellColorSwitch.isOn
       solveOption.doGateCheck = gateCheckSwitch.isOn
@@ -196,11 +199,25 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       let solveOpStr = UserDefaults.standard.string(forKey: "genSolveOp") ?? ""
       gateCheckSwitch.isOn = solveOpStr.firstIndex(of: "G") != nil
       cellColorSwitch.isOn = solveOpStr.firstIndex(of: "C") != nil
-      tryOneStepSwitch.isOn = solveOpStr.firstIndex(of: "T") != nil
+      tryOneStepSegment.selectedSegmentIndex = tryOneStepLevelFromOpStr(solveOpStr: solveOpStr)
       //areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
       solveTimeText.text = UserDefaults.standard.string(forKey: "genSolveTime") ?? "100"
       pruneType = PruneType(rawValue: UserDefaults.standard.string(forKey: "genPruneType") ?? "R4")
       pruneTypeLabel.text = pruneType.description
+    }
+  }
+  
+  /// 解法オプション文字列から1手仮置きのレベルを得る
+  ///
+  /// - Parameter solveOpStr: 解法オプション文字列
+  /// - Returns: 1手仮置きのレベル
+  private func tryOneStepLevelFromOpStr(solveOpStr: String) -> Int {
+    let tryIndex = solveOpStr.firstIndex(of: "T")
+    if let tryIndex = tryIndex {
+      let numIndex = solveOpStr.index(after: tryIndex)
+      return min((Int(String(solveOpStr[numIndex])) ?? 0), 2)
+    } else {
+      return 0
     }
   }
   
@@ -218,8 +235,8 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       if cellColorSwitch.isOn {
         solveOpStr += "C"
       }
-      if tryOneStepSwitch.isOn {
-        solveOpStr += "T"
+      if tryOneStepSegment.selectedSegmentIndex > 0 {
+        solveOpStr += "T\(tryOneStepSegment.selectedSegmentIndex)"
       }
       //if areaCheckSwitch.isOn {
       //  solveOpStr += "A"
@@ -240,20 +257,21 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       solveOpStr = "GC"
       pruneType = PruneType.random4Cell
     case 1:
-      solveOpStr = "GCT"
+      solveOpStr = "GCT1"
       pruneType = PruneType.random2Cell
     case 2:
-      solveOpStr = "GCT"
+      solveOpStr = "GCT2"
       pruneType = PruneType.random1Cell
     case 3:
-      solveOpStr = "GCT"
+      solveOpStr = "GCT2"
       pruneType = PruneType.randomSCell
     default:
       break
     }
     gateCheckSwitch.isOn = solveOpStr.firstIndex(of: "G") != nil
     cellColorSwitch.isOn = solveOpStr.firstIndex(of: "C") != nil
-    tryOneStepSwitch.isOn = solveOpStr.firstIndex(of: "T") != nil
+    tryOneStepSegment.selectedSegmentIndex = tryOneStepLevelFromOpStr(solveOpStr: solveOpStr)
+    //tryOneStepSwitch.isOn = solveOpStr.firstIndex(of: "T") != nil
     //areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
     pruneTypeLabel.text = pruneType.description
     
@@ -269,10 +287,10 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   /// 盤面のサイズに応じて、回答を求める際の許容時間を変更する
   private func updateSolveTime() {
     if let width = Int(widthText.text!), let height = Int(heightText.text!) {
-      // iPadAir2で1セルあたり1msを目処として使用
-      var solveTime = (width * height / 50) * 50
+      // iPadAir2で1セルあたり0.5msを目処として使用
+      var solveTime = (width * height / 100) * 50
       if solveTime == 0 {
-        solveTime = 10
+        solveTime = 50
       }
       if presetSegment.selectedSegmentIndex >= 2 {
         solveTime *= 2

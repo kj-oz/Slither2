@@ -31,8 +31,17 @@ class Solver {
   /// 解を求めた結果
   var result = SolveResult()
   
-  /// 1ステップトライ時の次のエッジのインデックス
+  /// 1ステップトライ時の次のトライするエッジのインデックス
   private var nextTryEdgeIndex = 0
+  
+  /// 1ステップトライ実行中かどうか
+  private var trying = false
+  
+  /// 1ステップトライ時のループ延長数
+  private var tryingChainCont = 0
+  
+  /// 1ステップトライ時の判定までの許容ループ延長数
+  private var tryingChainMax = 0
   
   /// 与えられた盤面で初期化する
   ///
@@ -107,6 +116,17 @@ class Solver {
     let startTime = Date()
     result = SolveResult()
     timelimit = startTime.addingTimeInterval(option.elapsedSec)
+    let percent: Double
+    switch option.tryOneStepLevel {
+    case 0:
+      percent = 0.0
+    case 1:
+      percent = 2.0
+    default:
+      percent = 20.0
+    }
+    tryingChainMax = Int(percent * 0.01 * Double(board.edges.count))
+    
     self.option = option
     do {
       try initCorner()
@@ -193,6 +213,7 @@ class Solver {
 
     do {
       try changeEdgeStatus(of: edge, to: status)
+      startTrying()
       try checkSurroundingElements(trying: true)
     } catch {
       let exception = error as! SolveException
@@ -201,11 +222,28 @@ class Solver {
       } else if exception.reason == .failed {
         backToPreviousStep()
         try changeEdgeStatus(of: edge, to: status.otherStatus())
+        endTrying()
         return true
       }
     }
     currentStep.rewind(addCache: true)
+    endTrying()
     return false
+  }
+  
+  /// 1ステップトライを開始する
+  private func startTrying() {
+    trying = true
+    tryingChainCont = 0
+  }
+  
+  /// 1ステップトライを終了する
+  private func endTrying() {
+    trying = false
+    if tryingChainCont > result.tryingChainCount {
+      result.tryingChainCount = tryingChainCont
+    }
+    tryingChainCont = 0
   }
   
   /// 与えられたNodeから発生する分岐の配列を得る
@@ -353,6 +391,13 @@ class Solver {
       throw SolveException(reason: .failed)
     }
     
+    if trying && status == .on {
+      tryingChainCont += 1
+      if tryingChainCont > tryingChainMax {
+        throw SolveException(reason: .stepover)
+      }
+    }
+    
     currentStep.add(action: SetEdgeStatusAction(edge: edge, status: status))
     currentStep.changedEdges.append(edge)
     if currentStep.useCache && currentStep.hasCache(edge: edge) {
@@ -441,7 +486,7 @@ class Solver {
       } else if trying {
         break
       } else {
-        if option.doTryOneStep {
+        if option.tryOneStepLevel > 0 {
           if try tryOneStep() {
             continue
           }

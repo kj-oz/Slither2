@@ -389,6 +389,8 @@ class Pruner {
         for index in indecies {
           numbers[index] = originalNumbers[index]
         }
+      } else if result.tryingChainCount > 0 {
+        print("tryingChain: \(result.tryingChainCount)")
       }
       stepHandler?(pruneCount, result)
     }

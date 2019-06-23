@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Rzz-QQ-oVT">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Rzz-QQ-oVT">
     <device id="ipad9_7" orientation="landscape">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -613,26 +613,23 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="１手仮置き [T]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hm5-pc-4bV">
-                                                    <rect key="frame" x="16" y="11.5" width="225" height="21"/>
+                                                    <rect key="frame" x="16" y="11.5" width="114" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jPw-Um-n1K">
-                                                    <rect key="frame" x="251" y="6.5" width="51" height="31"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="49" id="8If-1E-vrB"/>
-                                                    </constraints>
-                                                    <connections>
-                                                        <action selector="solveOptionChanged:" destination="PQF-7M-6QV" eventType="valueChanged" id="LF6-eK-Gil"/>
-                                                    </connections>
-                                                </switch>
+                                                <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="eAz-Gq-oB4">
+                                                    <rect key="frame" x="172" y="8" width="132" height="29"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <segments>
+                                                        <segment title="0" width="44"/>
+                                                        <segment title="1" width="44"/>
+                                                        <segment title="2" width="44"/>
+                                                    </segments>
+                                                </segmentedControl>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="jPw-Um-n1K" firstAttribute="leading" secondItem="Hm5-pc-4bV" secondAttribute="trailing" constant="10" id="9TV-hE-BPd"/>
                                                 <constraint firstItem="Hm5-pc-4bV" firstAttribute="centerY" secondItem="0j7-UA-ApL" secondAttribute="centerY" id="XLb-rk-yKA"/>
-                                                <constraint firstAttribute="trailing" secondItem="jPw-Um-n1K" secondAttribute="trailing" constant="20" id="cZy-sn-28F"/>
-                                                <constraint firstItem="jPw-Um-n1K" firstAttribute="centerY" secondItem="0j7-UA-ApL" secondAttribute="centerY" id="e46-KM-0Co"/>
                                                 <constraint firstItem="Hm5-pc-4bV" firstAttribute="leading" secondItem="0j7-UA-ApL" secondAttribute="leadingMargin" id="kcF-VH-NcW"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -732,7 +729,7 @@
                         <outlet property="pruneTypeLabel" destination="B5g-1D-Wph" id="ieB-p5-dm8"/>
                         <outlet property="solveTimeText" destination="Vyq-SL-ywB" id="At8-IG-8ec"/>
                         <outlet property="titleText" destination="1gg-7v-m0E" id="VT1-2p-SHS"/>
-                        <outlet property="tryOneStepSwitch" destination="jPw-Um-n1K" id="xFx-1l-msM"/>
+                        <outlet property="tryOneStepSegment" destination="eAz-Gq-oB4" id="XTF-4i-FLA"/>
                         <outlet property="widthText" destination="Lw1-Nm-ina" id="Xbz-d0-3QC"/>
                     </connections>
                 </tableViewController>
@@ -833,8 +830,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="check" width="314.18182373046875" height="360"/>
-        <image name="help" width="314.18182373046875" height="314.18182373046875"/>
+        <image name="check" width="24" height="27.5"/>
+        <image name="help" width="24" height="24"/>
         <image name="redo" width="28" height="22.5"/>
         <image name="undo" width="28" height="22.5"/>
     </resources>
