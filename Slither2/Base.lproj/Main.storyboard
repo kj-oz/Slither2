@@ -618,9 +618,8 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <segmentedControl opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="eAz-Gq-oB4">
-                                                    <rect key="frame" x="172" y="8" width="132" height="29"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="eAz-Gq-oB4">
+                                                    <rect key="frame" x="170" y="8" width="134" height="29"/>
                                                     <segments>
                                                         <segment title="0" width="44"/>
                                                         <segment title="1" width="44"/>
@@ -629,6 +628,8 @@
                                                 </segmentedControl>
                                             </subviews>
                                             <constraints>
+                                                <constraint firstItem="eAz-Gq-oB4" firstAttribute="centerY" secondItem="0j7-UA-ApL" secondAttribute="centerY" id="PF2-jU-fof"/>
+                                                <constraint firstAttribute="trailing" secondItem="eAz-Gq-oB4" secondAttribute="trailing" constant="16" id="VJj-dO-YWn"/>
                                                 <constraint firstItem="Hm5-pc-4bV" firstAttribute="centerY" secondItem="0j7-UA-ApL" secondAttribute="centerY" id="XLb-rk-yKA"/>
                                                 <constraint firstItem="Hm5-pc-4bV" firstAttribute="leading" secondItem="0j7-UA-ApL" secondAttribute="leadingMargin" id="kcF-VH-NcW"/>
                                             </constraints>
