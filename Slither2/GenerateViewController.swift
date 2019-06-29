@@ -287,12 +287,14 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   /// 盤面のサイズに応じて、回答を求める際の許容時間を変更する
   private func updateSolveTime() {
     if let width = Int(widthText.text!), let height = Int(heightText.text!) {
-      // iPadAir2で1セルあたり0.5msを目処として使用
-      var solveTime = (width * height / 100) * 50
+      // iPadAir2で1セルあたり1msを目処として使用（レベル0の問題はその半分）
+      var solveTime = (width * height / 100) * 100 / 2
       if solveTime == 0 {
         solveTime = 50
       }
-      if presetSegment.selectedSegmentIndex >= 2 {
+      if presetSegment.selectedSegmentIndex == 3 {
+        solveTime *= 3
+      } else if presetSegment.selectedSegmentIndex >= 1 {
         solveTime *= 2
       }
       solveTimeText.text = String(solveTime)

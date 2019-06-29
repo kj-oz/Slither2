@@ -177,7 +177,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     if let edge = puzzle.board.findOnEdge() {
       let endNode = puzzle.board.getLoopEnd(from: edge.nodes[0], and: edge)
       if endNode == nil {
-        let loopStatus = puzzle.board.getLoopStatus(including: edge)
+        let loopStatus = puzzle.board.check(finished: true)
         if loopStatus == .finished {
           puzzle.fix()
           puzzle.status = .solved
@@ -186,6 +186,8 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
           updateButtonStatus()
           let msg = "正解です。所要時間 \(puzzle.elapsedTimeString)"
           alert(viewController: self, message: msg)
+        } else if loopStatus == .nodeError {
+          alert(viewController: self, title: "ループエラー", message: "条件に合致しないノードがあります。")
         } else if loopStatus == .cellError {
           alert(viewController: self, title: "ループエラー", message: "条件に合致しないセルがあります。")
         } else if loopStatus == .multiLoop {

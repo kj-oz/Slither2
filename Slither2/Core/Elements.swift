@@ -106,11 +106,13 @@ enum GateStatus: Int {
 ///
 /// - NotClosed: 1本のループになっていない
 /// - CellError: 1本のループだがセルの数値と合致しない
+/// - NodeError: 1本のループだがノードのON数が0か2ではない
 /// - MultiLoop: 全てのセルの数値を満たしているが複数のループがある
 /// - Finished: 1本のループでなおかつ全てのセルの数値を満たしている
 enum LoopStatus: Int {
   case notClosed
   case cellError
+  case nodeError
   case multiLoop
   case finished
 }
