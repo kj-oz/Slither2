@@ -614,9 +614,9 @@ class Board {
       for loop in loops {
         checkedEdges.append(contentsOf: loop)
       }
-      return false
+      return true
     }
-    return true
+    return false
   }
   
   /// 水平方向のEdgeを表す状態に応じた文字を得る

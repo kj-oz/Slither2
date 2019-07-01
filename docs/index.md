@@ -10,7 +10,8 @@ Objective-Cで書かれた[SLPlayer][SLPlayer]の後継になります。
 画面イメージや使い方は、以下のページをご覧下さい。  
 　[http://???][Blogger]
 
-[パズルの生成](./generation.html).
+　[用語](./terms.html)
+　[パズルの生成](./generation.html)
 
 ### アプリケーションの特徴 
 
