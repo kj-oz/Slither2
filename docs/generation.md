@@ -3,7 +3,7 @@ layout: default
 ---
 
 <div style="text-align: right;">
-[TOPページ](./index.html).
+<a href="./index.html">TOPページ</a>
 </div>
 # パズルの生成
 
@@ -140,6 +140,9 @@ layout: default
 *   1セル：一度に1つのセルの数字を除去するパターンです。早めに除去する部分の定義によりいくつかのパターンが存在します。
 *   1セル（難問）：1セルと同じですが、早めに除去する部分の定義により、比較的難しい問題ができる傾向にあるパターンが選ばれています。
 
+<div style="text-align: right;">
+<a href="./index.html">TOPページ</a>
+</div>
 
 
 
