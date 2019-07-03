@@ -544,7 +544,7 @@ class Board {
   /// - Returns: 何かしらの瑕疵が見つかったかどうか
   private func checkNodes(finished: Bool) -> Bool {
     for node in nodes {
-      if (finished && node.onCount == 1) || node.onCount == 3 {
+      if ((finished || node.offCount == 3) && node.onCount == 1) || node.onCount == 3 {
         checkedNodes.append(node)
         for edge in node.edges {
           if edge.status == .on {
@@ -563,7 +563,8 @@ class Board {
   private func checkCells(finished: Bool) -> Bool {
     for cell in cells {
       if cell.number >= 0 &&
-          ((finished && cell.onCount < cell.number) || cell.onCount > cell.number) {
+          ((finished && cell.onCount < cell.number) || cell.onCount > cell.number
+            || cell.offCount > 4 - cell.number) {
         checkedCells.append(cell)
         for edge in cell.edges {
           if edge.status == .on {
