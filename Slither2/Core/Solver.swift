@@ -464,11 +464,6 @@ class Solver {
           break
         }
         
-        if option.doColorCheck {
-          currentStep.colorCheckCells.insert(edge.cells[0])
-          currentStep.colorCheckCells.insert(edge.cells[1])
-        }
-        
         if option.doGateCheck {
           currentStep.gateCheckCells.insert(edge.cells[0])
           currentStep.gateCheckCells.insert(edge.cells[1])
@@ -477,12 +472,16 @@ class Solver {
           currentStep.gateCheckCells.insert(edge.straightEdges[1].cells[0])
           currentStep.gateCheckCells.insert(edge.straightEdges[1].cells[1])
         }
-      } else if currentStep.colorCheckCells.count > 0 {
-        let cell = currentStep.colorCheckCells.popFirst()!
-        try checkColor(of: cell)
+        if option.doColorCheck {
+          currentStep.colorCheckCells.insert(edge.cells[0])
+          currentStep.colorCheckCells.insert(edge.cells[1])
+        }        
       } else if currentStep.gateCheckCells.count > 0 {
         let cell = currentStep.gateCheckCells.popFirst()!
         try checkGate(of: cell)
+      } else if currentStep.colorCheckCells.count > 0 {
+        let cell = currentStep.colorCheckCells.popFirst()!
+        try checkColor(of: cell)
       } else if trying {
         break
       } else {
