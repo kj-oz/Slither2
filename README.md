@@ -8,7 +8,7 @@ Objective-Cで書かれた[SLPlayer][SLPlayer]の後継になります。
 　[https://itunes.apple.com/jp/app/？？？？？？?mt=8][AppStore]
 
 以下のページで、アプリの中の操作ガイドには書かれていない、生成のロジックなどを解説していますので、合わせて御覧ください。 
-　[https://github.com/kj-oz/Slither2][https://github.com/kj-oz/Slither2]
+　[https://github.com/kj-oz/Slither2](https://github.com/kj-oz/Slither2)
 
 ### アプリケーションの特徴 
 
@@ -21,7 +21,7 @@ Objective-Cで書かれた[SLPlayer][SLPlayer]の後継になります。
 
 * 使用言語は Swift 5.0 です。
 * コメントは全て日本語です。
-* クラスの可視性などはあまり真面目に指定していません。リファクタリングする余地はたんまりあります。
+* クラスの可視性などはあまり真面目に指定していません。リファクタリングする余地はt多々あります。
 * SLPlayerにはあった写真や画像から問題を自動認識する機能はSlithe2では省略していますので、ご興味のある方は[SLPlayer][SLPlayer]のリポジトリを御覧ください。
 
 ### 開発環境
