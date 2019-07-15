@@ -116,16 +116,6 @@ class Solver {
     let startTime = Date()
     result = SolveResult()
     timelimit = startTime.addingTimeInterval(option.elapsedSec)
-    let percent: Double
-    switch option.tryOneStepLevel {
-    case 0:
-      percent = 0.0
-    case 1:
-      percent = 2.0
-    default:
-      percent = 20.0
-    }
-    tryingChainMax = Int(percent * 0.01 * Double(board.edges.count))
     
     self.option = option
     do {
@@ -485,7 +475,7 @@ class Solver {
       } else if trying {
         break
       } else {
-        if option.tryOneStepLevel > 0 {
+        if option.tryOneStepMaxExtent > 0 {
           if try tryOneStep() {
             continue
           }

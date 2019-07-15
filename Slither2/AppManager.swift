@@ -431,7 +431,7 @@ class AppManager {
   private func measure(_ lines: [String]) -> Int {
     var option = SolveOption()
     option.doAreaCheck = false
-    option.tryOneStepLevel = 2
+    option.tryOneStepMaxExtent = 10000
     option.useCache = true
     option.doColorCheck = true
     option.doGateCheck = true

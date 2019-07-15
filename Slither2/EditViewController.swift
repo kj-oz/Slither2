@@ -122,7 +122,7 @@ class EditViewController: UIViewController, PuzzleViewDelegate {
     let solver = Solver(board: puzzle.board)
     var option = SolveOption()
     option.doAreaCheck = true
-    option.tryOneStepLevel = 3
+    option.tryOneStepMaxExtent = 10000
     option.useCache = true
     option.doColorCheck = true
     option.doGateCheck = true

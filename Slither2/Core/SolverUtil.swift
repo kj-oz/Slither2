@@ -112,8 +112,8 @@ struct SolveOption {
   /// 領域チェックを行うかどうか
   var doAreaCheck = false
   
-  /// 1ステップだけの仮置きを行う際の先読みのレベル
-  var tryOneStepLevel = 1
+  /// 1ステップだけの仮置きを行う際の最大伸延すエッジ数
+  var tryOneStepMaxExtent = 100
   
   /// セルのコーナーの通過チェックを行うかどうか
   var doGateCheck = true
@@ -142,9 +142,9 @@ struct SolveOption {
     if doColorCheck {
       result += "C"
     }
-    if tryOneStepLevel > 0 {
+    if tryOneStepMaxExtent > 0 {
       result += useCache ? "T" : "t"
-      result += "\(tryOneStepLevel)"
+      result += "\(tryOneStepMaxExtent == 10 ? 1 : 2)"
     }
     if doAreaCheck {
       result += "A"

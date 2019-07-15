@@ -36,16 +36,16 @@
 "J6G-6b-YkX.title" = "複写";
 
 /* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[0] = "手動"; ObjectID = "KV9-iw-neE"; */
-"KV9-iw-neE.segmentTitles[0]" = "初級";
+"KV9-iw-neE.segmentTitles[0]" = "レベル1";
 
 /* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[1] = "易"; ObjectID = "KV9-iw-neE"; */
-"KV9-iw-neE.segmentTitles[1]" = "中級";
+"KV9-iw-neE.segmentTitles[1]" = "レベル2";
 
 /* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[2] = "中"; ObjectID = "KV9-iw-neE"; */
-"KV9-iw-neE.segmentTitles[2]" = "上級";
+"KV9-iw-neE.segmentTitles[2]" = "レベル3";
 
 /* Class = "UISegmentedControl"; KV9-iw-neE.segmentTitles[3] = "難"; ObjectID = "KV9-iw-neE"; */
-"KV9-iw-neE.segmentTitles[3]" = "難問";
+"KV9-iw-neE.segmentTitles[3]" = "レベル4";
 
 /* Class = "UIBarButtonItem"; title = "入力"; ObjectID = "Kuk-0x-nV7"; */
 "Kuk-0x-nV7.title" = "入力";

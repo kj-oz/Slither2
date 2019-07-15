@@ -115,9 +115,27 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       
       let title = titleText.text!
       
+      
       var solveOption = SolveOption()
       solveOption.doAreaCheck = false
-      solveOption.tryOneStepLevel = tryOneStepSegment.selectedSegmentIndex
+      //    let percent: Double
+      //    switch option.tryOneStepLevel {
+      //    case 0:
+      //      percent = 0.0
+      //    case 1:
+      //      percent = 2.0
+      //    default:
+      //      percent = 20.0
+      //    }
+      //    tryingChainMax = Int(percent * 0.01 * Double(board.edges.count))
+      switch tryOneStepSegment.selectedSegmentIndex {
+      case 1:
+        solveOption.tryOneStepMaxExtent = 10
+      case 2:
+        solveOption.tryOneStepMaxExtent = 100
+      default:
+        solveOption.tryOneStepMaxExtent = 0
+      }
       solveOption.useCache = true
       solveOption.doColorCheck = cellColorSwitch.isOn
       solveOption.doGateCheck = gateCheckSwitch.isOn
@@ -292,9 +310,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       if solveTime == 0 {
         solveTime = 50
       }
-      if presetSegment.selectedSegmentIndex == 3 {
-        solveTime *= 3
-      } else if presetSegment.selectedSegmentIndex >= 1 {
+      if presetSegment.selectedSegmentIndex >= 2 {
         solveTime *= 2
       }
       solveTimeText.text = String(solveTime)
