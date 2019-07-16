@@ -40,9 +40,6 @@ class Solver {
   /// 1ステップトライ時のループ延長数
   private var tryingChainCont = 0
   
-  /// 1ステップトライ時の判定までの許容ループ延長数
-  private var tryingChainMax = 0
-  
   /// 与えられた盤面で初期化する
   ///
   /// - Parameter board: 盤面
@@ -383,7 +380,7 @@ class Solver {
     
     if trying && status == .on {
       tryingChainCont += 1
-      if tryingChainCont > tryingChainMax {
+      if tryingChainCont > option.tryOneStepMaxExtent {
         throw SolveException(reason: .stepover)
       }
     }
