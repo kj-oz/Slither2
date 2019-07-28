@@ -144,7 +144,7 @@ struct SolveOption {
     }
     if tryOneStepMaxExtent > 0 {
       result += useCache ? "T" : "t"
-      result += "\(tryOneStepMaxExtent == 10 ? 1 : 2)"
+      result += "\(tryOneStepMaxExtent)"
     }
     if doAreaCheck {
       result += "A"

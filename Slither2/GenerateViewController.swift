@@ -22,13 +22,8 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   @IBOutlet weak var gateCheckSwitch: UISwitch!
   /// 回答チェック時、セルの色のチェックを使用するかどうかのスイッチ
   @IBOutlet weak var cellColorSwitch: UISwitch!
-  /// 回答チェック時、1ステップだけの仮置きを使用するかどうかのスイッチ
-  //@IBOutlet weak var tryOneStepSwitch: UISwitch!
-  /// 回答チェック時、1ステップだけの仮置きをどの程度使用するかのセグメント
-  /// （0:使用しない、1:仮置き後の判定までの延長が2%まで、2:制限なし）
-  @IBOutlet weak var tryOneStepSegment: UISegmentedControl!
-  ///// 回答チェック時、領域のチェックを使用するかどうかのスイッチ
-  //@IBOutlet weak var areaCheckSwitch: UISwitch!
+  /// 回答チェック時、1ステップだけの仮置きを使用する場合の許容延長の入力欄
+  @IBOutlet weak var tryExtentText: UITextField!
   /// 回答チェック時の許容時間(ms)の入力欄
   @IBOutlet weak var solveTimeText: UITextField!
   /// 盤面の除去パターン名
@@ -115,27 +110,10 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       
       let title = titleText.text!
       
-      
       var solveOption = SolveOption()
       solveOption.doAreaCheck = false
-      //    let percent: Double
-      //    switch option.tryOneStepLevel {
-      //    case 0:
-      //      percent = 0.0
-      //    case 1:
-      //      percent = 2.0
-      //    default:
-      //      percent = 20.0
-      //    }
-      //    tryingChainMax = Int(percent * 0.01 * Double(board.edges.count))
-      switch tryOneStepSegment.selectedSegmentIndex {
-      case 1:
-        solveOption.tryOneStepMaxExtent = 10
-      case 2:
-        solveOption.tryOneStepMaxExtent = 100
-      default:
-        solveOption.tryOneStepMaxExtent = 0
-      }
+      let tryExtent = Int(tryExtentText.text!) ?? 0
+      solveOption.tryOneStepMaxExtent = tryExtent
       solveOption.useCache = true
       solveOption.doColorCheck = cellColorSwitch.isOn
       solveOption.doGateCheck = gateCheckSwitch.isOn
@@ -217,7 +195,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       let solveOpStr = UserDefaults.standard.string(forKey: "genSolveOp") ?? ""
       gateCheckSwitch.isOn = solveOpStr.firstIndex(of: "G") != nil
       cellColorSwitch.isOn = solveOpStr.firstIndex(of: "C") != nil
-      tryOneStepSegment.selectedSegmentIndex = tryOneStepLevelFromOpStr(solveOpStr: solveOpStr)
+      tryExtentText.text = tryOneStepExtentFromOpStr(solveOpStr: solveOpStr)
       //areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
       solveTimeText.text = UserDefaults.standard.string(forKey: "genSolveTime") ?? "100"
       pruneType = PruneType(rawValue: UserDefaults.standard.string(forKey: "genPruneType") ?? "R4")
@@ -229,13 +207,13 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   ///
   /// - Parameter solveOpStr: 解法オプション文字列
   /// - Returns: 1手仮置きのレベル
-  private func tryOneStepLevelFromOpStr(solveOpStr: String) -> Int {
+  private func tryOneStepExtentFromOpStr(solveOpStr: String) -> String {
     let tryIndex = solveOpStr.firstIndex(of: "T")
     if let tryIndex = tryIndex {
       let numIndex = solveOpStr.index(after: tryIndex)
-      return min((Int(String(solveOpStr[numIndex])) ?? 0), 2)
+      return String(solveOpStr.suffix(from: numIndex))
     } else {
-      return 0
+      return "0"
     }
   }
   
@@ -253,12 +231,9 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
       if cellColorSwitch.isOn {
         solveOpStr += "C"
       }
-      if tryOneStepSegment.selectedSegmentIndex > 0 {
-        solveOpStr += "T\(tryOneStepSegment.selectedSegmentIndex)"
+      if let text = tryExtentText.text, text != "" && text != "0" {
+        solveOpStr += "T\(text)"
       }
-      //if areaCheckSwitch.isOn {
-      //  solveOpStr += "A"
-      //}
       UserDefaults.standard.set(solveOpStr, forKey: "genSolveOp")
       UserDefaults.standard.set(solveTimeText.text, forKey: "genSolveTime")
       UserDefaults.standard.set(pruneType.rawValue, forKey: "genPruneType")
@@ -270,27 +245,29 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   /// - Parameter level: プリセットのレベル
   private func setOptions(of level: Int) {
     var solveOpStr = ""
+    var tryExtent = 0
     switch level {
     case 0:
       solveOpStr = "GC"
       pruneType = PruneType.random4Cell
     case 1:
-      solveOpStr = "GCT1"
+      solveOpStr = "GCT10"
       pruneType = PruneType.random2Cell
+      tryExtent = 10
     case 2:
-      solveOpStr = "GCT2"
+      solveOpStr = "GCT10"
       pruneType = PruneType.random1Cell
+      tryExtent = 10
     case 3:
-      solveOpStr = "GCT2"
+      solveOpStr = "GCT40"
       pruneType = PruneType.randomSCell
+      tryExtent = 40
     default:
       break
     }
     gateCheckSwitch.isOn = solveOpStr.firstIndex(of: "G") != nil
     cellColorSwitch.isOn = solveOpStr.firstIndex(of: "C") != nil
-    tryOneStepSegment.selectedSegmentIndex = tryOneStepLevelFromOpStr(solveOpStr: solveOpStr)
-    //tryOneStepSwitch.isOn = solveOpStr.firstIndex(of: "T") != nil
-    //areaCheckSwitch.isOn = solveOpStr.firstIndex(of: "A") != nil
+    tryExtentText.text = "\(tryExtent)"
     pruneTypeLabel.text = pruneType.description
     
     updateSolveTime()

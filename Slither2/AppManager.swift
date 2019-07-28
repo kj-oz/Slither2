@@ -29,7 +29,8 @@ class Folder {
       if _puzzles == nil {
         _puzzles = []
         let fm = FileManager.default
-        let files = try! fm.contentsOfDirectory(atPath: path)
+        var files = try! fm.contentsOfDirectory(atPath: path)
+        files.sort()
         for file in files {
           self.puzzles.append(Puzzle(folder: self, filename: file))
         }

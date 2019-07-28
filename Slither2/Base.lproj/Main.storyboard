@@ -548,7 +548,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="斜めゲート [G]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mlF-O7-kGw">
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="斜ゲート [G]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mlF-O7-kGw">
                                                     <rect key="frame" x="16" y="11.5" width="227" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
@@ -612,26 +612,27 @@
                                             <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="１手仮置き [T]" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hm5-pc-4bV">
-                                                    <rect key="frame" x="16" y="11.5" width="114" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="１手仮置 [T]　判定長" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hm5-pc-4bV">
+                                                    <rect key="frame" x="16" y="11.5" width="166" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="eAz-Gq-oB4">
-                                                    <rect key="frame" x="170" y="8" width="134" height="29"/>
-                                                    <segments>
-                                                        <segment title="0" width="44"/>
-                                                        <segment title="1" width="44"/>
-                                                        <segment title="2" width="44"/>
-                                                    </segments>
-                                                </segmentedControl>
+                                                <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="iGV-hj-mip">
+                                                    <rect key="frame" x="224" y="7" width="80" height="30"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="80" id="TQY-pb-5aq"/>
+                                                    </constraints>
+                                                    <nil key="textColor"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                                                </textField>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="eAz-Gq-oB4" firstAttribute="centerY" secondItem="0j7-UA-ApL" secondAttribute="centerY" id="PF2-jU-fof"/>
-                                                <constraint firstAttribute="trailing" secondItem="eAz-Gq-oB4" secondAttribute="trailing" constant="16" id="VJj-dO-YWn"/>
                                                 <constraint firstItem="Hm5-pc-4bV" firstAttribute="centerY" secondItem="0j7-UA-ApL" secondAttribute="centerY" id="XLb-rk-yKA"/>
+                                                <constraint firstItem="iGV-hj-mip" firstAttribute="centerY" secondItem="0j7-UA-ApL" secondAttribute="centerY" id="dBa-7X-60J"/>
                                                 <constraint firstItem="Hm5-pc-4bV" firstAttribute="leading" secondItem="0j7-UA-ApL" secondAttribute="leadingMargin" id="kcF-VH-NcW"/>
+                                                <constraint firstAttribute="trailing" secondItem="iGV-hj-mip" secondAttribute="trailing" constant="16" id="qub-RY-mam"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -643,13 +644,16 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="判定時間（ms）" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qka-68-fK6">
-                                                    <rect key="frame" x="16" y="11.5" width="151" height="21"/>
+                                                    <rect key="frame" x="16" y="11.5" width="127" height="21"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Vyq-SL-ywB">
-                                                    <rect key="frame" x="177" y="7" width="123" height="30"/>
+                                                    <rect key="frame" x="224" y="7" width="80" height="30"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="80" id="0mG-ab-tSI"/>
+                                                    </constraints>
                                                     <nil key="textColor"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
@@ -658,9 +662,7 @@
                                             <constraints>
                                                 <constraint firstItem="qka-68-fK6" firstAttribute="leading" secondItem="wIg-qB-zC5" secondAttribute="leadingMargin" id="7p1-jb-3td"/>
                                                 <constraint firstItem="qka-68-fK6" firstAttribute="centerY" secondItem="wIg-qB-zC5" secondAttribute="centerY" id="I8Q-zB-ycS"/>
-                                                <constraint firstItem="Vyq-SL-ywB" firstAttribute="leading" secondItem="wIg-qB-zC5" secondAttribute="leading" constant="177" id="Stm-N4-6Yd"/>
-                                                <constraint firstItem="Vyq-SL-ywB" firstAttribute="leading" secondItem="qka-68-fK6" secondAttribute="trailing" constant="10" id="eUN-Qg-Pj0"/>
-                                                <constraint firstAttribute="trailing" secondItem="Vyq-SL-ywB" secondAttribute="trailing" constant="20" id="ggW-RN-wJu"/>
+                                                <constraint firstAttribute="trailing" secondItem="Vyq-SL-ywB" secondAttribute="trailing" constant="16" id="ggW-RN-wJu"/>
                                                 <constraint firstItem="Vyq-SL-ywB" firstAttribute="centerY" secondItem="wIg-qB-zC5" secondAttribute="centerY" id="zki-7Y-8H1"/>
                                             </constraints>
                                         </tableViewCellContentView>
@@ -730,7 +732,7 @@
                         <outlet property="pruneTypeLabel" destination="B5g-1D-Wph" id="ieB-p5-dm8"/>
                         <outlet property="solveTimeText" destination="Vyq-SL-ywB" id="At8-IG-8ec"/>
                         <outlet property="titleText" destination="1gg-7v-m0E" id="VT1-2p-SHS"/>
-                        <outlet property="tryOneStepSegment" destination="eAz-Gq-oB4" id="XTF-4i-FLA"/>
+                        <outlet property="tryExtentText" destination="iGV-hj-mip" id="LOe-FL-N6q"/>
                         <outlet property="widthText" destination="Lw1-Nm-ina" id="Xbz-d0-3QC"/>
                     </connections>
                 </tableViewController>

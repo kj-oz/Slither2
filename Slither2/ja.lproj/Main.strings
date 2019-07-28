@@ -27,7 +27,7 @@
 "GcF-9s-Rh5.title" = "削除";
 
 /* Class = "UILabel"; text = "１手仮置き [T]"; ObjectID = "Hm5-pc-4bV"; */
-"Hm5-pc-4bV.text" = "１手仮置き [T]";
+"Hm5-pc-4bV.text" = "１手仮置 [T]　判定長";
 
 /* Class = "UILabel"; text = "完了（9:59:59 固定5 初期化5）"; ObjectID = "IWI-3S-mcm"; */
 "IWI-3S-mcm.text" = "完了（9:59:59 固定5 初期化5）";
@@ -75,7 +75,7 @@
 "jn2-FG-mE9.text" = "高さ";
 
 /* Class = "UILabel"; text = "斜めゲート [G]"; ObjectID = "mlF-O7-kGw"; */
-"mlF-O7-kGw.text" = "斜めゲート [G]";
+"mlF-O7-kGw.text" = "斜ゲート [G]";
 
 /* Class = "UITableViewSection"; headerTitle = "詳細"; ObjectID = "nhh-bx-o5q"; */
 "nhh-bx-o5q.headerTitle" = "詳細";
