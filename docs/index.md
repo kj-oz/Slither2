@@ -19,3 +19,5 @@ Slither2は、[スリザーリンク](http://ja.wikipedia.org/wiki/スリザー�
 　[用語](./terms.html)  
 　[パズルの生成](./generation.html)
 
+　[プライバシーポリシー](./privacy.html)
+
