@@ -1,11 +1,11 @@
 Slither2
 ======================
-Slither2は、[スリザーリンク][Wikipedia]、あるいはナンバーラインと呼ばれるペンシルパズルで遊ぶための、Swiftで書かれたiPad専用のアプリケーションです。
-Objective-Cで書かれた[SLPlayer][SLPlayer]の後継になります。
+Slither2は、[スリザーリンク](http://ja.wikipedia.org/wiki/スリザーリンク)、あるいはナンバーラインと呼ばれるペンシルパズルで遊ぶための、Swiftで書かれたiPad専用のアプリケーションです。
+Objective-Cで書かれた[SLPlayer](https://github.com/kj-oz/SLPlayer)の後継になります。
 
 このソースからビルドされるアプリケーションは、Apple社のAppStoreで **スリザー2** という名称で
-無料で配信予定です。  
-　[https://itunes.apple.com/jp/app/？？？？？？?mt=8][AppStore]
+無料で配信中です。  
+　[https://apps.apple.com/app/id1473823135](https://apps.apple.com/app/id1473823135)
 
 以下のページで、アプリの中の操作ガイドには書かれていない、生成のロジックなどを解説していますので、合わせて御覧ください。 
 　[https://github.com/kj-oz/Slither2](https://github.com/kj-oz/Slither2)
@@ -34,13 +34,7 @@ iOS 9.0以上、iPad専用
 
 ライセンス
 -----
- [MIT License][MIT]. の元で公開します。  
+ [MIT License](http://www.opensource.org/licenses/mit-license.php). の元で公開します。  
 
 -----
 Copyright &copy; 2019 Kj Oz  
-
-[AppStore]: https://itunes.apple.com/jp/app/??????mt=8
-[Blogger]: http://?????
-[MIT]: http://www.opensource.org/licenses/mit-license.php
-[Wikipedia]: http://ja.wikipedia.org/wiki/スリザーリンク
-[SLPlayer]: https://github.com/kj-oz/SLPlayer
