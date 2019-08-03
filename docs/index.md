@@ -8,7 +8,6 @@ Slither2は、[スリザーリンク](http://ja.wikipedia.org/wiki/スリザー�
 本サイトでは、操作ガイドには書かれていない、パズルを生成する際のロジック等の情報を提供しています。
 
 　[概要](./general.html)  
-　[代表的な画面]  
 　[用語](./terms.html)  
 　[パズルの生成](./generation.html)
 
