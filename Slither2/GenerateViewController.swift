@@ -47,6 +47,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
     titleText.delegate = self
     widthText.delegate = self
     heightText.delegate = self
+    tryExtentText.delegate = self
     solveTimeText.delegate = self
     loadSettings()
     setGenerateButtonEnabled()
@@ -63,7 +64,7 @@ class GenerateViewController: UITableViewController, UITextFieldDelegate {
   
   // テキスト欄の変更時
   func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
-    if textField == solveTimeText {
+    if textField == solveTimeText || textField == tryExtentText {
       presetSegment.selectedSegmentIndex = -1
     } else if textField === widthText || textField === heightText {
       if presetSegment.selectedSegmentIndex >= 0 &&
