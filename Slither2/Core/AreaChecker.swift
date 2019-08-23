@@ -125,10 +125,10 @@ class Area : Hashable {
   let id: Int
   
   /// (Hashable)
-  var hashValue: Int {
-    return id
+  func hash(into hasher: inout Hasher) {
+    hasher.combine(id)
   }
-  
+
   /// (Hashable)
   static func == (lhs: Area, rhs: Area) -> Bool {
     return lhs.id == rhs.id
@@ -461,7 +461,7 @@ class AreaChecker {
   ///   - area: エリア
   ///   - status: ステータス
   /// - Throws: 解の探索時例外
-  private func changeGateStatus(of gate: Point, from area: Area, to status: EdgeStatus) throws -> Bool {
+  func changeGateStatus(of gate: Point, from area: Area, to status: EdgeStatus) throws -> Bool {
     var numAreas: [Int] = []
     var numOppAreas: [Int] = []
     for i in 0 ..< 4 {

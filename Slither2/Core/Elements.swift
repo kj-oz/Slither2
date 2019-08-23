@@ -117,20 +117,45 @@ enum LoopStatus: Int {
   case finished
 }
 
+enum ElementType: Int {
+  case none
+  case node
+  case cell
+  case hEdge
+  case vEdge
+}
 
-/// Cellの状態を表すクラス
-class Cell : Hashable {
+class Element : Hashable {
+  var elementType = ElementType.none
   
   /// (Hashable)
   func hash(into hasher: inout Hasher) {
-    let node = vEdges[0].nodes[0]
-    hasher.combine(node.x << 8 + node.y)
+    let node = hashNode
+    let val = elementType.rawValue << 16 + node.x << 8 + node.y
+    val.hash(into: &hasher)
   }
-    
+  
   /// (Hashable)
-  static func == (lhs: Cell, rhs: Cell) -> Bool {
+  static func == (lhs: Element, rhs: Element) -> Bool {
     return lhs === rhs
   }
+  
+  var hashNode: Node {
+    return Node(x: 0, y: 0)
+  }
+}
+
+/// Cellの状態を表すクラス
+class Cell : Element {
+  
+  override var hashNode: Node {
+    return vEdges[0].nodes[0]
+  }
+    
+//  /// (Hashable)
+//  static func == (lhs: Cell, rhs: Cell) -> Bool {
+//    return lhs === rhs
+//  }
   
   /// 中の数値、空の場合は-1
   var number: Int
@@ -168,6 +193,8 @@ class Cell : Hashable {
   init(number: Int, x: Int, y: Int) {
     self.number = number
     id = String(format: "C%02d%02d", x, y)
+    super.init()
+    elementType = .cell
   }
   
   /// 与えられたEdgeの対辺のEdgeを得る
@@ -197,15 +224,10 @@ class Cell : Hashable {
 
 
 /// Nodeの状態を表すクラス
-class Node : Hashable {
-  /// (Hashable)
-  func hash(into hasher: inout Hasher) {
-    hasher.combine(x << 8 + y)
-  }
-  
-  /// (Hashable)
-  static func == (lhs: Node, rhs: Node) -> Bool {
-    return lhs === rhs
+class Node : Element {
+
+  override var hashNode: Node {
+    return self
   }
 
   /// X座標
@@ -255,6 +277,8 @@ class Node : Hashable {
     self.x = x
     self.y = y
     id = String(format: "N%02d%02d", x, y)
+    super.init()
+    elementType = .node
   }
 
   /// 与えられたOnのEdgeに接続するもう1本のOnのEdgeを返す
@@ -285,16 +309,10 @@ class Node : Hashable {
 
 
 /// Edgeを表すクラス
-class Edge : Hashable {
-  /// (Hashable)
-  func hash(into hasher: inout Hasher) {
-    let node = nodes[0]
-    hasher.combine(node.x << 8 + node.y + (horizontal ? 1 << 16 : 0))
-  }
+class Edge : Element {
   
-  /// (Hashable)
-  static func == (lhs: Edge, rhs: Edge) -> Bool {
-    return lhs === rhs
+  override var hashNode: Node {
+    return nodes[0]
   }
   
   /// 状態
@@ -367,6 +385,8 @@ class Edge : Hashable {
     self.horizontal = horizontal
     let dir = horizontal ? "H" : "V"
     id = String(format: "%@%02d%02d", dir, x, y)
+    super.init()
+    elementType = horizontal ? .hEdge : .vEdge
   }
   
   /// 与えられたNodeの逆端のNodeを返す

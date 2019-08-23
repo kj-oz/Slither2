@@ -32,13 +32,13 @@ class Solver {
   var result = SolveResult()
   
   /// 1ステップトライ時の次のトライするエッジのインデックス
-  private var nextTryEdgeIndex = 0
+  var nextTryEdgeIndex = 0
   
   /// 1ステップトライ実行中かどうか
-  private var trying = false
+  var trying = false
   
   /// 1ステップトライ時のループ延長数
-  private var tryingChainCont = 0
+  var tryingChainCont = 0
   
   /// 与えられた盤面で初期化する
   ///
@@ -166,7 +166,7 @@ class Solver {
   ///
   /// - Returns: 新たな辺が確定したか
   /// - Throws: 解の探索時例外
-  private func tryOneStep() throws -> Bool {
+  func tryOneStep() throws -> Bool {
     startNewStep(useCache: option.useCache)
     // shuffleとの比較の結果はほぼ同等
     // 同じ順番よりは、特に長い時間がかかる場合に有利
@@ -196,7 +196,7 @@ class Solver {
   ///   - status: 状態
   /// - Returns: 指定のEdgeの状態が確定したかどうか
   /// - Throws: 解の探索時例外
-  private func tryEdge(_ edge: Edge, to status: EdgeStatus) throws -> Bool {
+  func tryEdge(_ edge: Edge, to status: EdgeStatus) throws -> Bool {
 
     do {
       try changeEdgeStatus(of: edge, to: status)
@@ -208,8 +208,8 @@ class Solver {
         // ここでは無視する
       } else if exception.reason == .failed {
         backToPreviousStep()
-        try changeEdgeStatus(of: edge, to: status.otherStatus())
         endTrying()
+        try changeEdgeStatus(of: edge, to: status.otherStatus())
         return true
       }
     }
@@ -219,13 +219,13 @@ class Solver {
   }
   
   /// 1ステップトライを開始する
-  private func startTrying() {
+  func startTrying() {
     trying = true
     tryingChainCont = 0
   }
   
   /// 1ステップトライを終了する
-  private func endTrying() {
+  func endTrying() {
     trying = false
     if tryingChainCont > result.tryingChainCount {
       result.tryingChainCount = tryingChainCont
@@ -343,13 +343,13 @@ class Solver {
   /// 新しいステップを開始する準備を行う
   ///
   /// - Parameter useCache: キャッシュを使用するかどうか
-  private func startNewStep(useCache: Bool = false) {
+  func startNewStep(useCache: Bool = false) {
     currentStep = Step(useCache: useCache)
     steps.append(currentStep)
   }
   
   /// 現在のステップを削除し、一つ前のステップをカレントにする
-  private func backToPreviousStep() {
+  func backToPreviousStep() {
     currentStep.rewind()
     steps.removeLast()
     currentStep = steps.last ?? Step()
@@ -429,7 +429,7 @@ class Solver {
   /// Edge周辺のチェックから繰り返す
   ///
   /// - Throws: 解の探索時例外
-  private func checkSurroundingElements(trying: Bool) throws {
+  func checkSurroundingElements(trying: Bool) throws {
     while true {
       if currentStep.changedEdges.count > 0 {
         let edge = currentStep.changedEdges.remove(at: 0)
@@ -494,7 +494,7 @@ class Solver {
   ///   - edge: 状態がOnに変化したEdge
   ///   - pos: 前後(0:indexが小さな側、1:indexが大きな側）
   /// - Throws: 解の探索時例外
-  private func checkNodeOfOnEdge(edge: Edge, pos: Int) throws {
+  func checkNodeOfOnEdge(edge: Edge, pos: Int) throws {
     let node = edge.nodes[pos]
     
     // ノードのOnの辺数が2になったら残りはOff
@@ -533,7 +533,7 @@ class Solver {
   ///   - edge: 状態がOnに変化したEdge
   ///   - pos: 左右(0:indexが小さな側、1:indexが大きな側）
   /// - Throws: 解の探索時例外
-  private func checkCellOfOnEdge(edge: Edge, pos: Int) throws {
+  func checkCellOfOnEdge(edge: Edge, pos: Int) throws {
     let cell = edge.cells[pos]
     
     // セルのOnの辺数がナンバーと一致したら残りはOff
@@ -559,7 +559,7 @@ class Solver {
   ///   - edge: 状態がOffに変化したEdge
   ///   - pos: 前後(0:indexが小さな側、1:indexが大きな側）
   /// - Throws: 解の探索時例外
-  private func checkNodeOfOffEdge(edge: Edge, pos: Int) throws {
+  func checkNodeOfOffEdge(edge: Edge, pos: Int) throws {
     let node = edge.nodes[pos]
     
     // ノードのOffの辺数が3になったら残りもOff
@@ -635,7 +635,7 @@ class Solver {
   ///   - edge: 状態がOffに変化したEdge
   ///   - pos: 左右(0:indexが小さな側、1:indexが大きな側）
   /// - Throws: 解の探索時例外
-  private func checkCellOfOffEdge(edge: Edge, pos: Int) throws {
+  func checkCellOfOffEdge(edge: Edge, pos: Int) throws {
     let cell = edge.cells[pos]
     
     // セルのOffの辺数が(4-ナンバー)と一致したら残りはOn
@@ -668,7 +668,7 @@ class Solver {
   ///
   /// - Parameter cell: 対象のセル
   /// - Throws: 解の探索時例外
-  private func checkColor(of cell: Cell) throws {
+  func checkColor(of cell: Cell) throws {
     if cell.color != .unset {
       return
     }
@@ -705,11 +705,43 @@ class Solver {
     }
   }
 
+  /// 与えられたCellの四隅の斜めに接するCellとの関係のチェックを行う
+  ///
+  /// - Parameter cell: 対象のCell
+  /// - Throws: 解の探索時例外
+  public func checkGate(of cell: Cell) throws {
+    switch cell.number {
+    case 1:
+      for h in [0, 1] {
+        for v in [0, 1] {
+          try checkGateC1(cell: cell, h: h, v: v)
+        }
+      }
+      
+    case 2:
+      for h in [0, 1] {
+        for v in [0, 1] {
+          try checkGateC2(cell: cell, h: h, v: v)
+        }
+      }
+      
+    case 3:
+      for h in [0, 1] {
+        for v in [0, 1] {
+          try checkGateC3(cell: cell, h: h, v: v)
+        }
+      }
+      
+    default:
+      return
+    }
+  }
+  
   /// 領域に接するループの末端の数をチェックする
   ///
   /// - Returns: 領域チェックの結果、エッジ、ゲートの状態に変更があったか
   /// - Throws: 解の探索時例外
-  private func checkArea() throws -> Bool {
+  func checkArea() throws -> Bool {
     dump(title: "☆ before checkArea")
     let ac = AreaChecker(solver: self)
     let stat = try ac.check()

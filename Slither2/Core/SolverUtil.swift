@@ -110,10 +110,10 @@ class BranchBuffer {
 /// パズルを解く際のオプション
 struct SolveOption {
   /// 領域チェックを行うかどうか
-  var doAreaCheck = false
+  var doAreaCheck = true
   
   /// 1ステップだけの仮置きを行う際の最大伸延すエッジ数
-  var tryOneStepMaxExtent = 100
+  var tryOneStepMaxExtent = 120
   
   /// セルのコーナーの通過チェックを行うかどうか
   var doGateCheck = true
@@ -128,10 +128,10 @@ struct SolveOption {
   var debug = false
   
   /// 許容処理時間（秒）
-  var elapsedSec = 0.0
+  var elapsedSec = 120.0
   
   /// 再帰探索の許容最大レベル（再帰探索無し:0）
-  var maxGuessLevel = 0
+  var maxGuessLevel = 120
   
   /// オプションを表現する文字列
   public var description : String {
@@ -157,5 +157,32 @@ struct SolveOption {
     }
     result += "\(Int(elapsedSec * 1000.0))"
     return result
+  }
+}
+
+class SolvingContext {
+  enum SolvingFunction {
+    case initialize
+    case smallLoop
+    case checkCell
+    case checkNode
+    case checkGate
+    case checkColor
+    case tryOneStep
+    case checkArea
+  }
+  
+  var function = SolvingFunction.initialize
+  
+  var mainElements: [Element] = []
+  
+  var relatedElements: [Element] = []
+  
+  var tryStep: [Action] = []
+  
+  var action: Action?
+  
+  init() {
+    
   }
 }

@@ -668,7 +668,7 @@ class Generator {
   ///   - edge: 状態がOnに変化したEdge
   ///   - pos: 前後(0:indexが小さな側、1:indexが大きな側）
   /// - Throws: 解の探索時例外
-  private func checkNodeOfOnEdge(edge: Edge, pos: Int) throws {
+  func checkNodeOfOnEdge(edge: Edge, pos: Int) throws {
     let node = edge.nodes[pos]
     
     // ノードのOnの辺数が2になったら残りはOff
@@ -705,7 +705,7 @@ class Generator {
   ///   - edge: 状態がOffに変化したEdge
   ///   - pos: 前後(0:indexが小さな側、1:indexが大きな側）
   /// - Throws: 解の探索時例外
-  private func checkNodeOfOffEdge(edge: Edge, pos: Int) throws {
+  func checkNodeOfOffEdge(edge: Edge, pos: Int) throws {
     let node = edge.nodes[pos]
     
     // ノードのOffの辺数が3になったら残りもOff

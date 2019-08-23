@@ -8,7 +8,7 @@ Objective-Cで書かれた[SLPlayer](https://github.com/kj-oz/SLPlayer)の後継
 　[https://apps.apple.com/app/id1473823135](https://apps.apple.com/app/id1473823135)
 
 以下のページで、アプリの中の操作ガイドには書かれていない、生成のロジックなどを解説していますので、合わせて御覧ください。  
-　[https://github.com/kj-oz/Slither2](https://github.com/kj-oz/Slither2)
+　[https://kj-oz.github.io/Slither2](https://kj-oz.github.io/Slither2)
 
 ### アプリケーションの特徴 
 

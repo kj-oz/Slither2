@@ -35,7 +35,7 @@ class SolverTests: XCTestCase {
     
     var option = SolveOption()
     option.doAreaCheck = false
-    option.tryOneStepLevel = 2
+    option.tryOneStepMaxExtent = 100
     option.useCache = true
     option.doColorCheck = true
     option.doGateCheck = true
@@ -71,7 +71,7 @@ class SolverTests: XCTestCase {
     
     var option = SolveOption()
     option.doAreaCheck = false
-    option.tryOneStepLevel = 2
+    option.tryOneStepMaxExtent = 100
     option.useCache = true
     option.doColorCheck = true
     option.doGateCheck = true
@@ -117,7 +117,7 @@ class SolverTests: XCTestCase {
     
     var option = SolveOption()
     option.doAreaCheck = false
-    option.tryOneStepLevel = 2
+    option.tryOneStepMaxExtent = 100
     option.useCache = true
     option.doColorCheck = true
     option.doGateCheck = true
@@ -163,7 +163,7 @@ class SolverTests: XCTestCase {
     
     var option = SolveOption()
     option.doAreaCheck = false
-    option.tryOneStepLevel = 2
+    option.tryOneStepMaxExtent = 100
     option.useCache = true
     option.doColorCheck = true
     option.doGateCheck = true

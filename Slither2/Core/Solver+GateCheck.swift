@@ -11,38 +11,6 @@ import Foundation
 // MARK: - セル4隅のゲートに関するチェック
 
 extension Solver {
-  /// 与えられたCellの四隅の斜めに接するCellとの関係のチェックを行う
-  ///
-  /// - Parameter cell: 対象のCell
-  /// - Throws: 解の探索時例外
-  public func checkGate(of cell: Cell) throws {
-    switch cell.number {
-    case 1:
-      for h in [0, 1] {
-        for v in [0, 1] {
-          try checkGateC1(cell: cell, h: h, v: v)
-        }
-      }
-      
-    case 2:
-      for h in [0, 1] {
-        for v in [0, 1] {
-          try checkGateC2(cell: cell, h: h, v: v)
-        }
-      }
-      
-    case 3:
-      for h in [0, 1] {
-        for v in [0, 1] {
-          try checkGateC3(cell: cell, h: h, v: v)
-        }
-      }
-      
-    default:
-      return
-    }
-  }
-  
   /// 与えられた1のCellの与えられたコーナーの斜めに接するCellとの関係のチェックを行う
   ///
   /// - Parameters:
@@ -50,7 +18,7 @@ extension Solver {
   ///   - h: 水平方向の位置（0:左側、1:右側)
   ///   - v: 鉛直方向の位置（0:上側、1:下側）
   /// - Throws: 解の探索時例外
-  private func checkGateC1(cell: Cell, h: Int, v: Int) throws {
+  func checkGateC1(cell: Cell, h: Int, v: Int) throws {
     let viEdge = cell.vEdges[h]
     let hiEdge = cell.hEdges[v]
     let voEdge = viEdge.straightEdges[v]
@@ -108,7 +76,7 @@ extension Solver {
   ///   - h: 水平方向の位置（0:左側、1:右側)
   ///   - v: 鉛直方向の位置（0:上側、1:下側）
   /// - Throws: 解の探索時例外
-  private func checkGateC2(cell: Cell, h: Int, v: Int) throws {
+  func checkGateC2(cell: Cell, h: Int, v: Int) throws {
     let viEdge = cell.vEdges[h]
     let hiEdge = cell.hEdges[v]
     let voEdge = viEdge.straightEdges[v]
@@ -212,7 +180,7 @@ extension Solver {
   ///   - h: 水平方向の位置（0:左側、1:右側)
   ///   - v: 鉛直方向の位置（0:上側、1:下側）
   /// - Throws: 解の探索時例外
-  private func checkGateC3(cell: Cell, h: Int, v: Int) throws {
+  func checkGateC3(cell: Cell, h: Int, v: Int) throws {
     let viEdge = cell.vEdges[h]
     let hiEdge = cell.hEdges[v]
     let voEdge = viEdge.straightEdges[v]
