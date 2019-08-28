@@ -114,20 +114,42 @@ enum PruneType: String {
     }
   }
   
+  /// ランダムセル別のグループ定義
+  private static var groups: [PruneType: PruneTypeGroup] = [
+    .random4Cell: PruneTypeGroup(.xySymmetry, .hPairSymmetry, .dPairSymmetry, .quad),
+    .random2Cell: PruneTypeGroup(.xSymmetry, .ySymmetry, .pointSymmetry, .hPair, .dPair),
+    .random1Cell: PruneTypeGroup(.free, .dWideBorder, .dThinBorder, .check),
+    .randomSCell: PruneTypeGroup(.vWideBorder, .vThinBorder, .hWideBorder, .hThinBorder)
+  ]
+  
   /// 実際に割り当てる除去パターン（ランダム系のパターンに実際のパターンを割り当て）
+  /// 同じ変数に対して2回呼ぶと、異なる値が返るため、取得した値は別な変数にほ保持しておくこと
   public var realType: PruneType {
-    switch self {
-    case .randomSCell:
-      return [.vWideBorder, .vThinBorder, .hWideBorder, .hThinBorder].randomElement()!
-    case .random1Cell:
-      return [.free, .dWideBorder, .dThinBorder, .check].randomElement()!
-    case .random2Cell:
-      return [.xSymmetry, .ySymmetry, .pointSymmetry, .hPair, .dPair].randomElement()!
-    case .random4Cell:
-      return [.xySymmetry, .hPairSymmetry, .dPairSymmetry, .quad].randomElement()!
-    default:
-      return self
+    return PruneType.groups[self]?.realType ?? self
+  }
+}
+
+/// 除去パターンのグループ定義
+class PruneTypeGroup {
+  /// グループに属する実際の除去パターン
+  let realTypes: [PruneType]
+  
+  /// 次の除去パターンを選択する選択肢（同じパターンが続けて選ばれないための装置）
+  var selectables: [PruneType] = []
+  
+  /// 実際の除去パターン
+  var realType: PruneType {
+    if selectables.count == 0 {
+      selectables = realTypes.shuffled()
     }
+    return selectables.removeLast()
+  }
+  
+  /// コンストラクタ
+  ///
+  /// - Parameter realTypes: 属する実際の除去パターン
+  init(_ realTypes: PruneType...) {
+    self.realTypes = realTypes
   }
 }
 
