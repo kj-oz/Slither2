@@ -409,7 +409,7 @@ class Solver {
           jointEdge.status = .on
           let status = board.getLoopStatus(including: edge)
           jointEdge.status = .unset
-          if status == .finished {
+          if case .finished = status {
             // このノードでの分岐の処理が行われなくなってしまうため、正式な手続きで完成するまで待つ
           } else {
             try changeEdgeStatus(of: jointEdge, to: .off)

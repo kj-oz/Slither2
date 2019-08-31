@@ -143,6 +143,8 @@ class PuzzleView: UIView {
   var sliderRailColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
   var sliderAreaColor = UIColor(red: 0.0, green: 0.5, blue: 0.9, alpha: 1.0)
   
+  /// アドバイス情報
+  var advise: AdviseInfo?
 
   // MARK: - 初期化
   
@@ -258,11 +260,8 @@ class PuzzleView: UIView {
     let lineW = 0.06 * pitch
     let crossLineW = 0.04 * pitch
     let crossR = 0.08 * pitch
-    let checked = board.checkedNodes.count + board.checkedCells.count + board.checkedEdges.count > 0
 
     let fixedColor = UIColor.black.cgColor
-    let checkColor = UIColor.red.cgColor
-
     
     let x0 = currentOrigin.x
     let y0 = currentOrigin.y
@@ -286,12 +285,16 @@ class PuzzleView: UIView {
           x = x0 + CGFloat(u) * pitch;
         }
         let node = board.nodeAt(x: u, y: v)
-        if checked && board.checkedNodes.contains(node) {
-          context.setFillColor(checkColor)
+        if let style = advise?.style(of: node) {
+          context.setFillColor(style.color.cgColor)
+          let r = style.enlargeNode ? pointR * 3 : pointR * 2
+          let rect = CGRect(x: x-pointR, y: y-pointR, width: r, height: r)
+          context.fill(rect)
+        } else {
+          context.setFillColor(fixedColor)
+          let rect = CGRect(x: x-pointR, y: y-pointR, width: pointR * 2, height: pointR * 2)
+          context.fill(rect)
         }
-        let rect = CGRect(x: x-pointR, y: y-pointR, width: pointR * 2, height: pointR * 2)
-        context.fill(rect)
-        context.setFillColor(fixedColor)
       }
     }
     
@@ -322,10 +325,14 @@ class PuzzleView: UIView {
         }
         let cell = board.cellAt(x: u, y: v)
         let number = cell.number
+        let style = advise?.style(of: cell)
+        if let style = style, style.showCellColor {
+          // セルの塗
+        }
         if number >= 0 {
           var fontColor = normalColor
-          if checked && board.checkedCells.contains(cell) {
-            fontColor = UIColor.red
+          if let style = style {
+            fontColor = style.color
           }
           let char = chars[number] as NSString
           char.draw(at: CGPoint(x: x, y: y), withAttributes:
@@ -347,13 +354,14 @@ class PuzzleView: UIView {
           x = x0 + CGFloat(u) * pitch
         }
         let edge = board.hEdgeAt(x: u, y: v)
-        if checked && board.checkedEdges.contains(edge) {
-          context.setFillColor(checkColor)
-          context.setStrokeColor(checkColor)
+        let color: CGColor
+        if let style = advise?.style(of: edge) {
+          color = style.color.cgColor
         } else {
-          context.setFillColor(edge.fixed ? fixedColor : erasableColor)
-          context.setStrokeColor(edge.fixed ? fixedColor : erasableColor)
+          color = edge.fixed ? fixedColor : erasableColor
         }
+        context.setFillColor(color)
+        context.setStrokeColor(color)
         let status = edge.status
         if status == .on {
           var rect: CGRect
@@ -386,13 +394,14 @@ class PuzzleView: UIView {
           x = x0 + CGFloat(u) * pitch
         }
         let edge = board.vEdgeAt(x: u, y: v)
-        if checked && board.checkedEdges.contains(edge) {
-          context.setFillColor(checkColor)
-          context.setStrokeColor(checkColor)
+        let color: CGColor
+        if let style = advise?.style(of: edge) {
+          color = style.color.cgColor
         } else {
-          context.setFillColor(edge.fixed ? fixedColor : erasableColor)
-          context.setStrokeColor(edge.fixed ? fixedColor : erasableColor)
+          color = edge.fixed ? fixedColor : erasableColor
         }
+        context.setFillColor(color)
+        context.setStrokeColor(color)
         let status = edge.status
         if status == .on {
           var rect: CGRect
@@ -598,7 +607,7 @@ class PuzzleView: UIView {
           let action = SetEdgeStatusAction(edge: edge, status: .on)
           delegate!.actionDone(action)
           prevEdge = nil
-          board.clearChecked()
+          advise = nil
         }
       }
       prevNode = node
@@ -676,7 +685,7 @@ class PuzzleView: UIView {
     let newStatus: EdgeStatus = oldStatus == .unset ? .off : .unset
     let action = SetEdgeStatusAction(edge: edge, status: newStatus)
     delegate!.actionDone(action)
-    board!.clearChecked()
+    advise = nil
   }
 
   // 2本指タップ：ズームの切替

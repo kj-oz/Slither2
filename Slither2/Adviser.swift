@@ -7,12 +7,20 @@
 //
 
 import Foundation
+import UIKit
 
 class Adviser {
+  /// 対象の問題
   let puzzle: Puzzle
+  /// 盤面
   let board: Board
-  var actions: [SetEdgeStatusAction] = []
+  /// ここまでユーザーが行ってきた手（正規化済み）
+  var userActions: [SetEdgeStatusAction] = []
   
+  
+  /// アドバイザを初期化する
+  ///
+  /// - Parameter puzzle: 問題
   init(puzzle: Puzzle) {
     self.puzzle = puzzle
     self.board = puzzle.board
@@ -21,11 +29,12 @@ class Adviser {
       let target = action.edge
       if !edgeSet.contains(target) {
         edgeSet.insert(target)
-        self.actions.insert(action, at: 0)
+        self.userActions.insert(action, at: 0)
       }
     }
   }
   
+  /// アドバイスする情報を構築する
   func advide() {
     if let action = findMistake() {
       // showMistake(action)
@@ -47,7 +56,7 @@ class Adviser {
     }
     let onEdges = Set<Edge>(loop)
     
-    for action in actions {
+    for action in userActions {
       if onEdges.contains(action.edge) {
         if action.newStatus == .off {
           return findLastAction(on: action.edge, from: puzzle.actions)
@@ -71,23 +80,23 @@ class Adviser {
   }
   
   func findNextAction() -> SetEdgeStatusAction? {
-    let af0 = ActionFinder(board: Board(width: board.width, height: board.height, numbers: board.numbers))
-    af0.doInitialStep()
-    if let action = af0.findAbsentAction(board: board) {
+    let finder = ActionFinder(board: Board(width: board.width, height: board.height, numbers: board.numbers))
+    finder.doInitialStep()
+    if let action = finder.findAbsentAction(board: board) {
       // initialize
       return action
     }
-
-    let af1 = ActionFinder(board: Board(width: board.width, height: board.height, numbers: board.numbers))
-    af1.doUserActions(actions)
-    if let action = af1.findAbsentAction(board: board) {
+    
+    finder.currentStep.rewind()
+    finder.doUserActions(userActions)
+    if let action = finder.findAbsentAction(board: board) {
       // minLoop
       // 小ループ1歩手前の状態は、これ以降新たなエッジがONにならない限り発生しない
       return action
     }
     
     do {
-      try af1.findSurroundingElements()
+      try finder.findSurroundingElements()
     } catch {
       if error is FinderException {
         

@@ -178,7 +178,8 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
       let endNode = puzzle.board.getLoopEnd(from: edge.nodes[0], and: edge)
       if endNode == nil {
         let loopStatus = puzzle.board.check(finished: true)
-        if loopStatus == .finished {
+        switch loopStatus {
+        case .finished:
           puzzle.fix()
           puzzle.status = .solved
           stopPlay()
@@ -186,12 +187,17 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
           updateButtonStatus()
           let msg = "正解です。所要時間 \(puzzle.elapsedTimeString)"
           alert(viewController: self, message: msg)
-        } else if loopStatus == .nodeError {
+        case .nodeError(let elements):
           alert(viewController: self, title: "ループエラー", message: "条件に合致しないノードがあります。")
-        } else if loopStatus == .cellError {
+          puzzleView.advise = CheckResultAdviseInfo(elements)
+        case .cellError(let elements):
           alert(viewController: self, title: "ループエラー", message: "条件に合致しないセルがあります。")
-        } else if loopStatus == .multiLoop {
+          puzzleView.advise = CheckResultAdviseInfo(elements)
+        case .multiLoop(let elements):
           alert(viewController: self, title: "ループエラー", message: "複数のループに分かれています。")
+          puzzleView.advise = CheckResultAdviseInfo(elements)
+        default:
+          break
         }
       }
     }
@@ -222,6 +228,9 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     puzzle.undo()
     updateButtonStatus()
     puzzleView.setNeedsDisplay()
+    if (puzzleView.advise as? CheckResultAdviseInfo) != nil {
+      puzzleView.advise = nil
+    }
   }
 
   // リドゥボタンタップ時

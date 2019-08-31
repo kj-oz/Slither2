@@ -32,11 +32,6 @@ class Board {
   /// 両方向Edgeの配列
   var edges: [Edge] = []
   
-  /// チェックにより何らかのエラーが見つかった要素
-  var checkedNodes: [Node] = []
-  var checkedCells: [Cell] = []
-  var checkedEdges: [Edge] = []
-  
   /// 数字のみの配列
   var numbers: [Int] {
     return cells.map({ $0.number })
@@ -484,8 +479,8 @@ class Board {
   /// - Parameter edge: Edge
   /// - Returns: ループの状態
   func getLoopStatus(including edge: Edge) -> LoopStatus {
-    if findOpenCell() != nil {
-      return .cellError
+    if let cell = findOpenCell() {
+      return .cellError(errorElements: [cell])
     }
 
     let root = edge.nodes[0]
@@ -499,12 +494,12 @@ class Board {
       }
       conCount += 1
       if conCount > onEdgeCount {
-        return .multiLoop
+        return .multiLoop(errorElements: [])
       }
       node = ed!.anotherNode(of: node)
     }
     
-    return conCount == onEdgeCount ? .finished : .multiLoop
+    return conCount == onEdgeCount ? .finished : .multiLoop(errorElements: [])
   }
   
   /// ループの状態に不正な状態がないかどうかを調べる
@@ -512,76 +507,70 @@ class Board {
   /// - Parameter finished: ループが完成した（つもり）かどうか
   /// - Returns: ループの状態
   func check(finished: Bool) -> LoopStatus {
-    clearChecked()
-    
-    if checkNodes(finished: finished) {
-      return .nodeError
+    if let errors = checkNodes(finished: finished) {
+      return .nodeError(errorElements: errors)
     }
     
-    if checkCells(finished: finished) {
-      return .cellError
+    if let errors = checkCells(finished: finished) {
+      return .cellError(errorElements: errors)
     }
     
     if finished {
       // ループのチェックはノードの状態が正しいことが前提
-      if checkEdges() {
-        return .multiLoop
+      if let errors = checkEdges() {
+        return .multiLoop(errorElements: errors)
       }
     }
     return .finished
   }
   
-  /// チェック結果をクリアする
-  func clearChecked() {
-    checkedNodes = []
-    checkedCells = []
-    checkedEdges = []
-  }
-  
   /// すべてのノードの状態が正しい（onCountが０か２）かどうかを調べる
   ///
   /// - Parameter finished: ループが完成した（つもり）かどうか
-  /// - Returns: 何かしらの瑕疵が見つかったかどうか
-  private func checkNodes(finished: Bool) -> Bool {
+  /// - Returns: 正しくない要素
+  private func checkNodes(finished: Bool) -> [Element]? {
+    var result: [Element] = []
     for node in nodes {
       if ((finished || node.offCount == 3) && node.onCount == 1) || node.onCount == 3 {
-        checkedNodes.append(node)
+        result.append(node)
         for edge in node.edges {
           if edge.status == .on {
-            checkedEdges.append(edge)
+            result.append(edge)
           }
         }
       }
     }
-    return checkedNodes.count > 0
+    return result.count > 0 ? result : nil
   }
   
   /// すべてのセルの状態が正しい（onCountが中の数字と一致している）かどうかを調べる
   ///
   /// - Parameter finished: ループが完成した（つもり）かどうか
-  /// - Returns: 何かしらの瑕疵が見つかったかどうか
-  private func checkCells(finished: Bool) -> Bool {
+  /// - Returns: 正しくない要素
+  private func checkCells(finished: Bool) -> [Element]? {
+    var result: [Element] = []
     for cell in cells {
       if cell.number >= 0 &&
           ((finished && cell.onCount < cell.number) || cell.onCount > cell.number
             || cell.offCount > 4 - cell.number) {
-        checkedCells.append(cell)
+        result.append(cell)
         for edge in cell.edges {
           if edge.status == .on {
-            checkedEdges.append(edge)
+            result.append(edge)
           }
         }
       }
     }
-    return checkedCells.count > 0
+    return result.count > 0 ? result : nil
   }
   
   /// ループが1つの閉じたループだけになっているかをチェックする
   ///
   /// - Returns: 何かしらの瑕疵が見つかったかどうか
-  private func checkEdges() -> Bool {
+  private func checkEdges() -> [Element]? {
     var loops: [[Edge]] = []
-    
+    var result: [Element] = []
+
     edge_loop: for edge in edges {
       if edge.status == .on {
         for loop in loops {
@@ -613,11 +602,11 @@ class Board {
       loops.sort(by: { a, b in  a.count > b.count })
       loops.remove(at: 0)
       for loop in loops {
-        checkedEdges.append(contentsOf: loop)
+        result.append(contentsOf: loop)
       }
-      return true
+      return result
     }
-    return false
+    return nil
   }
   
   /// 水平方向のEdgeを表す状態に応じた文字を得る

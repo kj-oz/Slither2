@@ -10,6 +10,7 @@
 		3113D36B2259C1B0006E9F68 /* GeneratorrTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D3682259C1B0006E9F68 /* GeneratorrTests.swift */; };
 		3113D36C2259C1B0006E9F68 /* SolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D3692259C1B0006E9F68 /* SolverTests.swift */; };
 		3113D36D2259C1B0006E9F68 /* AreaCheckerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3113D36A2259C1B0006E9F68 /* AreaCheckerTest.swift */; };
+		311B45422316C6BA004DCD00 /* AdviseInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 311B45412316C6BA004DCD00 /* AdviseInfo.swift */; };
 		313A494C2305A5AB0041237E /* Adviser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 313A494B2305A5AB0041237E /* Adviser.swift */; };
 		313A49672305A5F90041237E /* ActionFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 313A49662305A5F90041237E /* ActionFinder.swift */; };
 		3142F864229ED2AF00A0EAFE /* sample in Resources */ = {isa = PBXBuildFile; fileRef = 3142F863229ED2AF00A0EAFE /* sample */; };
@@ -60,6 +61,7 @@
 		3113D3682259C1B0006E9F68 /* GeneratorrTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GeneratorrTests.swift; sourceTree = "<group>"; };
 		3113D3692259C1B0006E9F68 /* SolverTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SolverTests.swift; sourceTree = "<group>"; };
 		3113D36A2259C1B0006E9F68 /* AreaCheckerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AreaCheckerTest.swift; sourceTree = "<group>"; };
+		311B45412316C6BA004DCD00 /* AdviseInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdviseInfo.swift; sourceTree = "<group>"; };
 		313A494B2305A5AB0041237E /* Adviser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Adviser.swift; sourceTree = "<group>"; };
 		313A49662305A5F90041237E /* ActionFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActionFinder.swift; sourceTree = "<group>"; };
 		3142F863229ED2AF00A0EAFE /* sample */ = {isa = PBXFileReference; lastKnownFileType = folder; path = sample; sourceTree = "<group>"; };
@@ -156,6 +158,7 @@
 				31C88052222282DB008C0D99 /* GenerateViewController.swift */,
 				31C8805B2222831E008C0D99 /* PlayViewController.swift */,
 				313A494B2305A5AB0041237E /* Adviser.swift */,
+				311B45412316C6BA004DCD00 /* AdviseInfo.swift */,
 				31CF03132276A2BD00F5447E /* www */,
 				31C8805E2222831E008C0D99 /* Puzzle.swift */,
 				31C8805F2222831E008C0D99 /* PuzzleCell.swift */,
@@ -313,6 +316,7 @@
 				31C8807222228495008C0D99 /* Solver.swift in Sources */,
 				31C8807122228495008C0D99 /* Board.swift in Sources */,
 				31C8807022228495008C0D99 /* AreaChecker.swift in Sources */,
+				311B45422316C6BA004DCD00 /* AdviseInfo.swift in Sources */,
 				31C8807922228495008C0D99 /* Action.swift in Sources */,
 				31C880602222831E008C0D99 /* PlayViewController.swift in Sources */,
 				31C8807522228495008C0D99 /* Step.swift in Sources */,

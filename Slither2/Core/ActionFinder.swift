@@ -22,6 +22,8 @@ class ActionFinder : Solver {
   private var minimumExtent = Int.max
   
   private var minimumStep: [Action] = []
+  
+  private var minimumFailed: Element?
 
   var solvingContext = SolvingContext()
   
@@ -35,7 +37,7 @@ class ActionFinder : Solver {
       try initBorder()
     } catch {
       let exception = error as! SolveException
-      if exception.reason == .finished {
+      if case .finished = exception {
         result.solved = true
         return
       }
@@ -51,7 +53,7 @@ class ActionFinder : Solver {
       }
     } catch {
       let exception = error as! SolveException
-      if exception.reason == .finished {
+      if case .finished = exception {
         result.solved = true
         return
       }
@@ -65,14 +67,10 @@ class ActionFinder : Solver {
   /// - Returns: ユーザーの着手盤面から漏れているアクション
   func findAbsentAction(board: Board) -> SetEdgeStatusAction? {
     for i in 0 ..< board.edges.count {
-      if self.board.edges[i].status != .unset &&
-          board.edges[i].status == .unset {
-        let edge = board.edges[i]
-        if (edge.nodes[0].onCount + edge.nodes[0].offCount < 3) ||
-            (edge.nodes[1].onCount + edge.nodes[1].offCount < 3) {
-          return SetEdgeStatusAction(edge: board.edges[i], status: self.board.edges[i].status)
-        }
+      if self.board.edges[i].status == .on && board.edges[i].status == .unset {
+        return SetEdgeStatusAction(edge: board.edges[i], status: .on)
       }
+      // .offの場合は、自明でチェックしなかった可能性がある
     }
     return nil
   }
@@ -172,6 +170,9 @@ class ActionFinder : Solver {
     }
     backToPreviousStep()
     if let action = minimumAction {
+      solvingContext.function = .tryOneStep
+      solvingContext.mainElements = []
+      solvingContext.relatedElements = steps
       try changeEdgeStatus(of: action.edge, to: action.newStatus)
     }
     return false
@@ -192,17 +193,20 @@ class ActionFinder : Solver {
       try checkSurroundingElements(trying: true)
     } catch {
       let exception = error as! SolveException
-      if exception.reason == .finished || exception.reason == .cacheHit {
-        // ここでは無視する
-      } else if exception.reason == .failed {
+      switch exception {
+      case .failed(reason: let reason):
         if tryingChainCont < minimumExtent {
           minimumExtent = tryingChainCont
           minimumAction = SetEdgeStatusAction(edge: edge, status: status.otherStatus())
           minimumStep = currentStep.actions
+          minimumFailed = reason
         }
         currentStep.rewind(addCache: false)
         endTrying()
         return true
+      default:
+        // .finished はここでは無視する
+        break
       }
     }
     currentStep.rewind(addCache: false)
