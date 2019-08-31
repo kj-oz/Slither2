@@ -247,7 +247,7 @@ extension Solver {
       return true
     } else {
       //debug(">>> cannot set to \(status): \(node.id):\(dir) is \(node.gateStatus[dir])")
-      throw SolveException(reason: .failed)
+      throw SolveException.failed(reason: node)
     }
   }
   

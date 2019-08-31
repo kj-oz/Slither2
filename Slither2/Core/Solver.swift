@@ -125,7 +125,7 @@ class Solver {
       //dump(title: "★ catch with init")
       result.elapsed = Date().timeIntervalSince(startTime)
       let exception = error as! SolveException
-      if exception.reason == .finished {
+      if case .finished = exception {
         result.solved = true
         return result
       }
@@ -204,14 +204,13 @@ class Solver {
       try checkSurroundingElements(trying: true)
     } catch {
       let exception = error as! SolveException
-      if exception.reason == .finished || exception.reason == .cacheHit {
-        // ここでは無視する
-      } else if exception.reason == .failed {
+      if case .failed = exception {
         backToPreviousStep()
         endTrying()
         try changeEdgeStatus(of: edge, to: status.otherStatus())
         return true
       }
+      // .finished　ここでは無視する
     }
     currentStep.rewind(addCache: true)
     endTrying()
@@ -303,13 +302,13 @@ class Solver {
           try checkSurroundingElements(trying: false)
         } catch {
           let exception = error as! SolveException
-          if exception.reason == .finished {
+          if case .finished = exception {
             if loop != nil {
               result.reason = .multiloop
               return
             }
             loop = board.loop
-          } else if exception.reason == .timeover {
+          } else if case .timeover = exception {
             loop = nil
             result.reason = .noloop
             return
@@ -367,7 +366,7 @@ class Solver {
   /// - Throws: 解の探索時例外
   func changeEdgeStatus(of edge: Edge, to status: EdgeStatus) throws {
     if Date().compare(timelimit) == .orderedDescending {
-      throw SolveException(reason: .timeover)
+      throw SolveException.timeover
     }
     if edge.status == status {
       return
@@ -375,13 +374,13 @@ class Solver {
     
     if edge.status != .unset {
       //debug(">>> cannot set to \(status): \(edge.id) is \(edge.status)")
-      throw SolveException(reason: .failed)
+      throw SolveException.failed(reason: edge)
     }
     
     if trying && status == .on {
       tryingChainCont += 1
       if tryingChainCont > option.tryOneStepMaxExtent {
-        throw SolveException(reason: .stepover)
+        throw SolveException.stepover
       }
     }
     
@@ -389,7 +388,7 @@ class Solver {
     currentStep.changedEdges.append(edge)
     if currentStep.useCache && currentStep.hasCache(edge: edge) {
 //      print("☆ Cache Hit!")
-      throw SolveException(reason: .cacheHit)
+      throw SolveException.cacheHit
     }
     
     if status == .on {
@@ -399,7 +398,7 @@ class Solver {
       
       if head === edge.nodes[1] {
         // 既に1つ手前でチェック済みのため board.getLoopStatus は行わない
-        throw SolveException(reason: .finished)
+        throw SolveException.finished
       } else {
         currentStep.add(action: SetOppositeNodeAction(node: head, oppositeNode: tail))
         currentStep.add(action: SetOppositeNodeAction(node: tail, oppositeNode: head))
@@ -683,7 +682,7 @@ class Solver {
             color = newColor
           } else if color != newColor {
             //debug(">>> conflict to set color: \(cell.id)")
-            throw SolveException(reason: .failed)
+            throw SolveException.failed(reason: cell)
           }
         }
       }

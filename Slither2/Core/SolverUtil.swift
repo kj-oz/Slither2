@@ -9,24 +9,18 @@
 import Foundation
 
 /// 解の探索中にこれ以上の探索ができなくなった際にスローする例外
-struct SolveException: Error {
-  /// 例外の理由
-  ///
-  /// - failed: 何らかの矛盾が発生した
-  /// - finished: 正解が見つかった
-  /// - cacheHit: キャッシュにヒットした
-  /// - timeover: 制限時間オーバー
-  /// - stepover: 1ステップトライ時の延長エッジ数の制限オーバー
-  enum Reason {
-    case failed
-    case finished
-    case cacheHit
-    case timeover
-    case stepover
-  }
-  
-  /// 例外の理由
-  let reason: SolveException.Reason
+///
+/// - failed: 何らかの矛盾が発生した
+/// - finished: 正解が見つかった
+/// - cacheHit: キャッシュにヒットした
+/// - timeover: 制限時間オーバー
+/// - stepover: 1ステップトライ時の延長エッジ数の制限オーバー
+enum SolveException: Error {
+  case failed(reason: Element?)
+  case finished
+  case cacheHit
+  case timeover
+  case stepover
 }
 
 /// パズルを解いた結果
@@ -176,7 +170,7 @@ class SolvingContext {
   
   var mainElements: [Element] = []
   
-  var relatedElements: [Element] = []
+  var relatedElements: Any = []
   
   var tryStep: [Action] = []
   

@@ -9,20 +9,16 @@
 import Foundation
 
 /// ループの生成中にこれ以上の延長ができなくなった際にスローする例外
-struct GenerateException: Error {
-  /// 例外の理由
-  ///
-  /// - failed: 何らかの矛盾が発生した
-  /// - finished: ループが完成した
-  /// - lengthTooShort: ループが完成したが長さが足りない
-  /// - tooManyBlank: ループが完成したが空白地帯が大きい
-  enum Reason {
-    case failed
-    case finished
-    case lengthTooShort
-    case tooManyBlank
-  }
-  let reason: GenerateException.Reason
+///
+/// - failed: 何らかの矛盾が発生した
+/// - finished: ループが完成した
+/// - lengthTooShort: ループが完成したが長さが足りない
+/// - tooManyBlank: ループが完成したが空白地帯が大きい
+enum GenerateException: Error {
+  case failed
+  case finished
+  case lengthTooShort
+  case tooManyBlank
 }
 
 
@@ -182,7 +178,7 @@ class Generator {
 
     // 満足のできる問題ができるまで試行を続ける
     retryCount = 0
-    while true {
+    loop: while true {
       retryCount += 1
       let root = board.nodes.randomElement()!
       let branches = createBranches(from: root)
@@ -191,18 +187,22 @@ class Generator {
         try tryBranches(branches)
       } catch {
         let exception = error as! GenerateException
-        if exception.reason == .finished {
+        switch exception {
+        case .finished:
           // 完成
-          break
-        } else if exception.reason == .lengthTooShort {
+          break loop
+        case .lengthTooShort:
           // ある回数試みても長さが不足 -> 袋小路にはまり込んでいる可能性が高いので、最初からやり直し
-        } else if exception.reason == .tooManyBlank {
+          break
+        case .tooManyBlank:
           // ループを延ばしても空白地帯が減らない ->
           // 空白地帯に接したエッジを始終点として再度延長を試みる
           if reduceBlank() {
-            break
+            break loop
           }
           // 空白地帯を埋めきれなかったら、最初からやり直し
+        case .failed:
+          break
         }
       }
       board.clear()
@@ -229,12 +229,13 @@ class Generator {
           try tryBranches(branch)
         } catch {
           let exception = error as! GenerateException
-          if exception.reason == .finished {
+          switch exception {
+          case .finished:
             return true
-          } else if exception.reason == .lengthTooShort {
+          case .lengthTooShort:
             return false
-          } else if exception.reason == .tooManyBlank {
-            continue
+          default:
+            break
           }
         }
       }
@@ -461,7 +462,8 @@ class Generator {
           try checkSurroundingElements(trying: false)
         } catch {
           let exception = error as! GenerateException
-          if exception.reason != .failed {
+          if case .failed = exception {
+          } else {
             throw error
           }
           currentStep.rewind()
@@ -487,7 +489,7 @@ class Generator {
       }
     }
     // 再挑戦
-    throw GenerateException(reason: .lengthTooShort)
+    throw GenerateException.lengthTooShort
   }
   
   /// 新しいステップを開始する準備を行う
@@ -522,7 +524,7 @@ class Generator {
     
     if edge.status != .unset {
       //debug(">>> cannot set to \(status): \(edge.id) is \(edge.status)")
-      throw GenerateException(reason: .failed)
+      throw GenerateException.failed
     }
     
     currentStep.add(action: SetEdgeStatusAction(edge: edge, status: status))
@@ -536,13 +538,13 @@ class Generator {
       if head === edge.nodes[1] {
         // 長さとボアリングレートを満足しているか
         if try checkLoop() {
-          throw GenerateException(reason: .finished)
+          throw GenerateException.finished
         } else {
-          throw GenerateException(reason: .failed)
+          throw GenerateException.failed
         }
       } else {
         if !canReach(from: head, to: tail) {
-          throw GenerateException(reason: .failed)
+          throw GenerateException.failed
         }
         currentStep.add(action: SetOppositeNodeAction(node: head, oppositeNode: tail))
         currentStep.add(action: SetOppositeNodeAction(node: tail, oppositeNode: head))
@@ -565,14 +567,14 @@ class Generator {
       } else {
         if blankCount >= prevBlankEdgeCount {
           // 拡張を試す
-          throw GenerateException(reason: .tooManyBlank)
+          throw GenerateException.tooManyBlank
         }
         prevBlankEdgeCount = blankCount
       }
     } else {
       lengthCheckCount += 1
       if lengthCheckCount > maxLengthCheckCount {
-        throw GenerateException(reason: .lengthTooShort)
+        throw GenerateException.lengthTooShort
       }
     }
     return false

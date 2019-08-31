@@ -302,7 +302,7 @@ class AreaChecker {
     areaChangedLoop: while areaChanged {
       
       if Date().compare(solver.timelimit) == .orderedDescending {
-        throw SolveException(reason: .timeover)
+        throw SolveException.timeover
       }
 
       // 逆端の接するエリアが同じ端点が複数ある場合には、その2つのエリアを統合する
@@ -359,15 +359,15 @@ class AreaChecker {
       case 0:
         if connectedCount % 2 == 1 {
           // エリアに接する外向け端点が奇数の場合エラー
-          throw SolveException(reason: .failed)
+          throw SolveException.failed(reason: nil)
         } else if connectedCount == 0 && area.terminals.count > 0 {
           // エリアに接する外向け端点が0で内部端点が存在する場合エラー
-          throw SolveException(reason: .failed)
+          throw SolveException.failed(reason: nil)
         }
       case 1:
         if connectedCount == 0 && area.terminals.count > 0 {
           // エリアに接する外向け端点が0で内部端点が存在する場合エラー
-          throw SolveException(reason: .failed)
+          throw SolveException.failed(reason: nil)
         }
         let gate = area.gates[0]
         var changed = false
