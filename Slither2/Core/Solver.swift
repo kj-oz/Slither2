@@ -127,6 +127,7 @@ class Solver {
       let exception = error as! SolveException
       if case .finished = exception {
         result.solved = true
+        loop = board.loop
         return result
       }
       return result

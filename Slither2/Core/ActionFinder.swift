@@ -10,6 +10,11 @@ import Foundation
 
 /// 次手探索時例外
 class FinderException : Error {
+  let action: SetEdgeStatusAction
+  
+  init(action: SetEdgeStatusAction) {
+    self.action = action
+  }
 }
 
 /// アドバイス時の次の手を探し出すクラス
@@ -25,7 +30,12 @@ class ActionFinder : Solver {
   
   private var minimumFailed: Element?
 
-  var solvingContext = SolvingContext()
+  var solvingContext: SolvingContext
+  
+  override init(board: Board) {
+    solvingContext = SolvingContext(board: board)
+    super.init(board: board)
+  }
   
   /// 初期配置の処理を行う
   /// （ユーザの着手に漏れがないかを検討する）
@@ -147,7 +157,7 @@ class ActionFinder : Solver {
       return
     }
     if watching && !trying {
-      throw FinderException()
+      throw FinderException(action: SetEdgeStatusAction(edge: edge, status: status))
     }
     try super.changeEdgeStatus(of: edge, to: status)
   }
@@ -302,6 +312,7 @@ class AreaCheckerAF : AreaChecker {
     let af = solver as! ActionFinder
     af.solvingContext.function = .checkArea
     af.solvingContext.mainElements = [gate.node]
+    af.solvingContext.relatedElements = area
     return try super.changeGateStatus(of: gate, from: area, to: status)
   }
 }

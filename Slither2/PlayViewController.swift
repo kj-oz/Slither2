@@ -36,6 +36,8 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   var elapsedStart:  Date?
   
   var logger: Logger!
+  
+  var advise: AdviseInfo?
 
   // MARK: - UIViewController
   
@@ -210,34 +212,65 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     let alert: UIAlertController = UIAlertController(title: "スリザー2", message: "操作”",
                                                      preferredStyle: .actionSheet)
     alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
-    alert.addAction(UIAlertAction(title: "初期化", style: .destructive, handler: { _ in
-      self.initActionSelected(self)
-    }))
-    alert.addAction(UIAlertAction(title: "未固定部消去", style: .destructive, handler: { _ in
-      self.eraseActionSelected(self)
-    }))
-    alert.addAction(UIAlertAction(title: "固定", style: .default, handler: { _ in
-      self.fixActionSelected(self)
-    }))
+    if let advise = self.advise {
+      if advise.reasonLabel.count > 0 && advise.reasonIndex < 0 {
+        alert.addAction(UIAlertAction(title: advise.reasonLabel, style: .default, handler: { _ in
+          self.adviseShowReasonActionSelected(self)
+        }))
+      }
+      alert.addAction(UIAlertAction(title: advise.fixLabel, style: .destructive, handler: { _ in
+        self.adviseFixActionSelected(self)
+      }))
+      alert.addAction(UIAlertAction(title: "アドバイス終了", style: .default, handler: { _ in
+        self.adviseEndActionSelected(self)
+      }))
+    } else {
+      alert.addAction(UIAlertAction(title: "初期化", style: .destructive, handler: { _ in
+        self.initActionSelected(self)
+      }))
+      alert.addAction(UIAlertAction(title: "未固定部消去", style: .destructive, handler: { _ in
+        self.eraseActionSelected(self)
+      }))
+      alert.addAction(UIAlertAction(title: "固定", style: .default, handler: { _ in
+        self.fixActionSelected(self)
+      }))
+      alert.addAction(UIAlertAction(title: "アドバイス", style: .default, handler: { _ in
+        self.adviseActionSelected(self)
+      }))
+    }
     alert.popoverPresentationController?.barButtonItem = sender as? UIBarButtonItem
     self.present(alert, animated: true, completion: nil)
   }
   
   // アンドゥボタンタップ時
   @IBAction func undoButtonTapped(_ sender: Any) {
-    puzzle.undo()
-    updateButtonStatus()
-    puzzleView.setNeedsDisplay()
-    if (puzzleView.advise as? CheckResultAdviseInfo) != nil {
-      puzzleView.advise = nil
+    if let advise = advise {
+      if let tryFailAdvise = advise as? TryFailAdviseInfo {
+        tryFailAdvise.stepBack()
+        puzzleView.setNeedsDisplay()
+      }
+    } else {
+      puzzle.undo()
+      updateButtonStatus()
+      puzzleView.setNeedsDisplay()
+      if (advise as? CheckResultAdviseInfo) != nil {
+        puzzleView.advise = nil
+      }
     }
   }
 
   // リドゥボタンタップ時
   @IBAction func redoButtonTapped(_ sender: Any) {
-    puzzle.redo()
-    updateButtonStatus()
-    puzzleView.setNeedsDisplay()
+    if let advise = advise {
+      if let tryFailAdvise = advise as? TryFailAdviseInfo {
+        tryFailAdvise.stepForward()
+        puzzleView.setNeedsDisplay()
+      }
+    } else {
+      puzzle.redo()
+      updateButtonStatus()
+      puzzleView.setNeedsDisplay()
+    }
   }
   
   // アクションシートの初期化ボタン押下
@@ -273,6 +306,42 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
     puzzleView.setNeedsDisplay()
   }
   
+  // アクションシートのアドバイスボタン押下
+  @IBAction func adviseActionSelected(_ sender: Any) {
+    let adviser = Adviser(puzzle: puzzle)
+    if let advise = adviser.advise() {
+      self.advise = advise
+      alert(viewController: self, message: advise.message)
+      puzzleView.startAdvise(advise: advise)
+    }
+  }
+  
+  // アクションシートのアドバイス理由表示ボタン押下
+  @IBAction func adviseShowReasonActionSelected(_ sender: Any) {
+    if let advise = self.advise {
+      advise.showReason()
+      puzzleView.setNeedsDisplay()
+    }
+  }
+  
+  // アクションシートのアドバイス確定ボタン押下
+  @IBAction func adviseFixActionSelected(_ sender: Any) {
+    if let advise = self.advise {
+      advise.fix(to: puzzle)
+      adviseEndActionSelected(self)
+    }
+  }
+  
+  // アクションシートのアドバイス終了ボタン押下
+  @IBAction func adviseEndActionSelected(_ sender: Any) {
+    if let _ = self.advise {
+      puzzleView.endAdvise()
+      self.advise = nil
+    }
+  }
+  
+
+  
   
   // MARK: - Navigation
   
@@ -291,8 +360,18 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   
   /// アンドゥ、リドゥボタンの活性・非活性を更新する
   private func updateButtonStatus() {
-    undoButton.isEnabled = puzzle.canUndo
-    redoButton.isEnabled = puzzle.canRedo
+    if let advise = self.advise {
+      if let tryFailAdvise = advise as? TryFailAdviseInfo {
+        undoButton.isEnabled = tryFailAdvise.reasonIndex > 0
+        redoButton.isEnabled = tryFailAdvise.reasonIndex < tryFailAdvise.steps.count - 1
+      } else {
+        undoButton.isEnabled = false
+        redoButton.isEnabled = false
+      }
+    } else {
+      undoButton.isEnabled = puzzle.canUndo
+      redoButton.isEnabled = puzzle.canRedo
+    }
     actionButton.isEnabled = puzzle.status == .solving
   }
   

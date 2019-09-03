@@ -155,7 +155,7 @@ struct SolveOption {
 }
 
 class SolvingContext {
-  enum SolvingFunction {
+  enum Function {
     case initialize
     case smallLoop
     case checkCell
@@ -166,17 +166,19 @@ class SolvingContext {
     case checkArea
   }
   
-  var function = SolvingFunction.initialize
+  var function = Function.initialize
   
   var mainElements: [Element] = []
   
   var relatedElements: Any = []
   
-  var tryStep: [Action] = []
+//  var tryStep: [Action] = []
+//
+//  var action: Action?
   
-  var action: Action?
+  var board: Board?
   
-  init() {
-    
+  init(board: Board?) {
+    self.board = board
   }
 }

@@ -145,6 +145,9 @@ class PuzzleView: UIView {
   
   /// アドバイス情報
   var advise: AdviseInfo?
+  
+  /// アドバイス前の盤面
+  var originalBoard: Board?
 
   // MARK: - 初期化
   
@@ -513,6 +516,25 @@ class PuzzleView: UIView {
     points[0] = CGPoint(x: x1, y: y2)
     points[1] = CGPoint(x: x2, y: y1)
     context.strokeLineSegments(between: points)
+  }
+  
+  func startAdvise(advise: AdviseInfo) {
+    self.advise = advise
+    mode = .view
+    if let board = advise.board {
+      originalBoard = self.board
+      self.board = board
+    }
+    setNeedsDisplay()
+  }
+  
+  func endAdvise() {
+    self.advise = nil
+    mode = .play
+    if let _ = advise!.board {
+      self.board = originalBoard
+    }
+    setNeedsDisplay()
   }
   
   // MARK: - プライベートメソッド（ジェスチャー）
