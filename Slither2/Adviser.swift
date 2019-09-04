@@ -69,10 +69,10 @@ class Adviser {
     guard result.reason == .solved, let loop = solver.loop else {
       return nil
     }
-    let onEdges = Set<Edge>(loop)
+    let onEdges = Set<String>(loop.map({ $0.id }))
     
     for action in userActions {
-      if onEdges.contains(action.edge) {
+      if onEdges.contains(action.edge.id) {
         if action.newStatus == .off {
           return findLastAction(on: action.edge, from: puzzle.actions)
         }

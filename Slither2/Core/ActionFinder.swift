@@ -181,8 +181,8 @@ class ActionFinder : Solver {
     backToPreviousStep()
     if let action = minimumAction {
       solvingContext.function = .tryOneStep
-      solvingContext.mainElements = []
-      solvingContext.relatedElements = steps
+      solvingContext.mainElements = [minimumFailed!]
+      solvingContext.relatedElements = minimumStep
       try changeEdgeStatus(of: action.edge, to: action.newStatus)
     }
     return false

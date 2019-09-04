@@ -188,9 +188,9 @@ class TryFailAdviseInfo : AdviseInfo {
   
   init(result: FindResult) {
     steps = []
-    if let step = result.context.relatedElements as? Step {
+    if let actions = result.context.relatedElements as? [Action] {
       var currStep = Step()
-      for action in step.actions {
+      for action in actions {
         currStep.add(action: action)
         if action is SetEdgeStatusAction {
           steps.append(currStep)
@@ -204,6 +204,7 @@ class TryFailAdviseInfo : AdviseInfo {
     action = result.action
     reasonElement = result.context.mainElements[0]
     super.init()
+    self.board = result.context.board
     message = "仮置の結果、確定します。"
     reasonLabel = "仮置のステップ実行"
     fixLabel = "確定"

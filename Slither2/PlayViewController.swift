@@ -320,6 +320,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   @IBAction func adviseShowReasonActionSelected(_ sender: Any) {
     if let advise = self.advise {
       advise.showReason()
+      updateButtonStatus()
       puzzleView.setNeedsDisplay()
     }
   }
@@ -335,6 +336,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   // アクションシートのアドバイス終了ボタン押下
   @IBAction func adviseEndActionSelected(_ sender: Any) {
     if let _ = self.advise {
+      updateButtonStatus()
       puzzleView.endAdvise()
       self.advise = nil
     }

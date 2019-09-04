@@ -529,11 +529,11 @@ class PuzzleView: UIView {
   }
   
   func endAdvise() {
-    self.advise = nil
-    mode = .play
-    if let _ = advise!.board {
+    if let _ = advise?.board {
       self.board = originalBoard
     }
+    self.advise = nil
+    mode = .play
     setNeedsDisplay()
   }
   
