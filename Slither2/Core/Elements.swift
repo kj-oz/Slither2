@@ -128,6 +128,9 @@ enum ElementType: Int {
 class Element : Hashable {
   var elementType = ElementType.none
   
+  /// 文字列表現
+  var id = ""
+  
   /// (Hashable)
   func hash(into hasher: inout Hasher) {
     let node = hashNode
@@ -181,8 +184,8 @@ class Cell : Element {
   /// BoardのCell配列内のインデックス
   var index = -1
 
-  /// 文字列表現
-  let id: String
+//  /// 文字列表現
+//  let id: String
   
   /// 指定の数値でCellを初期化する
   ///
@@ -192,9 +195,9 @@ class Cell : Element {
   ///   - y: Y方向位置
   init(number: Int, x: Int, y: Int) {
     self.number = number
-    id = String(format: "C%02d%02d", x, y)
     super.init()
     elementType = .cell
+    id = String(format: "C%02d%02d", x, y)
   }
   
   /// 与えられたEdgeの対辺のEdgeを得る
@@ -265,8 +268,8 @@ class Node : Element {
   /// 斜め方向の2つのCellの接するNodeにおけるEdgeの通過状態
   var gateStatus: [GateStatus] = [.unset, .unset]
   
-  /// 文字列表現
-  let id: String
+//  /// 文字列表現
+//  let id: String
 
   /// 指定の位置で初期化したNodeを生成する
   ///
@@ -276,9 +279,9 @@ class Node : Element {
   init(x: Int, y: Int) {
     self.x = x
     self.y = y
-    id = String(format: "N%02d%02d", x, y)
     super.init()
     elementType = .node
+    id = String(format: "N%02d%02d", x, y)
   }
 
   /// 与えられたOnのEdgeに接続するもう1本のOnのEdgeを返す
@@ -369,8 +372,8 @@ class Edge : Element {
   ///　BoardのEdge配列内のインデックス
   var index = -1
 
-  /// 文字列表現
-  let id: String
+//  /// 文字列表現
+//  let id: String
   
   ///　固定されているかどうか（Play時のみ使用）
   var fixed = false
@@ -384,9 +387,9 @@ class Edge : Element {
   init(horizontal: Bool, x: Int, y: Int) {
     self.horizontal = horizontal
     let dir = horizontal ? "H" : "V"
-    id = String(format: "%@%02d%02d", dir, x, y)
     super.init()
     elementType = horizontal ? .hEdge : .vEdge
+    id = String(format: "%@%02d%02d", dir, x, y)
   }
   
   /// 与えられたNodeの逆端のNodeを返す

@@ -322,7 +322,7 @@ class Solver {
           result.reason = .noloop
           return
         }
-        let newRoot = board.getLoopEnd(from: branch.root, and: branch.edge)
+        let (newRoot, _) = board.getLoopEnd(from: branch.root, and: branch.edge)
         let newBranches = createBranches(from: newRoot!)
         branchStack.append(newBranches)
         level += 1
@@ -752,7 +752,7 @@ class Solver {
   /// 盤面の状態をコンソールに出力する（デバッグ時のみ）
   ///
   /// - Parameter title: 出力時のタイトル
-  private func dump(title: String) {
+  func dump(title: String) {
     if option.debug {
       print(title)
       for line in board.dump() {

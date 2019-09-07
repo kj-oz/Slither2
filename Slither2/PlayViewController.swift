@@ -177,7 +177,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   /// 線の連続入力の終了
   func lineEnded() {
     if let edge = puzzle.board.findOnEdge() {
-      let endNode = puzzle.board.getLoopEnd(from: edge.nodes[0], and: edge)
+      let (endNode, _) = puzzle.board.getLoopEnd(from: edge.nodes[0], and: edge)
       if endNode == nil {
         let loopStatus = puzzle.board.check(finished: true)
         switch loopStatus {
@@ -251,12 +251,12 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
       }
     } else {
       puzzle.undo()
-      updateButtonStatus()
       puzzleView.setNeedsDisplay()
       if (advise as? CheckResultAdviseInfo) != nil {
         puzzleView.advise = nil
       }
     }
+    updateButtonStatus()
   }
 
   // リドゥボタンタップ時
@@ -268,9 +268,9 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
       }
     } else {
       puzzle.redo()
-      updateButtonStatus()
       puzzleView.setNeedsDisplay()
     }
+    updateButtonStatus()
   }
   
   // アクションシートの初期化ボタン押下
@@ -313,6 +313,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
       self.advise = advise
       alert(viewController: self, message: advise.message)
       puzzleView.startAdvise(advise: advise)
+      updateButtonStatus()
     }
   }
   
@@ -335,7 +336,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   
   // アクションシートのアドバイス終了ボタン押下
   @IBAction func adviseEndActionSelected(_ sender: Any) {
-    if let _ = self.advise {
+    if self.advise != nil {
       updateButtonStatus()
       puzzleView.endAdvise()
       self.advise = nil

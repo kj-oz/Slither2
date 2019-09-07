@@ -228,24 +228,24 @@ class Board {
   ///   - node: 探索元のNode
   ///   - edge: 最初の方向のEdge
   /// - Returns: 連続線のedgeから見てnodeと逆側の末端のNode、連続線が閉じている場合にはnil
-  func getLoopEnd(from node: Node, and edge: Edge) -> Node? {
-    var count = 0
+  func getLoopEnd(from node: Node, and edge: Edge) -> (Node?, [Edge]) {
+    var loop : [Edge] = [edge]
     var nd = edge.anotherNode(of: node)
     var ed = edge
     while nd.onCount == 2 {
       ed = nd.onEdge(connectTo: ed)!
+      loop.append(ed)
       nd = ed.anotherNode(of: nd)
       
       if nd === node {
-        return nil
+        return (nil, loop)
       }
-      count += 1
-      if count == edges.count {
+      if loop.count == edges.count {
         // 無限ループ防止
-        return nil
+        return (nil, loop)
       }
     }
-    return nd
+    return (nd, loop)
   }
   
   /// 文字で盤面を出力する

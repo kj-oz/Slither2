@@ -59,7 +59,10 @@ class ActionFinder : Solver {
   func doUserActions(_ actions: [SetEdgeStatusAction]) {
     do {
       for action in actions {
-        try changeEdgeStatus(of: action.edge, to: action.newStatus)
+        let node = action.edge.nodes[0]
+        let edge = action.edge.horizontal ?
+          board.hEdgeAt(x: node.x, y: node.y) :board.vEdgeAt(x: node.x, y: node.y)
+        try changeEdgeStatus(of: edge, to: action.newStatus)
       }
     } catch {
       let exception = error as! SolveException
@@ -75,12 +78,11 @@ class ActionFinder : Solver {
   ///
   /// - Parameter board: ユーザーの着手盤面
   /// - Returns: ユーザーの着手盤面から漏れているアクション
-  func findAbsentAction(board: Board) -> SetEdgeStatusAction? {
+  func findAbsentAction(board: Board, status: EdgeStatus) -> SetEdgeStatusAction? {
     for i in 0 ..< board.edges.count {
-      if self.board.edges[i].status == .on && board.edges[i].status == .unset {
-        return SetEdgeStatusAction(edge: board.edges[i], status: .on)
+      if self.board.edges[i].status == status && board.edges[i].status == .unset {
+        return SetEdgeStatusAction(edge: self.board.edges[i], status: status)
       }
-      // .offの場合は、自明でチェックしなかった可能性がある
     }
     return nil
   }
@@ -156,10 +158,14 @@ class ActionFinder : Solver {
     if edge.status == status {
       return
     }
-    if watching && !trying {
-      throw FinderException(action: SetEdgeStatusAction(edge: edge, status: status))
-    }
     try super.changeEdgeStatus(of: edge, to: status)
+    if watching && !trying {
+      if status == .on ||
+          (edge.nodes[0].onCount + edge.nodes[0].offCount < 3 ||
+           edge.nodes[1].onCount + edge.nodes[1].offCount < 3) {
+        throw FinderException(action: SetEdgeStatusAction(edge: edge, status: status))
+      }
+    }
   }
   
   /// 試しに1ステップだけ未設定のEdgeをOnまたはOffに設定して、エラーになればその逆の状態に確定させる.

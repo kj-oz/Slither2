@@ -97,17 +97,24 @@ class Adviser {
   
   func findNextAction() -> FindResult? {
     let finder = ActionFinder(board: Board(width: board.width, height: board.height, numbers: board.numbers))
+    finder.option.debug = true
     finder.doInitialStep()
-    if let action = finder.findAbsentAction(board: board) {
+    // .offの場合は、自明でチェックしなかった可能性があるので.onのみ調べる
+    if let action = finder.findAbsentAction(board: board, status: .on) {
       finder.solvingContext.function = .initialize
       return FindResult(action: action, context: finder.solvingContext)
     }
     
     finder.currentStep.rewind()
     finder.doUserActions(userActions)
-    if let action = finder.findAbsentAction(board: board) {
+
+    if let action = finder.findAbsentAction(board: board, status: .off) {
       // 小ループ1歩手前の状態は、これ以降新たなエッジがONにならない限り発生しない
       finder.solvingContext.function = .smallLoop
+      let edge = action.edge
+      let node = edge.nodes[0]
+      let (_, loop) = finder.board.getLoopEnd(from: node, and: node.onEdge(connectTo: edge)!)
+      finder.solvingContext.mainElements = loop
       return FindResult(action: action, context: finder.solvingContext)
     }
     

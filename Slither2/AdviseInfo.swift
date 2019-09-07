@@ -11,7 +11,7 @@ import UIKit
 
 class AdviseInfo {
   static let mainColor = UIColor.red
-  static let adviseColor = UIColor.green
+  static let adviseColor = UIColor(red: 0.2, green: 1.0, blue: 0.0, alpha: 1.0)
   static let relatedColor = UIColor.orange
   
   var message = ""
@@ -126,6 +126,7 @@ class MissAdviseInfo : AdviseInfo {
     switch function {
     case .initialize:
       message = "初期配置からの手の見落としです。"
+      reasonLabel = ""
     case .smallLoop:
       message = "小ループ防止の手の見落としです。"
     case .checkNode:
@@ -146,14 +147,18 @@ class MissAdviseInfo : AdviseInfo {
   override func style(of element: Element) -> Style? {
     if let edge = element as? Edge, edge == action.edge {
       return Style(color: AdviseInfo.adviseColor)
-    } else if reasonElements.contains(element) {
+    } else if reasonIndex >= 0 && reasonElements.contains(element) {
       return Style(color: AdviseInfo.mainColor, showGate: showGate, showCellColor: showCellColor)
     }
     return nil
   }
 
   override func fix(to puzzle: Puzzle) {
-    puzzle.addAction(action)
+    let node = action.edge.nodes[0]
+    let edge = action.edge.horizontal ?
+      puzzle.board.hEdgeAt(x: node.x, y: node.y) :
+      puzzle.board.vEdgeAt(x: node.x, y: node.y)
+    puzzle.addAction(SetEdgeStatusAction(edge: edge, status: action.newStatus))
   }
 }
 
@@ -180,7 +185,7 @@ class AreaCheckAdviseInfo : MissAdviseInfo {
 }
 
 class TryFailAdviseInfo : AdviseInfo {
-  var steps: [Step]
+  var steps: [[Action]]
   var action: SetEdgeStatusAction
   var followingElements: [Element] = []
   var edgeElement: Element?
@@ -189,15 +194,15 @@ class TryFailAdviseInfo : AdviseInfo {
   init(result: FindResult) {
     steps = []
     if let actions = result.context.relatedElements as? [Action] {
-      var currStep = Step()
+      var currStep: [Action] = []
       for action in actions {
-        currStep.add(action: action)
+        currStep.append(action)
         if action is SetEdgeStatusAction {
           steps.append(currStep)
-          currStep = Step()
+          currStep = []
         }
       }
-      if currStep.actions.count > 0 {
+      if currStep.count > 0 {
         steps.append(currStep)
       }
     }
@@ -230,40 +235,41 @@ class TryFailAdviseInfo : AdviseInfo {
   }
   
   override func fix(to puzzle: Puzzle) {
-    while reasonIndex >= 0 {
-      steps[reasonIndex].rewind()
-      reasonIndex -= 1
-    }
-    steps = []
-    puzzle.addAction(action)
+    let node = action.edge.nodes[0]
+    let edge = action.edge.horizontal ?
+      puzzle.board.hEdgeAt(x: node.x, y: node.y) :
+      puzzle.board.vEdgeAt(x: node.x, y: node.y)
+    puzzle.addAction(SetEdgeStatusAction(edge: edge, status: action.newStatus))
   }
 
   func stepForward() {
     reasonIndex += 1
     let currStep = steps[reasonIndex]
-    for action in currStep.actions {
+    for action in currStep {
       action.redo()
     }
     appendElements(of: currStep)
     if reasonIndex < steps.count - 1 {
-      edgeElement = followingElements.removeLast()
+      edgeElement = followingElements.last
     } else {
       edgeElement = nil
     }
   }
   
   func stepBack() {
-    steps[reasonIndex].rewind()
+    for action in steps[reasonIndex] {
+      action.undo()
+    }
     reasonIndex -= 1
     followingElements = []
     for i in 0 ... reasonIndex {
       appendElements(of: steps[i])
     }
-    edgeElement = followingElements.removeLast()
+    edgeElement = followingElements.last
   }
   
-  private func appendElements(of step: Step) {
-    for action in step.actions {
+  private func appendElements(of step: [Action]) {
+    for action in step {
       switch action {
       case is SetEdgeStatusAction:
         followingElements.append((action as! SetEdgeStatusAction).edge)

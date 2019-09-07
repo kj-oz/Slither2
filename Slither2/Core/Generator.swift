@@ -469,7 +469,7 @@ class Generator {
           currentStep.rewind()
           continue;
         }
-        newRoot = board.getLoopEnd(from: branch.root, and: branch.edge)
+        (newRoot, _) = board.getLoopEnd(from: branch.root, and: branch.edge)
         if newRoot == nil {
           dump(title: "■■ newRoot is nil (\(branch.root.id) -> \(branch.edge.id))")
         }
