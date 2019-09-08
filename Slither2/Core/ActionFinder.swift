@@ -80,9 +80,14 @@ class ActionFinder : Solver {
   /// - Returns: ユーザーの着手盤面から漏れているアクション
   func findAbsentAction(board: Board, status: EdgeStatus) -> SetEdgeStatusAction? {
     for i in 0 ..< board.edges.count {
-      if self.board.edges[i].status == status && board.edges[i].status == .unset {
-        return SetEdgeStatusAction(edge: self.board.edges[i], status: status)
+      if self.board.edges[i].status == status {
+        let edge = board.edges[i]
+        // onCountをチェックしないと、意味のない箇所で小ループの見落としとしてリストアップされる
+        if edge.status == .unset && edge.nodes[0].onCount < 2 && edge.nodes[1].onCount < 2 {
+          return SetEdgeStatusAction(edge: self.board.edges[i], status: status)
+        }
       }
+      
     }
     return nil
   }
@@ -161,6 +166,7 @@ class ActionFinder : Solver {
     try super.changeEdgeStatus(of: edge, to: status)
     if watching && !trying {
       if status == .on ||
+          (edge.nodes[0].onCount < 2 && edge.nodes[1].onCount < 2) &&
           (edge.nodes[0].onCount + edge.nodes[0].offCount < 3 ||
            edge.nodes[1].onCount + edge.nodes[1].offCount < 3) {
         throw FinderException(action: SetEdgeStatusAction(edge: edge, status: status))
