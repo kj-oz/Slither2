@@ -310,6 +310,7 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   @IBAction func adviseActionSelected(_ sender: Any) {
     let adviser = Adviser(puzzle: puzzle)
     if let advise = adviser.advise() {
+      puzzle.adviseCount += 1
       self.advise = advise
       alert(viewController: self, message: advise.message)
       puzzleView.startAdvise(advise: advise)

@@ -68,6 +68,9 @@ class Puzzle : Hashable {
   /// 解くまでに固定した回数
   var fixCount: Int = 0
   
+  /// アドバイスを受けた回数
+  var adviseCount: Int = 0
+  
   ///　操作の配列
   var actions: [SetEdgeStatusAction] = []
   
@@ -112,11 +115,11 @@ class Puzzle : Hashable {
     }
   }
   
-  /// 解くのに掛かった時間（と固定回数、初期化回数）の文字列（H:mm:ss 固定:f 初期化:i）
+  /// 解くのに掛かった時間（と固定回数、初期化回数、アドバイス回数）の文字列（H:mm:ss 固定:f 初期化:i）
   var solvingStatusString: String {
     if elapsedSecond > 0 {
       if resetCount > 0 || fixCount > 0 {
-        return String(format: "%@ 固定%d 初期化%d", elapsedTimeString, fixCount, resetCount)
+        return String(format: "%@ 固定%d 初期化%d 助言%d", elapsedTimeString, fixCount, resetCount, adviseCount)
       } else {
         return elapsedTimeString
       }
@@ -238,6 +241,8 @@ class Puzzle : Hashable {
           resetCount = Int(value)!
         case "fixCount":
           fixCount = Int(value)!
+        case "adviseCount":
+          adviseCount = Int(value)!
         case "actions":
           return
         default:
@@ -317,6 +322,7 @@ class Puzzle : Hashable {
     elapsedSecond = 0
     resetCount = 0
     fixCount = 0
+    adviseCount = 0
     actions = []
     save()
     folder.add([self])
@@ -344,6 +350,7 @@ class Puzzle : Hashable {
     lines.append("elapsedSecond: \(elapsedSecond)")
     lines.append("resetCount: \(resetCount)")
     lines.append("fixCount: \(fixCount)")
+    lines.append("adviseCount: \(adviseCount)")
     lines.append("actions: \(actions.count)")
     for action in actions {
       let edge = action.edge

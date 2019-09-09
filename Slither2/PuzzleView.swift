@@ -289,10 +289,15 @@ class PuzzleView: UIView {
         }
         let node = board.nodeAt(x: u, y: v)
         if let style = advise?.style(of: node) {
-          context.setFillColor(style.color.cgColor)
-          let r = style.enlargeNode ? pointR * 3 : pointR * 2
-          let rect = CGRect(x: x-pointR, y: y-pointR, width: r, height: r)
-          context.fill(rect)
+          if style.showGate {
+            context.setStrokeColor(style.color.cgColor)
+            drawGate(context: context, cx: x, cy: y, r: crossR, gate: node.gateStatus, rotate: rotate)
+          } else {
+            context.setFillColor(style.color.cgColor)
+            let r = style.enlargeNode ? pointR * 4 : pointR * 2
+            let rect = CGRect(x: x-pointR, y: y-pointR, width: r, height: r)
+            context.fill(rect)
+          }
         } else {
           context.setFillColor(fixedColor)
           let rect = CGRect(x: x-pointR, y: y-pointR, width: pointR * 2, height: pointR * 2)
@@ -316,29 +321,32 @@ class PuzzleView: UIView {
     
     for v in 0 ..< board.height {
       if rotate {
-        x = x0 + CGFloat(v) * pitch + nx
+        x = x0 + CGFloat(v) * pitch
       } else {
-        y = y0 + CGFloat(v) * pitch + ny
+        y = y0 + CGFloat(v) * pitch
       }
       for u in 0  ..< board.width {
         if rotate {
-          y = y0 - CGFloat(u + 1) * pitch + ny
+          y = y0 - CGFloat(u + 1) * pitch
         } else {
-          x = x0 + CGFloat(u) * pitch + nx
+          x = x0 + CGFloat(u) * pitch
         }
         let cell = board.cellAt(x: u, y: v)
         let number = cell.number
         let style = advise?.style(of: cell)
         if let style = style, style.showCellColor {
-          // セルの塗
+          if cell.color != .unset {
+            context.setFillColor(style.color.cgColor)
+            context.fill(CGRect(x: x, y: y, width: pitch, height: pitch))
+          }
         }
         if number >= 0 {
           var fontColor = normalColor
-          if let style = style {
+          if let style = style, !style.showCellColor {
             fontColor = style.color
           }
           let char = chars[number] as NSString
-          char.draw(at: CGPoint(x: x, y: y), withAttributes:
+          char.draw(at: CGPoint(x: x + nx, y: y + ny), withAttributes:
             [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: fontColor])
         }
       }
@@ -418,7 +426,7 @@ class PuzzleView: UIView {
           if (rotate) {
             drawCross(context: context, cx: x+0.5*pitch, cy: y, r: crossR)
           } else {
-            drawCross(context: context, cx: x, cy: y + 0.5 * pitch, r: crossR)
+            drawCross(context: context, cx: x, cy: y+0.5*pitch, r: crossR)
           }
         }
       }
@@ -516,6 +524,48 @@ class PuzzleView: UIView {
     points[0] = CGPoint(x: x1, y: y2)
     points[1] = CGPoint(x: x2, y: y1)
     context.strokeLineSegments(between: points)
+  }
+  
+  /// ゲートを描画する
+  ///
+  /// - Parameters:
+  ///   - context: コンテキスト
+  ///   - cx: ゲートの中心のX座標
+  ///   - cy: ゲートの中心のY座標
+  ///   - r: ゲートの腕の長さ
+  ///   - gate: ゲートの状態
+  ///   - rotate: 盤面の状態
+  private func drawGate(context: CGContext, cx: CGFloat, cy: CGFloat, r: CGFloat,
+                        gate: [GateStatus], rotate: Bool) {
+    var x1 = cx - 2*r
+    var y1 = cy - 2*r
+    var x2 = cx + 2*r
+    var y2 = cy + 2*r
+    var points: [CGPoint] = []
+    points.append(CGPoint(x: cx, y: y1))
+    points.append(CGPoint(x: x1, y: cy))
+    points.append(CGPoint(x: cx, y: y2))
+    points.append(CGPoint(x: x2, y: cy))
+    points.append(CGPoint(x: cx, y: y1))
+    context.strokeLineSegments(between: points)
+    
+    x1 = cx - r
+    y1 = cy - r
+    x2 = cx + r
+    y2 = cy + r
+    let ruIndex = rotate ? 1 : 0
+    if gate[ruIndex] == .open {
+      points = []
+      points.append(CGPoint(x: x1, y: y1))
+      points.append(CGPoint(x: x2, y: y2))
+      context.strokeLineSegments(between: points)
+    }
+    if gate[1-ruIndex] == .open {
+      points = []
+      points.append(CGPoint(x: x1, y: y2))
+      points.append(CGPoint(x: x2, y: y1))
+      context.strokeLineSegments(between: points)
+    }
   }
   
   func startAdvise(advise: AdviseInfo) {

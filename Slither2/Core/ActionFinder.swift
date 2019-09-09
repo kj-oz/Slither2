@@ -78,18 +78,30 @@ class ActionFinder : Solver {
   ///
   /// - Parameter board: ユーザーの着手盤面
   /// - Returns: ユーザーの着手盤面から漏れているアクション
-  func findAbsentAction(board: Board, status: EdgeStatus) -> SetEdgeStatusAction? {
+  func findAbsentAction(board: Board) -> SetEdgeStatusAction? {
     for i in 0 ..< board.edges.count {
-      if self.board.edges[i].status == status {
-        let edge = board.edges[i]
-        // onCountをチェックしないと、意味のない箇所で小ループの見落としとしてリストアップされる
-        if edge.status == .unset && edge.nodes[0].onCount < 2 && edge.nodes[1].onCount < 2 {
-          return SetEdgeStatusAction(edge: self.board.edges[i], status: status)
+      let edge = board.edges[i]
+      if edge.status == .unset {
+        switch self.board.edges[i].status {
+        case .on:
+          return SetEdgeStatusAction(edge: self.board.edges[i], status: .on)
+        case .off:
+          let edge = board.edges[i]
+          // onCountをチェックしないと、意味のない箇所で小ループの見落としとしてリストアップされる
+          if !isEdgeObviouslyOff(edge) {
+            return SetEdgeStatusAction(edge: self.board.edges[i], status: .off)
+          }
+        case .unset:
+          break
         }
       }
-      
     }
     return nil
+  }
+  
+  private func isEdgeObviouslyOff(_ edge: Edge) -> Bool {
+    return edge.nodes[0].onCount == 2 || edge.nodes[1].onCount == 2 ||
+      edge.nodes[0].offCount >= 3 || edge.nodes[1].offCount >= 3
   }
   
   /// これまでの打ち手による盤面の状況から、次の着手を探し出す
@@ -165,10 +177,7 @@ class ActionFinder : Solver {
     }
     try super.changeEdgeStatus(of: edge, to: status)
     if watching && !trying {
-      if status == .on ||
-          (edge.nodes[0].onCount < 2 && edge.nodes[1].onCount < 2) &&
-          (edge.nodes[0].onCount + edge.nodes[0].offCount < 3 ||
-           edge.nodes[1].onCount + edge.nodes[1].offCount < 3) {
+      if status == .on || !isEdgeObviouslyOff(edge) {
         throw FinderException(action: SetEdgeStatusAction(edge: edge, status: status))
       }
     }
@@ -290,8 +299,37 @@ class ActionFinder : Solver {
   
   override func checkGate(of cell: Cell) throws {
     solvingContext.function = .checkGate
-    solvingContext.mainElements = [cell]
-    try super.checkGate(of: cell)
+    switch cell.number {
+    case 1:
+      for h in [0, 1] {
+        for v in [0, 1] {
+          let node = cell.hEdges[v].nodes[h]
+          solvingContext.mainElements = [cell, node]
+          try checkGateC1(cell: cell, h: h, v: v)
+        }
+      }
+      
+    case 2:
+      for h in [0, 1] {
+        for v in [0, 1] {
+          let node = cell.hEdges[v].nodes[h]
+          solvingContext.mainElements = [cell, node]
+          try checkGateC2(cell: cell, h: h, v: v)
+        }
+      }
+      
+    case 3:
+      for h in [0, 1] {
+        for v in [0, 1] {
+          let node = cell.hEdges[v].nodes[h]
+          solvingContext.mainElements = [cell, node]
+          try checkGateC3(cell: cell, h: h, v: v)
+        }
+      }
+      
+    default:
+      return
+    }
   }
   
   /// 領域に接するループの末端の数をチェックする

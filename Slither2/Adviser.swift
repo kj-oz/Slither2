@@ -99,8 +99,7 @@ class Adviser {
     let finder = ActionFinder(board: Board(width: board.width, height: board.height, numbers: board.numbers))
     finder.option.debug = true
     finder.doInitialStep()
-    // .offの場合は、自明でチェックしなかった可能性があるので.onのみ調べる
-    if let action = finder.findAbsentAction(board: board, status: .on) {
+    if let action = finder.findAbsentAction(board: board) {
       finder.solvingContext.function = .initialize
       return FindResult(action: action, context: finder.solvingContext)
     }
@@ -108,7 +107,7 @@ class Adviser {
     finder.currentStep.rewind()
     finder.doUserActions(userActions)
 
-    if let action = finder.findAbsentAction(board: board, status: .off) {
+    if let action = finder.findAbsentAction(board: board) {
       // 小ループ1歩手前の状態は、これ以降新たなエッジがONにならない限り発生しない
       finder.solvingContext.function = .smallLoop
       let edge = action.edge
