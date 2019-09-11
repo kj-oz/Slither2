@@ -22,16 +22,24 @@ class ActionFinder : Solver {
   /// 次手が見つかるのを待っている状態かどうか
   private var watching = false
   
+  /// 仮置で最小延長で確定したアクション
   private var minimumAction: SetEdgeStatusAction?
   
+  /// 仮置で最小延長で確定した際の延長数
   private var minimumExtent = Int.max
   
+  /// 仮置で最小延長で確定した際の確定するまでのアクション
   private var minimumStep: [Action] = []
   
+  /// 仮置で最小延長で確定した際の矛盾の発生した要素
   private var minimumFailed: Element?
 
+  /// 解いている過程の状況
   var solvingContext: SolvingContext
   
+  /// コンストラクタ
+  ///
+  /// - Parameter board: 次手検索用の盤面
   override init(board: Board) {
     solvingContext = SolvingContext(board: board)
     super.init(board: board)
@@ -99,9 +107,17 @@ class ActionFinder : Solver {
     return nil
   }
   
+  /// そのエッジが明らかにOFFであるかどうかを調べる
+  ///
+  /// - Parameter edge: 対象のエッジ
+  /// - Returns: 明らかにOFFならtrue
   private func isEdgeObviouslyOff(_ edge: Edge) -> Bool {
-    return edge.nodes[0].onCount == 2 || edge.nodes[1].onCount == 2 ||
-      edge.nodes[0].offCount >= 3 || edge.nodes[1].offCount >= 3
+    if edge.nodes[0].onCount == 2 || edge.nodes[1].onCount == 2 ||
+        edge.nodes[0].offCount >= 3 || edge.nodes[1].offCount >= 3 {
+      return true
+    }
+    return edge.cells[0].onCount == edge.cells[0].number ||
+      edge.cells[1].onCount == edge.cells[1].number
   }
   
   /// これまでの打ち手による盤面の状況から、次の着手を探し出す
@@ -183,10 +199,7 @@ class ActionFinder : Solver {
     }
   }
   
-  /// 試しに1ステップだけ未設定のEdgeをOnまたはOffに設定して、エラーになればその逆の状態に確定させる.
-  ///
-  /// - Returns: 新たな辺が確定したか
-  /// - Throws: 解の探索時例外
+  // 試しに1ステップだけ未設定のEdgeをOnまたはOffに設定して、エラーになればその逆の状態に確定させる.
   override func tryOneStep() throws -> Bool {
     startNewStep(useCache: false)
     minimumAction = nil
@@ -209,13 +222,7 @@ class ActionFinder : Solver {
     return false
   }
   
-  /// 与えられたEdgeを指定の状態に設定して解を求め、エラーになった場合は逆の状態に確定する
-  ///
-  /// - Parameters:
-  ///   - edge: 対象のEdge
-  ///   - status: 状態
-  /// - Returns: 指定のEdgeの状態が確定したかどうか
-  /// - Throws: 解の探索時例外
+  // 与えられたEdgeを指定の状態に設定して解を求め、エラーになった場合は逆の状態に確定する
   override func tryEdge(_ edge: Edge, to status: EdgeStatus) throws -> Bool {
     
     do {
@@ -245,58 +252,42 @@ class ActionFinder : Solver {
     return false
   }
   
+  // 与えられた状態がOnに変化したEdgeの与えられた方向のNodeをチェックする
   override func checkNodeOfOnEdge(edge: Edge, pos: Int) throws {
     solvingContext.function = .checkNode
     solvingContext.mainElements = [edge.nodes[pos]]
     try super.checkNodeOfOnEdge(edge: edge, pos: pos)
   }
   
-  /// 与えられた状態がOnに変化したEdgeの与えられた方向のCellをチェックする
-  ///
-  /// - Parameters:
-  ///   - edge: 状態がOnに変化したEdge
-  ///   - pos: 左右(0:indexが小さな側、1:indexが大きな側）
-  /// - Throws: 解の探索時例外
+  // 与えられた状態がOnに変化したEdgeの与えられた方向のCellをチェックする
   override func checkCellOfOnEdge(edge: Edge, pos: Int) throws {
     solvingContext.function = .checkCell
     solvingContext.mainElements = [edge.cells[pos]]
     try super.checkCellOfOnEdge(edge: edge, pos: pos)
   }
   
-  /// 与えられた状態がOffに変化したEdgeの与えられた方向のNodeをチェックする
-  ///
-  /// - Parameters:
-  ///   - edge: 状態がOffに変化したEdge
-  ///   - pos: 前後(0:indexが小さな側、1:indexが大きな側）
-  /// - Throws: 解の探索時例外
+  // 与えられた状態がOffに変化したEdgeの与えられた方向のNodeをチェックする
   override func checkNodeOfOffEdge(edge: Edge, pos: Int) throws {
     solvingContext.function = .checkNode
     solvingContext.mainElements = [edge.nodes[pos]]
     try super.checkNodeOfOffEdge(edge: edge, pos: pos)
   }
   
-  /// 与えられた状態がOffに変化したEdgeの与えられた方向のCellをチェックする
-  ///
-  /// - Parameters:
-  ///   - edge: 状態がOffに変化したEdge
-  ///   - pos: 左右(0:indexが小さな側、1:indexが大きな側）
-  /// - Throws: 解の探索時例外
+  // 与えられた状態がOffに変化したEdgeの与えられた方向のCellをチェックする
   override func checkCellOfOffEdge(edge: Edge, pos: Int) throws {
     solvingContext.function = .checkCell
     solvingContext.mainElements = [edge.cells[pos]]
     try super.checkCellOfOffEdge(edge: edge, pos: pos)
   }
   
-  /// 状態が変化したエッジに接していたセルの色をチェックする
-  ///
-  /// - Parameter cell: 対象のセル
-  /// - Throws: 解の探索時例外
+  // 状態が変化したエッジに接していたセルの色をチェックする
   override func checkColor(of cell: Cell) throws {
     solvingContext.function = .checkColor
     solvingContext.mainElements = [cell]
     try super.checkColor(of: cell)
   }
   
+  // 与えられたCellの四隅の斜めに接するCellとの関係のチェックを行う
   override func checkGate(of cell: Cell) throws {
     solvingContext.function = .checkGate
     switch cell.number {
@@ -332,10 +323,7 @@ class ActionFinder : Solver {
     }
   }
   
-  /// 領域に接するループの末端の数をチェックする
-  ///
-  /// - Returns: 領域チェックの結果、エッジ、ゲートの状態に変更があったか
-  /// - Throws: 解の探索時例外
+  // 領域に接するループの末端の数をチェックする
   override func checkArea() throws -> Bool {
     let ac = AreaCheckerAF(finder: self)
     let stat = try ac.check()
@@ -343,21 +331,16 @@ class ActionFinder : Solver {
   }
 }
 
+/// 何らかの手が見つかった場合に、FinderExceptionを投げるよう改良した領域チェッククラス
 class AreaCheckerAF : AreaChecker {
-  /// ソルバを引数にチェッカーを生成する
+  /// ファインダを引数にチェッカーを生成する
   ///
-  /// - Parameter solver: ソルバ
+  /// - Parameter finder: ファインダ
   init(finder: ActionFinder) {
     super.init(solver: finder)
   }
 
-  /// ゲート部の（エッジの）ステータスを変更する
-  ///
-  /// - Parameters:
-  ///   - gate: ゲート
-  ///   - area: エリア
-  ///   - status: ステータス
-  /// - Throws: 解の探索時例外
+  // ゲート部の（エッジの）ステータスを変更する
   override func changeGateStatus(of gate: Point, from area: Area, to status: EdgeStatus) throws -> Bool {
     let af = solver as! ActionFinder
     af.solvingContext.function = .checkArea

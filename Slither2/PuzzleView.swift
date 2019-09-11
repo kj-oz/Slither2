@@ -544,10 +544,12 @@ class PuzzleView: UIView {
     var points: [CGPoint] = []
     points.append(CGPoint(x: cx, y: y1))
     points.append(CGPoint(x: x1, y: cy))
+    points.append(CGPoint(x: x1, y: cy))
+    points.append(CGPoint(x: cx, y: y2))
     points.append(CGPoint(x: cx, y: y2))
     points.append(CGPoint(x: x2, y: cy))
+    points.append(CGPoint(x: x2, y: cy))
     points.append(CGPoint(x: cx, y: y1))
-    context.strokeLineSegments(between: points)
     
     x1 = cx - r
     y1 = cy - r
@@ -555,17 +557,14 @@ class PuzzleView: UIView {
     y2 = cy + r
     let ruIndex = rotate ? 1 : 0
     if gate[ruIndex] == .open {
-      points = []
       points.append(CGPoint(x: x1, y: y1))
       points.append(CGPoint(x: x2, y: y2))
-      context.strokeLineSegments(between: points)
     }
     if gate[1-ruIndex] == .open {
-      points = []
       points.append(CGPoint(x: x1, y: y2))
       points.append(CGPoint(x: x2, y: y1))
-      context.strokeLineSegments(between: points)
     }
+    context.strokeLineSegments(between: points)
   }
   
   func startAdvise(advise: AdviseInfo) {

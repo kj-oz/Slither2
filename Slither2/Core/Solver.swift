@@ -496,6 +496,9 @@ class Solver {
   /// - Throws: 解の探索時例外
   func checkNodeOfOnEdge(edge: Edge, pos: Int) throws {
     let node = edge.nodes[pos]
+    if node.onCount > 2 || node.offCount > 2 {
+      throw SolveException.failed(reason: node)
+    }
     
     // ノードのOnの辺数が2になったら残りはOff
     if node.onCount == 2 {
@@ -535,6 +538,9 @@ class Solver {
   /// - Throws: 解の探索時例外
   func checkCellOfOnEdge(edge: Edge, pos: Int) throws {
     let cell = edge.cells[pos]
+    if cell.number >= 0 && cell.onCount > cell.number {
+      throw SolveException.failed(reason: cell)
+    }
     
     // セルのOnの辺数がナンバーと一致したら残りはOff
     if cell.onCount == cell.number {
@@ -561,7 +567,10 @@ class Solver {
   /// - Throws: 解の探索時例外
   func checkNodeOfOffEdge(edge: Edge, pos: Int) throws {
     let node = edge.nodes[pos]
-    
+    if node.onCount == 1 && node.offCount == 3 {
+      throw SolveException.failed(reason: node)
+    }
+
     // ノードのOffの辺数が3になったら残りもOff
     if node.offCount == 3 {
       if node.vEdges[0].status != .off {
@@ -637,7 +646,10 @@ class Solver {
   /// - Throws: 解の探索時例外
   func checkCellOfOffEdge(edge: Edge, pos: Int) throws {
     let cell = edge.cells[pos]
-    
+    if cell.number >= 0 && 4 - cell.offCount < cell.number {
+      throw SolveException.failed(reason: cell)
+    }
+
     // セルのOffの辺数が(4-ナンバー)と一致したら残りはOn
     if cell.number > 0 && cell.offCount == 4 - cell.number {
       if cell.hEdges[0].status == .unset {

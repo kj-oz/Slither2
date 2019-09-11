@@ -13,7 +13,9 @@ class AdviseInfo {
   static let mainColor = UIColor.red
   static let adviseColor = UIColor(red: 0.2, green: 1.0, blue: 0.0, alpha: 1.0)
   static let relatedColor = UIColor.orange
-  
+  static let innerColor = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.1)
+  static let outerColor = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.1)
+
   var message = ""
   var reasonIndex = -1
   var reasonLabel = ""
@@ -148,7 +150,13 @@ class MissAdviseInfo : AdviseInfo {
     if let edge = element as? Edge, edge == action.edge {
       return Style(color: AdviseInfo.adviseColor)
     } else if reasonIndex >= 0 && reasonElements.contains(element) {
-      return Style(color: AdviseInfo.mainColor, showGate: showGate, showCellColor: showCellColor)
+      var color = AdviseInfo.mainColor
+      if showCellColor {
+        if let cell = element as? Cell {
+          color = (cell.color == CellColor.inner) ? AdviseInfo.innerColor : AdviseInfo.outerColor
+        }
+      }
+      return Style(color: color, showGate: showGate, showCellColor: showCellColor)
     }
     return nil
   }
@@ -228,7 +236,11 @@ class TryFailAdviseInfo : AdviseInfo {
       if element == edgeElement || (reasonIndex == steps.count - 1 && element == reasonElement) {
         return Style(color: AdviseInfo.mainColor)
       } else if followingElements.contains(element) {
-        return Style(color: AdviseInfo.relatedColor, showGate: true, showCellColor: true)
+        var color = AdviseInfo.relatedColor
+        if let cell = element as? Cell {
+          color = (cell.color == CellColor.inner) ? AdviseInfo.innerColor : AdviseInfo.outerColor
+        }
+        return Style(color: color, showGate: true, showCellColor: true)
       }
     }
     return nil

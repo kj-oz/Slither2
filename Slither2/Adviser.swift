@@ -34,7 +34,8 @@ class Adviser {
     self.puzzle = puzzle
     self.board = puzzle.board
     var edgeSet: Set<Edge> = []
-    for action in puzzle.actions.reversed() {
+    for i in (0 ... puzzle.currentIndex).reversed() {
+      let action = puzzle.actions[i]
       let target = action.edge
       if !edgeSet.contains(target) {
         edgeSet.insert(target)
