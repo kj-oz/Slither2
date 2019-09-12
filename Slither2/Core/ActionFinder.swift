@@ -111,10 +111,18 @@ class ActionFinder : Solver {
   ///
   /// - Parameter edge: 対象のエッジ
   /// - Returns: 明らかにOFFならtrue
-  private func isEdgeObviouslyOff(_ edge: Edge) -> Bool {
-    if edge.nodes[0].onCount == 2 || edge.nodes[1].onCount == 2 ||
-        edge.nodes[0].offCount >= 3 || edge.nodes[1].offCount >= 3 {
+  private func isEdgeObviouslyOff(_ edge: Edge, after: Bool = false) -> Bool {
+    if edge.nodes[0].onCount == 2 || edge.nodes[1].onCount == 2 {
       return true
+    }
+    if after {
+      if edge.nodes[0].offCount == 4 || edge.nodes[1].offCount == 4 {
+        return true
+      }
+    } else {
+      if edge.nodes[0].offCount >= 3 || edge.nodes[1].offCount >= 3 {
+        return true
+      }
     }
     return edge.cells[0].onCount == edge.cells[0].number ||
       edge.cells[1].onCount == edge.cells[1].number
@@ -193,7 +201,7 @@ class ActionFinder : Solver {
     }
     try super.changeEdgeStatus(of: edge, to: status)
     if watching && !trying {
-      if status == .on || !isEdgeObviouslyOff(edge) {
+      if status == .on || !isEdgeObviouslyOff(edge, after: true) {
         throw FinderException(action: SetEdgeStatusAction(edge: edge, status: status))
       }
     }
