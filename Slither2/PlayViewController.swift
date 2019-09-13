@@ -338,9 +338,9 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   // アクションシートのアドバイス終了ボタン押下
   @IBAction func adviseEndActionSelected(_ sender: Any) {
     if self.advise != nil {
-      updateButtonStatus()
       puzzleView.endAdvise()
       self.advise = nil
+      updateButtonStatus()
     }
   }
   
