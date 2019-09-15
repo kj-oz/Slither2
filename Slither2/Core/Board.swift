@@ -493,7 +493,7 @@ class Board {
         return .notClosed
       }
       conCount += 1
-      if conCount > onEdgeCount {
+      if conCount > edges.count {
         return .multiLoop(errorElements: [])
       }
       node = ed!.anotherNode(of: node)
