@@ -38,7 +38,10 @@ class Solver {
   var trying = false
   
   /// 1ステップトライ時のループ延長数
-  var tryingChainCont = 0
+  var tryingChainCount = 0
+  
+  ///
+  var tryOnEdges : [Edge:EdgeStatus] = [:]
   
   /// 与えられた盤面で初期化する
   ///
@@ -201,17 +204,35 @@ class Solver {
 
     do {
       try changeEdgeStatus(of: edge, to: status)
-      startTrying()
+      startTrying(status: status)
       try checkSurroundingElements(trying: true)
     } catch {
       let exception = error as! SolveException
-      if case .failed = exception {
+      switch exception {
+      case .failed:
         backToPreviousStep()
         endTrying()
         try changeEdgeStatus(of: edge, to: status.otherStatus())
         return true
+      case .sameAction(action: let action):
+        print("SameAction: \(action.edge.id)")
+        backToPreviousStep()
+        endTrying()
+        try changeEdgeStatus(of: action.edge, to: action.newStatus)
+        return true
+      default:
+        // .finished　ここでは無視する
+        break
       }
-      // .finished　ここでは無視する
+    }
+    if case status = EdgeStatus.on {
+      for action in currentStep.actions {
+        if let setEdgeAction = action as? SetEdgeStatusAction {
+          tryOnEdges[setEdgeAction.edge] = setEdgeAction.newStatus
+        }
+      }
+    } else {
+      tryOnEdges = [:]
     }
     currentStep.rewind(addCache: true)
     endTrying()
@@ -219,18 +240,18 @@ class Solver {
   }
   
   /// 1ステップトライを開始する
-  func startTrying() {
+  func startTrying(status: EdgeStatus) {
     trying = true
-    tryingChainCont = 0
+    tryingChainCount = 0
   }
   
   /// 1ステップトライを終了する
   func endTrying() {
     trying = false
-    if tryingChainCont > result.tryingChainCount {
-      result.tryingChainCount = tryingChainCont
+    if tryingChainCount > result.tryingChainCount {
+      result.tryingChainCount = tryingChainCount
     }
-    tryingChainCont = 0
+    tryingChainCount = 0
   }
   
   /// 与えられたNodeから発生する分岐の配列を得る
@@ -378,10 +399,15 @@ class Solver {
       throw SolveException.failed(reason: edge)
     }
     
-    if trying && status == .on {
-      tryingChainCont += 1
-      if tryingChainCont > option.tryOneStepMaxExtent {
-        throw SolveException.stepover
+    if trying {
+      if let onStatus = tryOnEdges[edge], onStatus == status {
+        throw SolveException.sameAction(action: SetEdgeStatusAction(edge: edge, status: status))
+      }
+      if status == .on {
+        tryingChainCount += 1
+        if tryingChainCount > option.tryOneStepMaxExtent {
+          throw SolveException.stepover
+        }
       }
     }
     

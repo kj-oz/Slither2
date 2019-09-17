@@ -8,19 +8,21 @@
 
 import Foundation
 
-/// 解の探索中にこれ以上の探索ができなくなった際にスローする例外
+/// 解の探索中にこれ以上の探索ができなくなった（必要なくなった）際にスローする例外
 ///
 /// - failed: 何らかの矛盾が発生した
 /// - finished: 正解が見つかった
 /// - cacheHit: キャッシュにヒットした
 /// - timeover: 制限時間オーバー
 /// - stepover: 1ステップトライ時の延長エッジ数の制限オーバー
+/// - sameAction: 1ステップトライ時の.onと.offで同じ状態になった
 enum SolveException: Error {
   case failed(reason: Element?)
   case finished
   case cacheHit
   case timeover
   case stepover
+  case sameAction(action: SetEdgeStatusAction)
 }
 
 /// パズルを解いた結果
@@ -162,7 +164,8 @@ class SolvingContext {
     case checkNode
     case checkGate
     case checkColor
-    case tryOneStep
+    case tryFail
+    case trySameResult
     case checkArea
   }
   

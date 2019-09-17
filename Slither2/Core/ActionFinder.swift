@@ -37,6 +37,8 @@ class ActionFinder : Solver {
   /// 解いている過程の状況
   var solvingContext: SolvingContext
   
+  var onActions: [Action] = []
+  
   /// コンストラクタ
   ///
   /// - Parameter board: 次手検索用の盤面
@@ -222,8 +224,13 @@ class ActionFinder : Solver {
     }
     backToPreviousStep()
     if let action = minimumAction {
-      solvingContext.function = .tryOneStep
-      solvingContext.mainElements = [minimumFailed!]
+      if let failed = minimumFailed {
+        solvingContext.function = .tryFail
+        solvingContext.mainElements = [failed]
+      } else {
+        solvingContext.function = .trySameResult
+        solvingContext.mainElements = []
+      }
       solvingContext.relatedElements = minimumStep
       try changeEdgeStatus(of: action.edge, to: action.newStatus)
     }
@@ -234,15 +241,15 @@ class ActionFinder : Solver {
   override func tryEdge(_ edge: Edge, to status: EdgeStatus) throws -> Bool {
     
     do {
-      startTrying()
+      startTrying(status: status)
       try changeEdgeStatus(of: edge, to: status)
       try checkSurroundingElements(trying: true)
     } catch {
       let exception = error as! SolveException
       switch exception {
       case .failed(reason: let reason):
-        if tryingChainCont < minimumExtent {
-          minimumExtent = tryingChainCont
+        if tryingChainCount < minimumExtent {
+          minimumExtent = tryingChainCount
           minimumAction = SetEdgeStatusAction(edge: edge, status: status.otherStatus())
           minimumStep = currentStep.actions
           minimumFailed = reason
@@ -250,8 +257,37 @@ class ActionFinder : Solver {
         currentStep.rewind(addCache: false)
         endTrying()
         return true
+      case .sameAction(action: let action):
+        var actions: [Action] = []
+        var onChainCount = 0
+        for onAction in onActions {
+          actions.append(action)
+          if let seAction = onAction as? SetEdgeStatusAction {
+            if seAction.newStatus == .on {
+              onChainCount += 1
+            }
+            if seAction.edge == action.edge {
+              break
+            }
+          }
+        }
+        let maxChainCount = max(tryingChainCount, onChainCount)
+        if maxChainCount < minimumExtent {
+          minimumExtent = maxChainCount
+          minimumAction = action
+          minimumStep = []
+          minimumStep.append(contentsOf: actions)
+          minimumStep.append(contentsOf: currentStep.actions)
+          minimumFailed = nil
+        }
+        currentStep.rewind(addCache: false)
+        endTrying()
+        return true
       default:
         // .finished はここでは無視する
+        if status == .on {
+          onActions = currentStep.actions
+        }
         break
       }
     }

@@ -54,8 +54,10 @@ class Adviser {
       switch result.context.function {
       case .initialize, .smallLoop, .checkNode, .checkCell, .checkGate, .checkColor:
         return MissAdviseInfo(result: result)
-      case .tryOneStep:
+      case .tryFail:
         return TryFailAdviseInfo(result: result)
+      case .trySameResult:
+        return TrySameResultAdviseInfo(result: result)
       case .checkArea:
         return AreaCheckAdviseInfo(result: result)
       }

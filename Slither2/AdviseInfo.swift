@@ -295,3 +295,118 @@ class TryFailAdviseInfo : AdviseInfo {
     }
   }
 }
+
+class TrySameResultAdviseInfo : AdviseInfo {
+  var steps: [[Action]]
+  var action: SetEdgeStatusAction
+  var followingElements: [Element] = []
+  var edgeElement: Element?
+  var reasonElement: Edge
+  
+  var offIndex = 0
+  
+  init(result: FindResult) {
+    let edge = result.action.edge
+    steps = []
+    if let actions = result.context.relatedElements as? [Action] {
+      var currStep: [Action] = []
+      for action in actions {
+        currStep.append(action)
+        if let seAction = action as? SetEdgeStatusAction {
+          steps.append(currStep)
+          currStep = []
+          if seAction.edge == edge {
+            offIndex = steps.count
+          }
+        }
+      }
+      if currStep.count > 0 {
+        steps.append(currStep)
+      }
+    }
+    action = result.action
+    reasonElement = result.context.mainElements[0] as! Edge
+    super.init()
+    self.board = result.context.board
+    message = "どちらの状態の仮置でも同じ状態になり、確定します。"
+    reasonLabel = "仮置（ON→OFF）のステップ実行"
+    fixLabel = "確定"
+    stepForward()
+  }
+  
+  override func showReason() {
+    stepForward()
+  }
+  
+  override func style(of element: Element) -> Style? {
+    if reasonIndex < 1 {
+      if let edge = element as? Edge {
+        if edge == action.edge {
+          return Style(color: AdviseInfo.adviseColor)
+        } else if edge == reasonElement {
+          return Style(color: AdviseInfo.mainColor)
+        }
+      }
+    } else {
+      if element == edgeElement {
+        return Style(color: AdviseInfo.mainColor)
+      } else if followingElements.contains(element) {
+        var color = AdviseInfo.relatedColor
+        if let cell = element as? Cell {
+          color = (cell.color == CellColor.inner) ? AdviseInfo.innerColor : AdviseInfo.outerColor
+        }
+        return Style(color: color, showGate: true, showCellColor: true)
+      }
+    }
+    return nil
+  }
+  
+  override func fix(to puzzle: Puzzle) {
+    let node = action.edge.nodes[0]
+    let edge = action.edge.horizontal ?
+      puzzle.board.hEdgeAt(x: node.x, y: node.y) :
+      puzzle.board.vEdgeAt(x: node.x, y: node.y)
+    puzzle.addAction(SetEdgeStatusAction(edge: edge, status: action.newStatus))
+  }
+  
+  func stepForward() {
+    reasonIndex += 1
+    if reasonIndex == offIndex {
+      followingElements = []
+    }
+    let currStep = steps[reasonIndex]
+    for action in currStep {
+      action.redo()
+    }
+    appendElements(of: currStep)
+    edgeElement = followingElements.last
+  }
+  
+  func stepBack() {
+    for action in steps[reasonIndex] {
+      action.undo()
+    }
+    reasonIndex -= 1
+    followingElements = []
+    let startIndex = reasonIndex < offIndex ? 0 : offIndex
+    for i in startIndex ... reasonIndex {
+      appendElements(of: steps[i])
+    }
+    edgeElement = followingElements.last
+  }
+  
+  private func appendElements(of step: [Action]) {
+    for action in step {
+      switch action {
+      case is SetEdgeStatusAction:
+        followingElements.append((action as! SetEdgeStatusAction).edge)
+      case is SetGateStatusAction:
+        followingElements.append((action as! SetGateStatusAction).node)
+      case is SetCellColorAction:
+        followingElements.append((action as! SetCellColorAction).cell)
+      default:
+        break
+      }
+    }
+  }
+}
