@@ -52,7 +52,9 @@ class Adviser {
     
     if let result = findNextAction() {
       switch result.context.function {
-      case .initialize, .smallLoop, .checkNode, .checkCell, .checkGate, .checkColor:
+      case .initialize:
+        return InitialAdviseInfo(puzzle: puzzle, action: result.action)
+      case .smallLoop, .checkNode, .checkCell, .checkGate, .checkColor:
         return MissAdviseInfo(result: result)
       case .tryFail:
         return TryFailAdviseInfo(result: result)

@@ -379,7 +379,14 @@ class PuzzleView: UIView {
         }
         context.setFillColor(color)
         context.setStrokeColor(color)
-        let status = edge.status
+        var status = edge.status
+        var showEmptyElement = false
+        if status == .unset {
+          if let style = style, style.showEmptyElement {
+            status = style.emptyEdgeStatus
+            showEmptyElement = true
+          }
+        }
         if status == .on {
           var rect: CGRect
           if rotate {
@@ -394,7 +401,7 @@ class PuzzleView: UIView {
           } else {
             drawCross(context: context, cx: x + 0.5 * pitch, cy: y, r: crossR)
           }
-        } else if let style = style, style.showEmptyElement {
+        } else if showEmptyElement {
           var rect: CGRect
           if rotate {
             rect = CGRect(x: x-crossR, y: y + 0.5 * pitch - crossR, width: 2 * crossR, height: 2 * crossR)
@@ -428,7 +435,14 @@ class PuzzleView: UIView {
         }
         context.setFillColor(color)
         context.setStrokeColor(color)
-        let status = edge.status
+        var status = edge.status
+        var showEmptyElement = false
+        if status == .unset {
+          if let style = style, style.showEmptyElement {
+            status = style.emptyEdgeStatus
+            showEmptyElement = true
+          }
+        }
         if status == .on {
           var rect: CGRect
           if rotate {
@@ -443,7 +457,7 @@ class PuzzleView: UIView {
           } else {
             drawCross(context: context, cx: x, cy: y+0.5*pitch, r: crossR)
           }
-        } else if let style = style, style.showEmptyElement {
+        } else if showEmptyElement {
           var rect: CGRect
           if rotate {
             rect = CGRect(x: x + 0.5 * pitch - crossR, y: y-crossR, width: 2 * crossR, height: 2 * crossR)

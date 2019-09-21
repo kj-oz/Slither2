@@ -28,14 +28,16 @@ class AdviseInfo {
     let enlargeNode: Bool
     let showCellColor: Bool
     let showEmptyElement: Bool
+    let emptyEdgeStatus: EdgeStatus
     
-    init(color: UIColor, showGate: Bool = false,
-         enlargeNode: Bool = true, showCellColor: Bool = false, showEmptyElement: Bool = false) {
+    init(color: UIColor, showGate: Bool = false, enlargeNode: Bool = true,
+         showCellColor: Bool = false, showEmptyElement: Bool = false, emptyEdgeStatus: EdgeStatus = .unset) {
       self.color = color
       self.showGate = showGate
       self.enlargeNode = enlargeNode
       self.showCellColor = showCellColor
       self.showEmptyElement = showEmptyElement
+      self.emptyEdgeStatus = emptyEdgeStatus
     }
   }
   
@@ -109,6 +111,32 @@ class MistakeAdviseInfo : AdviseInfo {
     while puzzle.currentIndex > safeIndex {
       puzzle.undo()
     }
+  }
+}
+
+class InitialAdviseInfo : AdviseInfo {
+  var action: SetEdgeStatusAction
+  
+  init(puzzle: Puzzle, action: SetEdgeStatusAction) {
+    let node = action.edge.nodes[0]
+    let edge = action.edge.horizontal ?
+      puzzle.board.hEdgeAt(x: node.x, y: node.y) :
+      puzzle.board.vEdgeAt(x: node.x, y: node.y)
+    self.action = SetEdgeStatusAction(edge: edge, status: action.newStatus)
+    super.init()
+    fixLabel = "確定"
+    message = "初期配置からの手の見落としです。"
+  }
+  
+  override func style(of element: Element) -> Style? {
+    if let edge = element as? Edge, edge == action.edge {
+      return Style(color: AdviseInfo.adviseColor, showEmptyElement: true,  emptyEdgeStatus: action.newStatus)
+    }
+    return nil
+  }
+  
+  override func fix(to puzzle: Puzzle) {
+    puzzle.addAction(action)
   }
 }
 
