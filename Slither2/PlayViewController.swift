@@ -245,8 +245,8 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   // アンドゥボタンタップ時
   @IBAction func undoButtonTapped(_ sender: Any) {
     if let advise = advise {
-      if let tryFailAdvise = advise as? TryFailAdviseInfo {
-        tryFailAdvise.stepBack()
+      if let tryAdvise = advise as? TryAdviseInfo {
+        tryAdvise.stepBack()
         puzzleView.setNeedsDisplay()
       }
     } else {
@@ -262,8 +262,8 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   // リドゥボタンタップ時
   @IBAction func redoButtonTapped(_ sender: Any) {
     if let advise = advise {
-      if let tryFailAdvise = advise as? TryFailAdviseInfo {
-        tryFailAdvise.stepForward()
+      if let tryAdvise = advise as? TryAdviseInfo {
+        tryAdvise.stepForward()
         puzzleView.setNeedsDisplay()
       }
     } else {
@@ -365,9 +365,9 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   /// アンドゥ、リドゥボタンの活性・非活性を更新する
   private func updateButtonStatus() {
     if let advise = self.advise {
-      if let tryFailAdvise = advise as? TryFailAdviseInfo {
-        undoButton.isEnabled = tryFailAdvise.reasonIndex > 0
-        redoButton.isEnabled = tryFailAdvise.reasonIndex < tryFailAdvise.steps.count - 1
+      if let tryAdvise = advise as? TryAdviseInfo {
+        undoButton.isEnabled = tryAdvise.canStepBack
+        redoButton.isEnabled = tryAdvise.canStepForward
       } else {
         undoButton.isEnabled = false
         redoButton.isEnabled = false

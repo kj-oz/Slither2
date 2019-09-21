@@ -182,6 +182,7 @@ class Solver {
         nextTryEdgeIndex = 0
       }
       if edge.status == .unset {
+        tryOnEdges = [:]
         if try tryEdge(edge, to: .on) || tryEdge(edge, to: .off) {
           //print("★ Try One Step: true")
           return true
@@ -225,14 +226,14 @@ class Solver {
         break
       }
     }
+    
     if case status = EdgeStatus.on {
+      // onのトライ時には、変更したエッジのマップ作成
       for action in currentStep.actions {
         if let setEdgeAction = action as? SetEdgeStatusAction {
           tryOnEdges[setEdgeAction.edge] = setEdgeAction.newStatus
         }
       }
-    } else {
-      tryOnEdges = [:]
     }
     currentStep.rewind(addCache: true)
     endTrying()

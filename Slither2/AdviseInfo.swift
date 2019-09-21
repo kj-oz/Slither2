@@ -27,12 +27,15 @@ class AdviseInfo {
     let showGate: Bool
     let enlargeNode: Bool
     let showCellColor: Bool
+    let showEmptyElement: Bool
     
-    init(color: UIColor, showGate: Bool = false, enlargeNode: Bool = true, showCellColor: Bool = false) {
+    init(color: UIColor, showGate: Bool = false,
+         enlargeNode: Bool = true, showCellColor: Bool = false, showEmptyElement: Bool = false) {
       self.color = color
       self.showGate = showGate
       self.enlargeNode = enlargeNode
       self.showCellColor = showCellColor
+      self.showEmptyElement = showEmptyElement
     }
   }
   
@@ -192,7 +195,7 @@ class AreaCheckAdviseInfo : MissAdviseInfo {
   }
 }
 
-class TryFailAdviseInfo : AdviseInfo {
+class TryAdviseInfo : AdviseInfo {
   var steps: [[Action]]
   var action: SetEdgeStatusAction
   var followingElements: [Element] = []
@@ -201,49 +204,15 @@ class TryFailAdviseInfo : AdviseInfo {
   
   init(result: FindResult) {
     steps = []
-    if let actions = result.context.relatedElements as? [Action] {
-      var currStep: [Action] = []
-      for action in actions {
-        currStep.append(action)
-        if action is SetEdgeStatusAction {
-          steps.append(currStep)
-          currStep = []
-        }
-      }
-      if currStep.count > 0 {
-        steps.append(currStep)
-      }
-    }
     action = result.action
     reasonElement = result.context.mainElements[0]
     super.init()
     self.board = result.context.board
-    message = "仮置の結果、確定します。"
-    reasonLabel = "仮置のステップ実行"
     fixLabel = "確定"
   }
-
+  
   override func showReason() {
     stepForward()
-  }
-  
-  override func style(of element: Element) -> Style? {
-    if reasonIndex < 0 {
-      if let edge = element as? Edge, edge == action.edge {
-        return Style(color: AdviseInfo.adviseColor)
-      }
-    } else {
-      if element == edgeElement || (reasonIndex == steps.count - 1 && element == reasonElement) {
-        return Style(color: AdviseInfo.mainColor)
-      } else if followingElements.contains(element) {
-        var color = AdviseInfo.relatedColor
-        if let cell = element as? Cell {
-          color = (cell.color == CellColor.inner) ? AdviseInfo.innerColor : AdviseInfo.outerColor
-        }
-        return Style(color: color, showGate: true, showCellColor: true)
-      }
-    }
-    return nil
   }
   
   override func fix(to puzzle: Puzzle) {
@@ -253,7 +222,7 @@ class TryFailAdviseInfo : AdviseInfo {
       puzzle.board.vEdgeAt(x: node.x, y: node.y)
     puzzle.addAction(SetEdgeStatusAction(edge: edge, status: action.newStatus))
   }
-
+  
   func stepForward() {
     reasonIndex += 1
     let currStep = steps[reasonIndex]
@@ -261,26 +230,24 @@ class TryFailAdviseInfo : AdviseInfo {
       action.redo()
     }
     appendElements(of: currStep)
-    if reasonIndex < steps.count - 1 {
-      edgeElement = followingElements.last
-    } else {
-      edgeElement = nil
-    }
   }
   
   func stepBack() {
-    for action in steps[reasonIndex] {
+    for action in steps[reasonIndex].reversed() {
       action.undo()
     }
     reasonIndex -= 1
-    followingElements = []
-    for i in 0 ... reasonIndex {
-      appendElements(of: steps[i])
-    }
-    edgeElement = followingElements.last
   }
   
-  private func appendElements(of step: [Action]) {
+  var canStepBack: Bool {
+    return reasonIndex > 0
+  }
+  
+  var canStepForward: Bool {
+    return reasonIndex < steps.count - 1
+  }
+  
+  func appendElements(of step: [Action]) {
     for action in step {
       switch action {
       case is SetEdgeStatusAction:
@@ -296,18 +263,71 @@ class TryFailAdviseInfo : AdviseInfo {
   }
 }
 
-class TrySameResultAdviseInfo : AdviseInfo {
-  var steps: [[Action]]
-  var action: SetEdgeStatusAction
-  var followingElements: [Element] = []
-  var edgeElement: Element?
-  var reasonElement: Edge
+class TryFailAdviseInfo : TryAdviseInfo {
   
+  override init(result: FindResult) {
+    super.init(result: result)
+    if let actions = result.context.relatedElements as? [Action] {
+      var currStep: [Action] = []
+      for action in actions {
+        currStep.append(action)
+        if action is SetEdgeStatusAction {
+          steps.append(currStep)
+          currStep = []
+        }
+      }
+      if currStep.count > 0 {
+        steps.append(currStep)
+      }
+    }
+    message = "仮置の結果、確定します。"
+    reasonLabel = "仮置のステップ実行"
+  }
+
+  override func style(of element: Element) -> Style? {
+    if reasonIndex < 0 {
+      if let edge = element as? Edge, edge == action.edge {
+        return Style(color: AdviseInfo.adviseColor)
+      }
+    } else {
+      if element == edgeElement || (reasonIndex == steps.count - 1 && element == reasonElement) {
+        return Style(color: AdviseInfo.mainColor, showEmptyElement: true)
+      } else if followingElements.contains(element) {
+        var color = AdviseInfo.relatedColor
+        if let cell = element as? Cell {
+          color = (cell.color == CellColor.inner) ? AdviseInfo.innerColor : AdviseInfo.outerColor
+        }
+        return Style(color: color, showGate: true, showCellColor: true)
+      }
+    }
+    return nil
+  }
+  
+  override func stepForward() {
+    super.stepForward()
+    if reasonIndex < steps.count - 1 {
+      edgeElement = followingElements.last
+    } else {
+      edgeElement = nil
+    }
+  }
+  
+  override func stepBack() {
+    super.stepBack()
+    followingElements = []
+    for i in 0 ... reasonIndex {
+      appendElements(of: steps[i])
+    }
+    edgeElement = followingElements.last
+  }
+}
+
+class TrySameResultAdviseInfo : TryAdviseInfo {
   var offIndex = 0
   
-  init(result: FindResult) {
+  override init(result: FindResult) {
+    super.init(result: result)
     let edge = result.action.edge
-    steps = []
     if let actions = result.context.relatedElements as? [Action] {
       var currStep: [Action] = []
       for action in actions {
@@ -315,7 +335,8 @@ class TrySameResultAdviseInfo : AdviseInfo {
         if let seAction = action as? SetEdgeStatusAction {
           steps.append(currStep)
           currStep = []
-          if seAction.edge == edge {
+          if seAction.edge == edge && offIndex == 0 {
+            // 最初の対象エッジの次からoff
             offIndex = steps.count
           }
         }
@@ -324,18 +345,8 @@ class TrySameResultAdviseInfo : AdviseInfo {
         steps.append(currStep)
       }
     }
-    action = result.action
-    reasonElement = result.context.mainElements[0] as! Edge
-    super.init()
-    self.board = result.context.board
     message = "どちらの状態の仮置でも同じ状態になり、確定します。"
     reasonLabel = "仮置（ON→OFF）のステップ実行"
-    fixLabel = "確定"
-    stepForward()
-  }
-  
-  override func showReason() {
-    stepForward()
   }
   
   override func style(of element: Element) -> Style? {
@@ -344,7 +355,7 @@ class TrySameResultAdviseInfo : AdviseInfo {
         if edge == action.edge {
           return Style(color: AdviseInfo.adviseColor)
         } else if edge == reasonElement {
-          return Style(color: AdviseInfo.mainColor)
+          return Style(color: AdviseInfo.mainColor, showEmptyElement: true)
         }
       }
     } else {
@@ -361,52 +372,31 @@ class TrySameResultAdviseInfo : AdviseInfo {
     return nil
   }
   
-  override func fix(to puzzle: Puzzle) {
-    let node = action.edge.nodes[0]
-    let edge = action.edge.horizontal ?
-      puzzle.board.hEdgeAt(x: node.x, y: node.y) :
-      puzzle.board.vEdgeAt(x: node.x, y: node.y)
-    puzzle.addAction(SetEdgeStatusAction(edge: edge, status: action.newStatus))
+  override func showReason() {
+    action.edge._status = .unset
+    super.showReason()
   }
   
-  func stepForward() {
-    reasonIndex += 1
-    if reasonIndex == offIndex {
+  override func stepForward() {
+    if reasonIndex + 1 == offIndex {
+      for index in (0 ... reasonIndex).reversed() {
+        for action in steps[index].reversed() {
+          action.undo()
+        }
+      }
       followingElements = []
     }
-    let currStep = steps[reasonIndex]
-    for action in currStep {
-      action.redo()
-    }
-    appendElements(of: currStep)
+    super.stepForward()
     edgeElement = followingElements.last
   }
   
-  func stepBack() {
-    for action in steps[reasonIndex] {
-      action.undo()
-    }
-    reasonIndex -= 1
+  override func stepBack() {
+    super.stepBack()
     followingElements = []
     let startIndex = reasonIndex < offIndex ? 0 : offIndex
     for i in startIndex ... reasonIndex {
       appendElements(of: steps[i])
     }
     edgeElement = followingElements.last
-  }
-  
-  private func appendElements(of step: [Action]) {
-    for action in step {
-      switch action {
-      case is SetEdgeStatusAction:
-        followingElements.append((action as! SetEdgeStatusAction).edge)
-      case is SetGateStatusAction:
-        followingElements.append((action as! SetGateStatusAction).node)
-      case is SetCellColorAction:
-        followingElements.append((action as! SetCellColorAction).cell)
-      default:
-        break
-      }
-    }
   }
 }

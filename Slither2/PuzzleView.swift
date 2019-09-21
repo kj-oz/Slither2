@@ -295,7 +295,7 @@ class PuzzleView: UIView {
           } else {
             context.setFillColor(style.color.cgColor)
             let r = style.enlargeNode ? pointR * 4 : pointR * 2
-            let rect = CGRect(x: x-pointR, y: y-pointR, width: r, height: r)
+            let rect = CGRect(x: x-r/2, y: y-r/2, width: r, height: r)
             context.fill(rect)
           }
         } else {
@@ -348,6 +348,11 @@ class PuzzleView: UIView {
           let char = chars[number] as NSString
           char.draw(at: CGPoint(x: x + nx, y: y + ny), withAttributes:
             [NSAttributedString.Key.font: font, NSAttributedString.Key.foregroundColor: fontColor])
+        } else if let style = style, style.showEmptyElement {
+          context.setStrokeColor(style.color.cgColor)
+          let offset = 0.1 * pitch
+          let rect = CGRect(x: x+offset, y: y+offset, width: pitch-2*offset, height: pitch-2*offset)
+          context.stroke(rect)
         }
       }
     }
@@ -366,7 +371,8 @@ class PuzzleView: UIView {
         }
         let edge = board.hEdgeAt(x: u, y: v)
         let color: CGColor
-        if let style = advise?.style(of: edge) {
+        let style = advise?.style(of: edge)
+        if let style = style {
           color = style.color.cgColor
         } else {
           color = edge.fixed ? fixedColor : erasableColor
@@ -388,6 +394,14 @@ class PuzzleView: UIView {
           } else {
             drawCross(context: context, cx: x + 0.5 * pitch, cy: y, r: crossR)
           }
+        } else if let style = style, style.showEmptyElement {
+          var rect: CGRect
+          if rotate {
+            rect = CGRect(x: x-crossR, y: y + 0.5 * pitch - crossR, width: 2 * crossR, height: 2 * crossR)
+          } else {
+            rect = CGRect(x: x + 0.5 * pitch - crossR, y: y-crossR, width: 2 * crossR, height: 2 * crossR)
+          }
+          context.strokeEllipse(in: rect)
         }
       }
     }
@@ -406,7 +420,8 @@ class PuzzleView: UIView {
         }
         let edge = board.vEdgeAt(x: u, y: v)
         let color: CGColor
-        if let style = advise?.style(of: edge) {
+        let style = advise?.style(of: edge)
+        if let style = style {
           color = style.color.cgColor
         } else {
           color = edge.fixed ? fixedColor : erasableColor
@@ -428,6 +443,14 @@ class PuzzleView: UIView {
           } else {
             drawCross(context: context, cx: x, cy: y+0.5*pitch, r: crossR)
           }
+        } else if let style = style, style.showEmptyElement {
+          var rect: CGRect
+          if rotate {
+            rect = CGRect(x: x + 0.5 * pitch - crossR, y: y-crossR, width: 2 * crossR, height: 2 * crossR)
+          } else {
+            rect = CGRect(x: x-crossR, y: y + 0.5 * pitch - crossR, width: 2 * crossR, height: 2 * crossR)
+          }
+          context.strokeEllipse(in: rect)
         }
       }
     }

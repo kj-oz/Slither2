@@ -67,8 +67,11 @@ class Adviser {
   
   func findMistake() -> Int? {
     let solver = Solver(board: Board(width: board.width, height: board.height, numbers: board.numbers))
-    let solveOption = SolveOption()
+    var solveOption = SolveOption()
+    // solveOption.debug = true
+    solveOption.doAreaCheck = false
     let result = solver.solve(option: solveOption)
+    // solver.dump(title: "SOLVED")
     guard result.reason == .solved, let loop = solver.loop else {
       return nil
     }

@@ -140,47 +140,53 @@ class ActionFinder : Solver {
     }
     
     // 単純なセル、ノードのエッジの状態のチェック
-    while currentStep.changedEdges.count > 0 {
-      let edge = currentStep.changedEdges.remove(at: 0)
-      
-      switch edge.status {
-      case .on:
-        try checkNodeOfOnEdge(edge: edge, pos: 0)
-        try checkNodeOfOnEdge(edge: edge, pos: 1)
+    while true {
+      if currentStep.changedEdges.count > 0 {
+        let edge = currentStep.changedEdges.remove(at: 0)
         
-        try checkCellOfOnEdge(edge: edge, pos: 0)
-        try checkCellOfOnEdge(edge: edge, pos: 1)
-      case .off:
-        try checkNodeOfOffEdge(edge: edge, pos: 0)
-        try checkNodeOfOffEdge(edge: edge, pos: 1)
+        switch edge.status {
+        case .on:
+          try checkNodeOfOnEdge(edge: edge, pos: 0)
+          try checkNodeOfOnEdge(edge: edge, pos: 1)
+          
+          try checkCellOfOnEdge(edge: edge, pos: 0)
+          try checkCellOfOnEdge(edge: edge, pos: 1)
+        case .off:
+          try checkNodeOfOffEdge(edge: edge, pos: 0)
+          try checkNodeOfOffEdge(edge: edge, pos: 1)
+          
+          try checkCellOfOffEdge(edge: edge, pos: 0)
+          try checkCellOfOffEdge(edge: edge, pos: 1)
+        default:
+          break
+        }
         
-        try checkCellOfOffEdge(edge: edge, pos: 0)
-        try checkCellOfOffEdge(edge: edge, pos: 1)
-      default:
-        break
+        currentStep.gateCheckCells.insert(edge.cells[0])
+        currentStep.gateCheckCells.insert(edge.cells[1])
+        currentStep.gateCheckCells.insert(edge.straightEdges[0].cells[0])
+        currentStep.gateCheckCells.insert(edge.straightEdges[0].cells[1])
+        currentStep.gateCheckCells.insert(edge.straightEdges[1].cells[0])
+        currentStep.gateCheckCells.insert(edge.straightEdges[1].cells[1])
+        
+        currentStep.colorCheckCells.insert(edge.cells[0])
+        currentStep.colorCheckCells.insert(edge.cells[1])
       }
       
-      currentStep.gateCheckCells.insert(edge.cells[0])
-      currentStep.gateCheckCells.insert(edge.cells[1])
-      currentStep.gateCheckCells.insert(edge.straightEdges[0].cells[0])
-      currentStep.gateCheckCells.insert(edge.straightEdges[0].cells[1])
-      currentStep.gateCheckCells.insert(edge.straightEdges[1].cells[0])
-      currentStep.gateCheckCells.insert(edge.straightEdges[1].cells[1])
+      // 斜ゲートのチェック
+      else if currentStep.gateCheckCells.count > 0 {
+        let cell = currentStep.gateCheckCells.popFirst()!
+        try checkGate(of: cell)
+      }
       
-      currentStep.colorCheckCells.insert(edge.cells[0])
-      currentStep.colorCheckCells.insert(edge.cells[1])
-    }
-    
-    // 斜ゲートのチェック
-    while currentStep.gateCheckCells.count > 0 {
-      let cell = currentStep.gateCheckCells.popFirst()!
-      try checkGate(of: cell)
-    }
-    
-    // セル色のチェック
-    while currentStep.colorCheckCells.count > 0 {
-      let cell = currentStep.colorCheckCells.popFirst()!
-      try checkColor(of: cell)
+      // セル色のチェック
+      else if currentStep.colorCheckCells.count > 0 {
+        let cell = currentStep.colorCheckCells.popFirst()!
+        try checkColor(of: cell)
+      }
+      
+      else {
+        break;
+      }
     }
     
     // 1手仮置を最大延長を10に制限して実施
@@ -217,6 +223,7 @@ class ActionFinder : Solver {
     minimumStep = currentStep.actions
     for edge in board.edges {
       if edge.status == .unset {
+        tryOnEdges = [:]
         if try !tryEdge(edge, to: .on) {
           let _ = try tryEdge(edge, to: .off)
         }
@@ -224,15 +231,19 @@ class ActionFinder : Solver {
     }
     backToPreviousStep()
     if let action = minimumAction {
+      solvingContext.relatedElements = minimumStep
       if let failed = minimumFailed {
+        // 失敗に終わった結果の確定
         solvingContext.function = .tryFail
         solvingContext.mainElements = [failed]
+        try changeEdgeStatus(of: action.edge, to: action.newStatus)
       } else {
+        // 同じ状態に変更されるエッジ
         solvingContext.function = .trySameResult
-        solvingContext.mainElements = []
+        solvingContext.mainElements = [action.edge]
+        let sameAction = minimumStep.last! as! SetEdgeStatusAction
+        try changeEdgeStatus(of: sameAction.edge, to: sameAction.newStatus)
       }
-      solvingContext.relatedElements = minimumStep
-      try changeEdgeStatus(of: action.edge, to: action.newStatus)
     }
     return false
   }
@@ -258,10 +269,11 @@ class ActionFinder : Solver {
         endTrying()
         return true
       case .sameAction(action: let action):
+        // on時の、同じアクションまでのアクションの配列と延長エッジ数を得る
         var actions: [Action] = []
         var onChainCount = 0
         for onAction in onActions {
-          actions.append(action)
+          actions.append(onAction)
           if let seAction = onAction as? SetEdgeStatusAction {
             if seAction.newStatus == .on {
               onChainCount += 1
@@ -271,13 +283,22 @@ class ActionFinder : Solver {
             }
           }
         }
+        
+        // on/offいずれか大きい方の手数で判定
+        if action.newStatus == .on {
+          tryingChainCount += 1
+        }
         let maxChainCount = max(tryingChainCount, onChainCount)
+        
         if maxChainCount < minimumExtent {
           minimumExtent = maxChainCount
-          minimumAction = action
+          minimumAction = SetEdgeStatusAction(edge: edge, status: .on)
+          // stepにはOon/off両方のアクションを連続して保存
           minimumStep = []
           minimumStep.append(contentsOf: actions)
           minimumStep.append(contentsOf: currentStep.actions)
+          minimumStep.append(action)
+          // sameResultの場合、failedをnilに
           minimumFailed = nil
         }
         currentStep.rewind(addCache: false)
@@ -289,6 +310,13 @@ class ActionFinder : Solver {
           onActions = currentStep.actions
         }
         break
+      }
+    }
+    if case status = EdgeStatus.on {
+      for action in currentStep.actions {
+        if let setEdgeAction = action as? SetEdgeStatusAction {
+          tryOnEdges[setEdgeAction.edge] = setEdgeAction.newStatus
+        }
       }
     }
     currentStep.rewind(addCache: false)
