@@ -306,13 +306,11 @@ class ActionFinder : Solver {
         return true
       default:
         // .finished はここでは無視する
-        if status == .on {
-          onActions = currentStep.actions
-        }
         break
       }
     }
-    if case status = EdgeStatus.on {
+    if status == .on {
+      onActions = currentStep.actions
       for action in currentStep.actions {
         if let setEdgeAction = action as? SetEdgeStatusAction {
           tryOnEdges[setEdgeAction.edge] = setEdgeAction.newStatus
