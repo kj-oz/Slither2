@@ -126,8 +126,24 @@ class ActionFinder : Solver {
         return true
       }
     }
-    return edge.cells[0].onCount == edge.cells[0].number ||
-      edge.cells[1].onCount == edge.cells[1].number
+    if edge.cells[0].onCount == edge.cells[0].number ||
+        edge.cells[1].onCount == edge.cells[1].number {
+      return true
+    }
+    if edge.nodes[0].oppositeNode == edge.nodes[1] {
+      var ed = edge
+      var nd = edge.nodes[0]
+      var count = 0
+      while nd != edge.nodes[1] && count < 4 {
+        ed = nd.onEdge(connectTo: ed)!
+        nd = ed.anotherNode(of: nd)
+        count += 1
+      }
+      if count == 3 {
+        return true
+      }
+    }
+    return false
   }
   
   /// これまでの打ち手による盤面の状況から、次の着手を探し出す

@@ -21,15 +21,17 @@ class GeneratorTests: XCTestCase {
     super.tearDown()
   }
   
-//  func testGenarateLoop() {
-//    let generator = Generator(width: 20, height: 15)
-//    let option = GenerateOption()
-//    _ = generator.generateLoop(option: option)
+  func testGenarateLoop() {
+    let generator = Generator(width: 20, height: 15)
+    let option = GenerateOption()
+    _ = generator.generateLoop(option: option, retryHandler: { (count) in
+      
+    })
 //    print(String(format: "GenerateLoop:Elapsed: %.0f ms",
-//                 generator.elapsedGL * 1000))
-//    print(" Max Level:\(generator.maxLevel)")
-//  }
-//
+//                 generator.stats.elapsed.last! * 1000))
+    print(" Max Level:\(generator.maxLevel)")
+  }
+
 //  func testPruneNumbers() {
 //    let generator = Generator(width: 20, height: 15)
 //    let loopOption = GenerateOption()
@@ -50,7 +52,7 @@ class GeneratorTests: XCTestCase {
 //      print(line)
 //    }
 //  }
-//
+
 //  func testCreateWorkbook() {
 //    var solveOption = SolveOption()
 //    solveOption.doAreaCheck = false

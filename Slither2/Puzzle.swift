@@ -118,7 +118,7 @@ class Puzzle : Hashable {
   /// 解くのに掛かった時間（と固定回数、初期化回数、アドバイス回数）の文字列（H:mm:ss 固定:f 初期化:i）
   var solvingStatusString: String {
     if elapsedSecond > 0 {
-      if resetCount > 0 || fixCount > 0 {
+      if resetCount > 0 || fixCount > 0 || adviseCount > 0 {
         return String(format: "%@ 固定%d 初期化%d 助言%d", elapsedTimeString, fixCount, resetCount, adviseCount)
       } else {
         return elapsedTimeString

@@ -235,7 +235,7 @@ class Generator {
           case .lengthTooShort:
             return false
           default:
-            break
+            continue
           }
         }
       }
