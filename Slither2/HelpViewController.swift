@@ -35,13 +35,10 @@ class HelpViewController: UIViewController, UIWebViewDelegate {
   
   // 新しいアドレスへの移動の直前
   func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
-    let url: URL? = request.url
-    if url?.isFileURL == nil {
-      if let url = url {
-        if UIApplication.shared.canOpenURL(url) {
-          UIApplication.shared.openURL(url)
-          return false
-        }
+    if let url = request.url, !url.isFileURL {
+      if UIApplication.shared.canOpenURL(url) {
+        UIApplication.shared.openURL(url)
+        return false
       }
     }
     return true

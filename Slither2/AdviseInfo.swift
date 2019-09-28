@@ -157,9 +157,6 @@ class MissAdviseInfo : AdviseInfo {
     reasonLabel = "理由表示"
     fixLabel = "確定"
     switch function {
-    case .initialize:
-      message = "初期配置からの手の見落としです。"
-      reasonLabel = ""
     case .smallLoop:
       message = "小ループ防止の手の見落としです。"
     case .checkNode:
