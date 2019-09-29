@@ -202,8 +202,7 @@ class AreaCheckAdviseInfo : MissAdviseInfo {
   var areaNodes: [Node]
   
   override init(result: FindResult) {
-    // TODO
-    areaNodes = []
+    areaNodes = result.context.relatedElements as! [Node]
     super.init(result: result)
     reasonElements = []
     message = "領域出入りから確定します。"

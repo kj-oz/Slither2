@@ -579,27 +579,32 @@ class PuzzleView: UIView {
     var x2 = cx + 2*r
     var y2 = cy + 2*r
     var points: [CGPoint] = []
-    points.append(CGPoint(x: cx, y: y1))
-    points.append(CGPoint(x: x1, y: cy))
-    points.append(CGPoint(x: x1, y: cy))
-    points.append(CGPoint(x: cx, y: y2))
-    points.append(CGPoint(x: cx, y: y2))
-    points.append(CGPoint(x: x2, y: cy))
-    points.append(CGPoint(x: x2, y: cy))
-    points.append(CGPoint(x: cx, y: y1))
+    
+    let luIndex = rotate ? 1 : 0
+    if gate[luIndex] != .unset {
+      points.append(CGPoint(x: x1, y: cy))
+      points.append(CGPoint(x: cx, y: y2))
+      points.append(CGPoint(x: cx, y: y1))
+      points.append(CGPoint(x: x2, y: cy))
+    }
+    if gate[1-luIndex] != .unset {
+      points.append(CGPoint(x: x1, y: cy))
+      points.append(CGPoint(x: cx, y: y1))
+      points.append(CGPoint(x: cx, y: y2))
+      points.append(CGPoint(x: x2, y: cy))
+    }
     
     x1 = cx - r
     y1 = cy - r
     x2 = cx + r
     y2 = cy + r
-    let ruIndex = rotate ? 1 : 0
-    if gate[ruIndex] == .open {
-      points.append(CGPoint(x: x1, y: y1))
-      points.append(CGPoint(x: x2, y: y2))
-    }
-    if gate[1-ruIndex] == .open {
+    if gate[luIndex] == .close {
       points.append(CGPoint(x: x1, y: y2))
       points.append(CGPoint(x: x2, y: y1))
+    }
+    if gate[1-luIndex] == .close {
+      points.append(CGPoint(x: x1, y: y1))
+      points.append(CGPoint(x: x2, y: y2))
     }
     context.strokeLineSegments(between: points)
   }

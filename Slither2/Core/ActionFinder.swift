@@ -431,7 +431,16 @@ class AreaCheckerAF : AreaChecker {
     let af = solver as! ActionFinder
     af.solvingContext.function = .checkArea
     af.solvingContext.mainElements = [gate.node]
-    af.solvingContext.relatedElements = area
+    var nodes: [Node] = []
+    for y in 0 ..< height {
+      for x in 0 ..< width {
+        let point = points[y][x]
+        if point.areas.count > 0 && point.areas[0] == area && (point.type == .space || point.type == .gate) {
+          nodes.append(point.node)
+        }
+      }
+    }
+    af.solvingContext.relatedElements = nodes
     return try super.changeGateStatus(of: gate, from: area, to: status)
   }
 }
