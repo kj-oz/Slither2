@@ -228,9 +228,9 @@ class PuzzlesViewController: UITableViewController,
   @IBAction func renameButtonTapped(_ sender: Any) {
     let puzzle = selectedPuzzles()[0]
     let dialog = UIAlertController(title: appTitle,
-                                   message: "名称とメモを入力して[変更]をタップしください。", preferredStyle: .alert)
+                                   message: "タイトルとメモを入力して[変更]をタップしください。", preferredStyle: .alert)
     dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.alphabet;
-      $0.placeholder = "名称"; $0.text = puzzle.title})
+      $0.placeholder = "タイトル"; $0.text = puzzle.title})
     dialog.addTextField(configurationHandler: {$0.keyboardType = UIKeyboardType.alphabet;
       $0.placeholder = "高さ"; $0.text = puzzle.genParams})
     dialog.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))

@@ -45,7 +45,7 @@ layout: default
 
 
 ## 生成画面の指定内容
-<img src="images/GenerateView_UP.png" width="320" height="640" style="float:right;margin-left:16px">
+<img src="images/GenerateView_UP.png" width="320" height="640" style="float:right;margin-left:24px;margin-bottom:24px;border:1px #000000 solid">
 
 #### タイトル
 
