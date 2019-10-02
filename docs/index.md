@@ -10,7 +10,10 @@ Slither2は、[スリザーリンク](http://ja.wikipedia.org/wiki/スリザー�
 　[概要](./general.html)  
 　[用語](./terms.html)  
 　[パズルの解法](./solver.html)  
-　[パズルの生成](./generation.html)
+　[パズルの生成](./generation.html)  
+
+　[付録A　初期配置パターン](./initPattern.html)  
+　[付録B　基本解法パターン](./basicPattern.html)
 
 　[プライバシーポリシー](./privacy.html)  
 　[変更履歴](./history.html)
