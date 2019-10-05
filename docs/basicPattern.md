@@ -21,8 +21,9 @@ layout: default
 
 |パターン|説明|
 |:----:|:---|
-|![](pattern/init/border11.png)|外周に沿って１が並ぶ場合、その間のエッジはOFF|
-|![](pattern/init/border13.png)|外周に沿って１と３が並ぶ場合、|
+|![](pattern/basic/cellON.png)|セルの数字とONのエッジの数が同じならば、残りのエッジはOFF|
+|![](pattern/basic/cellOFF.png)|セルの数字を４から引いた数とOFFのエッジの数が同じならば、残りのエッジはON|
+|![](pattern/basic/cell23.png)|２のセルのOFFのエッジとは逆側で隣り合ったセルが３ならば、３のセルの２と逆側のエッジがON|
 
 
 <div style="text-align: right;">
