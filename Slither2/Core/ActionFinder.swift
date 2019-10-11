@@ -301,13 +301,10 @@ class ActionFinder : Solver {
         }
         
         // on/offいずれか大きい方の手数で判定
-        if action.newStatus == .on {
-          tryingChainCount += 1
-        }
-        let maxChainCount = max(tryingChainCount, onChainCount)
+        let chainCount = tryingChainCount + onChainCount
         
-        if maxChainCount < minimumExtent {
-          minimumExtent = maxChainCount
+        if chainCount < minimumExtent {
+          minimumExtent = chainCount
           minimumAction = SetEdgeStatusAction(edge: edge, status: .on)
           // stepにはOon/off両方のアクションを連続して保存
           minimumStep = []
@@ -327,9 +324,14 @@ class ActionFinder : Solver {
     }
     if status == .on {
       onActions = currentStep.actions
+      var chainCount = 0
       for action in currentStep.actions {
         if let setEdgeAction = action as? SetEdgeStatusAction {
-          tryOnEdges[setEdgeAction.edge] = setEdgeAction.newStatus
+          if setEdgeAction.newStatus == .on {
+            chainCount += 1
+          }
+          tryOnEdges[setEdgeAction.edge] = TryChainStatus(
+            status: setEdgeAction.newStatus, extentCount: chainCount)
         }
       }
     }

@@ -10,6 +10,14 @@ import Foundation
 
 /// 解の探索を行うクラス
 class Solver {
+  /// １手仮置時に変更されたエッジの状態
+  struct TryChainStatus {
+    /// 状態
+    var status: EdgeStatus
+    /// このエッジが変更された時点のエッジ延長数
+    var extentCount: Int
+  }
+  
   /// 正解のループ
   var loop: [Edge]?
   
@@ -40,10 +48,10 @@ class Solver {
   /// 1ステップトライ時のループ延長数
   var tryingChainCount = 0
   
-  ///
-  var tryOnEdges : [Edge:EdgeStatus] = [:]
+  /// １手仮置のONの際のエッジの変更状態
+  var tryOnEdges : [Edge : TryChainStatus] = [:]
   
-  /// 与えられた盤面で初期化する
+  /// 与えられた盤面でソルバを初期化する
   ///
   /// - Parameter board: 盤面
   init(board: Board) {
@@ -229,9 +237,14 @@ class Solver {
     
     if case status = EdgeStatus.on {
       // onのトライ時には、変更したエッジのマップ作成
+      var chainCount = 0
       for action in currentStep.actions {
         if let setEdgeAction = action as? SetEdgeStatusAction {
-          tryOnEdges[setEdgeAction.edge] = setEdgeAction.newStatus
+          if setEdgeAction.newStatus == .on {
+            chainCount += 1
+          }
+          tryOnEdges[setEdgeAction.edge] = TryChainStatus(
+            status: setEdgeAction.newStatus, extentCount: chainCount)
         }
       }
     }
@@ -401,14 +414,15 @@ class Solver {
     }
     
     if trying {
-      if let onStatus = tryOnEdges[edge], onStatus == status {
-        throw SolveException.sameAction(action: SetEdgeStatusAction(edge: edge, status: status))
-      }
       if status == .on {
         tryingChainCount += 1
         if tryingChainCount > option.tryOneStepMaxExtent {
           throw SolveException.stepover
         }
+      }
+      if let onStatus = tryOnEdges[edge], onStatus.status == status &&
+          (onStatus.extentCount + tryingChainCount < option.tryOneStepMaxExtent) {
+        throw SolveException.sameAction(action: SetEdgeStatusAction(edge: edge, status: status))
       }
     }
     
