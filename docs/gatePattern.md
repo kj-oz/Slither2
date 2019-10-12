@@ -23,8 +23,6 @@ layout: default
 |![](pattern/gate/gateOPEN.png)|セルのゲートに接するエッジの片方がONで片方がOFFならば、ゲートはOPEN|
 |![](pattern/gate/gateCLOSE.png)|セルのゲートに接するエッジの両方がON、または両方がOFFならば、ゲートはCLOSE|
 
-あるゲートの状態が確定したらば、そのゲートの逆側のセル（の４隅のゲート）を対象に更にゲートのチェックを行う。
-
 ##### OPENなゲートによるエッジの確定
 
 |パターン|説明|
