@@ -3,7 +3,7 @@ layout: default
 ---
 
 <div style="text-align: right;">
-<a href="./index.html">TOPページ</a>
+<a href="./general.html">＜概要</a>　 <a href="./index.html">TOPページ</a>　 <a href="./solver.html">パズルの解法＞</a>
 </div>
 # 用語
 
@@ -61,7 +61,7 @@ layout: default
 その際に、ある局面で次に確定する要素（必ずしもエッジとは限らず、ゲートやセルの色の場合もあります）を見つける方法を解法と呼びます。
 
 <div style="text-align: right;">
-<a href="./index.html">TOPページ</a>
+<a href="./general.html">＜概要</a>　 <a href="./index.html">TOPページ</a>　 <a href="./solver.html">パズルの解法＞</a>
 </div>
 
 

@@ -3,7 +3,7 @@ layout: default
 ---
 
 <div style="text-align: right;">
-<a href="./index.html">TOPページ</a>
+<a href="./index.html">TOPページ</a>　 <a href="./terms.html">用語＞</a>
 </div>
 # 概要
 
@@ -32,8 +32,8 @@ Slither2 は、SLPlayer（ **スリザー** という名称でAppStoreで公開�
 
 #### パズル一覧
 ![Puzzles](images/PuzzlesView.png)
-パズル一覧の各行に書かれている内容は、左から順に、名称、盤面のサイズ、メモ、解いた実績となります。各々の内容は以下の通りです。
-- 名称：問題を生成する際に指定した名称、自動生成時の初期値は生成した年（西暦下2桁）月日＋3桁の連番
+パズル一覧の各行に書かれている内容は、左から順に、タイトル、盤面のサイズ、メモ、解いた実績となります。各々の内容は以下の通りです。
+- タイトル：問題を生成する際に指定したタイトル、自動生成時の初期値は生成した年（西暦下2桁）月日＋3桁の連番
 - サイズ：横のセル数 X 縦のセル数
 - メモ：自動生成した場合、生成時のパラメータ（詳細は[パズルの生成](./generation.html)を参照）、ハイフン（-）で区切られた以下の3つの部分で構成
   - 先頭：利用した解法、Tの後ろの数字は1手仮置の判定長
@@ -41,7 +41,7 @@ Slither2 は、SLPlayer（ **スリザー** という名称でAppStoreで公開�
   - 末尾：除去パターン
 - 実績：解くのにかかった時間、盤面を固定した回数、盤面を初期化した回数、アドバイスを受けた回数  
 
-このうち、名称とメモは「名称変更」により変更することができます。
+このうち、タイトルとメモは「編集＞名称変更」により変更することができます。
 
 #### 問題生成
 ![Generate](images/GenerateView.png)
@@ -53,5 +53,5 @@ Slither2 は、SLPlayer（ **スリザー** という名称でAppStoreで公開�
 ![PlayZoom](images/PlayViewZoom.png)
 
 <div style="text-align: right;">
-<a href="./index.html">TOPページ</a>
+<a href="./index.html">TOPページ</a>　 <a href="./terms.html">用語＞</a>
 </div>
