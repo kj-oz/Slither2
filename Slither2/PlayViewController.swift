@@ -35,8 +35,10 @@ class PlayViewController: UIViewController, PuzzleViewDelegate {
   /// 経過時間の開始時刻
   var elapsedStart:  Date?
   
+  /// ログ出力先
   var logger: Logger!
   
+  /// アドバイス
   var advise: AdviseInfo?
 
   // MARK: - UIViewController

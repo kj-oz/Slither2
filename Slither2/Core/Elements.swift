@@ -117,6 +117,13 @@ enum LoopStatus {
   case finished
 }
 
+/// 要素の種別（ハッシュを求める際に使用）
+///
+/// - none: 未定
+/// - node: ノード
+/// - cell: セル
+/// - hEdge: 水平のエッジ
+/// - vEdge: 垂直のエッジ
 enum ElementType: Int {
   case none
   case node
@@ -125,6 +132,7 @@ enum ElementType: Int {
   case vEdge
 }
 
+/// 全要素の親クラス
 class Element : Hashable {
   var elementType = ElementType.none
   
@@ -143,10 +151,12 @@ class Element : Hashable {
     return lhs === rhs
   }
   
+  /// ハッシュを求めるためののノード（左上のノード）
   var hashNode: Node {
     return Node(x: 0, y: 0)
   }
 }
+
 
 /// Cellの状態を表すクラス
 class Cell : Element {
@@ -155,11 +165,6 @@ class Cell : Element {
     return vEdges[0].nodes[0]
   }
     
-//  /// (Hashable)
-//  static func == (lhs: Cell, rhs: Cell) -> Bool {
-//    return lhs === rhs
-//  }
-  
   /// 中の数値、空の場合は-1
   var number: Int
   
@@ -184,9 +189,6 @@ class Cell : Element {
   /// BoardのCell配列内のインデックス
   var index = -1
 
-//  /// 文字列表現
-//  let id: String
-  
   /// 指定の数値でCellを初期化する
   ///
   /// - Parameters:
@@ -268,9 +270,6 @@ class Node : Element {
   /// 斜め方向の2つのCellの接するNodeにおけるEdgeの通過状態
   var gateStatus: [GateStatus] = [.unset, .unset]
   
-//  /// 文字列表現
-//  let id: String
-
   /// 指定の位置で初期化したNodeを生成する
   ///
   /// - Parameters:
@@ -372,9 +371,6 @@ class Edge : Element {
   ///　BoardのEdge配列内のインデックス
   var index = -1
 
-//  /// 文字列表現
-//  let id: String
-  
   ///　固定されているかどうか（Play時のみ使用）
   var fixed = false
   

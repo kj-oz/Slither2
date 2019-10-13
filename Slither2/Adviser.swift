@@ -9,16 +9,7 @@
 import Foundation
 import UIKit
 
-class FindResult {
-  let action: SetEdgeStatusAction
-  let context: SolvingContext
-  
-  init(action: SetEdgeStatusAction, context: SolvingContext) {
-    self.action = action
-    self.context = context
-  }
-}
-
+/// 次の手を提示するインスタンス
 class Adviser {
   /// 対象の問題
   let puzzle: Puzzle
@@ -50,7 +41,8 @@ class Adviser {
       return MistakeAdviseInfo(puzzle: puzzle, index: index)
     }
     
-    if let result = findNextAction() {
+    let finder = ActionFinder(board: Board(width: board.width, height: board.height, numbers: board.numbers))
+    if let result = finder.findNextAction(userActions: userActions) {
       switch result.context.function {
       case .initialize:
         return InitialAdviseInfo(puzzle: puzzle, action: result.action)
@@ -67,6 +59,9 @@ class Adviser {
     return nil
   }
   
+  /// ユーザーのこれまでの手の中から誤りを見つける
+  ///
+  /// - Returns: 間違った手のインデックス
   func findMistake() -> Int? {
     let solver = Solver(board: Board(width: board.width, height: board.height, numbers: board.numbers))
     var solveOption = SolveOption()
@@ -93,6 +88,12 @@ class Adviser {
     return nil
   }
   
+  /// 与えられたエッジに対する最後のアクションを検索する
+  ///
+  /// - Parameters:
+  ///   - edge: 対象のエッジ
+  ///   - actions: 検索対象のアクション
+  /// - Returns: 最後のアクションのインデックス
   private func findLastAction(on edge: Edge, from actions: [SetEdgeStatusAction]) -> Int? {
     for i in (0 ..< actions.count).reversed() {
       let action = actions[i]
@@ -103,36 +104,36 @@ class Adviser {
     return nil
   }
   
-  func findNextAction() -> FindResult? {
-    let finder = ActionFinder(board: Board(width: board.width, height: board.height, numbers: board.numbers))
-    finder.option.debug = true
-    finder.doInitialStep()
-    if let action = finder.findAbsentAction(board: board) {
-      finder.solvingContext.function = .initialize
-      return FindResult(action: action, context: finder.solvingContext)
-    }
-    
-    finder.currentStep.rewind()
-    finder.doUserActions(userActions)
-
-    if let action = finder.findAbsentAction(board: board) {
-      // 小ループ1歩手前の状態は、これ以降新たなエッジがONにならない限り発生しない
-      finder.solvingContext.function = .smallLoop
-      let edge = action.edge
-      let node = edge.nodes[0]
-      let (_, loop) = finder.board.getLoopEnd(from: node, and: node.onEdge(connectTo: edge)!)
-      finder.solvingContext.mainElements = loop
-      return FindResult(action: action, context: finder.solvingContext)
-    }
-    
-    do {
-      try finder.findSurroundingElements()
-    } catch {
-      if let findException = error as? FinderException {
-        return FindResult(action: findException.action, context: finder.solvingContext)
-      }
-    }
-    
-    return nil
-  }
+//  func findNextAction() -> FindResult? {
+//    let finder = ActionFinder(board: Board(width: board.width, height: board.height, numbers: board.numbers))
+//    finder.option.debug = true
+//    finder.doInitialStep()
+//    if let action = finder.findAbsentAction(board: board) {
+//      finder.solvingContext.function = .initialize
+//      return FindResult(action: action, context: finder.solvingContext)
+//    }
+//
+//    finder.currentStep.rewind()
+//    finder.doUserActions(userActions)
+//
+//    if let action = finder.findAbsentAction(board: board) {
+//      // 小ループ1歩手前の状態は、これ以降新たなエッジがONにならない限り発生しない
+//      finder.solvingContext.function = .smallLoop
+//      let edge = action.edge
+//      let node = edge.nodes[0]
+//      let (_, loop) = finder.board.getLoopEnd(from: node, and: node.onEdge(connectTo: edge)!)
+//      finder.solvingContext.mainElements = loop
+//      return FindResult(action: action, context: finder.solvingContext)
+//    }
+//
+//    do {
+//      try finder.findSurroundingElements()
+//    } catch {
+//      if let findException = error as? FinderException {
+//        return FindResult(action: findException.action, context: finder.solvingContext)
+//      }
+//    }
+//
+//    return nil
+//  }
 }

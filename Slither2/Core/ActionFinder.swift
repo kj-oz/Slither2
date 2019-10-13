@@ -8,35 +8,74 @@
 
 import Foundation
 
-/// 次手探索時例外
-class FinderException : Error {
+/// 次の手の探索結果
+struct FindResult {
+  /// エッジに対するアクション
   let action: SetEdgeStatusAction
-  
-  init(action: SetEdgeStatusAction) {
-    self.action = action
-  }
+  /// そのアクションを発見した理由等
+  let context: SolvingContext
+//
+//  init(action: SetEdgeStatusAction, context: SolvingContext) {
+//    self.action = action
+//    self.context = context
+//  }
 }
 
 /// アドバイス時の次の手を探し出すクラス
 class ActionFinder : Solver {
+  /// 次手探索時例外
+  struct FinderException : Error {
+    /// 次手
+    let action: SetEdgeStatusAction
+//
+//    init(action: SetEdgeStatusAction) {
+//      self.action = action
+//    }
+  }
+  
+  /// １手仮置時の結果（手数が最低の処理を見つけるために保存しておく）
+  struct TryAction {
+    /// 仮置のアクション
+    var tryEdgeAction: SetEdgeStatusAction?
+    /// 確定するまでの延長数
+    var extent = Int.max
+    /// 確定するまでのアクション
+    var steps: [Action] = []
+    /// 矛盾が発生した要素（
+    var failedElement: Element?
+    
+    mutating func reset() {
+      self = TryAction()
+//      tryEdgeAction = nil
+//      extent = Int.max
+//      steps = []
+//      failedElement = nil
+    }
+  }
+
   /// 次手が見つかるのを待っている状態かどうか
   private var watching = false
   
   /// 仮置で最小延長で確定したアクション
-  private var minimumAction: SetEdgeStatusAction?
+  private var minimumAction = TryAction()
   
-  /// 仮置で最小延長で確定した際の延長数
-  private var minimumExtent = Int.max
-  
-  /// 仮置で最小延長で確定した際の確定するまでのアクション
-  private var minimumStep: [Action] = []
-  
-  /// 仮置で最小延長で確定した際の矛盾の発生した要素
-  private var minimumFailed: Element?
+
+//  /// 仮置で最小延長で確定したアクション
+//  private var minimumAction: SetEdgeStatusAction?
+//
+//  /// 仮置で最小延長で確定した際の延長数
+//  private var minimumExtent = Int.max
+//
+//  /// 仮置で最小延長で確定した際の確定するまでのアクション
+//  private var minimumStep: [Action] = []
+//
+//  /// 仮置で最小延長で確定した際の矛盾の発生した要素
+//  private var minimumFailed: Element?
 
   /// 解いている過程の状況
   var solvingContext: SolvingContext
   
+  /// ONで仮置した際の手順
   var onActions: [Action] = []
   
   /// コンストラクタ
@@ -47,9 +86,49 @@ class ActionFinder : Solver {
     super.init(board: board)
   }
   
+  /// 次の手を探索する
+  ///
+  /// - Parameter userActions: これまでのユーザの着手
+  /// - Returns: 探索の結果
+  func findNextAction(userActions: [SetEdgeStatusAction]) -> FindResult? {
+    option.debug = true
+    // 初期探索パターンの漏れのチェック
+    doInitialStep()
+    if let action = findAbsentAction(board: board) {
+      solvingContext.function = .initialize
+      return FindResult(action: action, context: solvingContext)
+    }
+    currentStep.rewind()
+    
+    // ユーザの着手のトレース
+    doUserActions(userActions)
+    
+    // 小ループ防止のOFFエッジの見落としのチェック
+    if let action = findAbsentAction(board: board) {
+      // 小ループ1歩手前の状態は、これ以降新たなエッジがONにならない限り発生しない
+      solvingContext.function = .smallLoop
+      let edge = action.edge
+      let node = edge.nodes[0]
+      let (_, loop) = board.getLoopEnd(from: node, and: node.onEdge(connectTo: edge)!)
+      solvingContext.mainElements = loop
+      return FindResult(action: action, context: solvingContext)
+    }
+    
+    // 次の手の探索
+    do {
+      try findSurroundingElements()
+    } catch {
+      if let findException = error as? FinderException {
+        return FindResult(action: findException.action, context: solvingContext)
+      }
+    }
+    
+    return nil
+  }
+
   /// 初期配置の処理を行う
   /// （ユーザの着手に漏れがないかを検討する）
-  func doInitialStep() {
+  private func doInitialStep() {
     do {
       try initCorner()
       try initC0()
@@ -66,7 +145,7 @@ class ActionFinder : Solver {
   }
   
   /// ユーザーの着手をそのまま再現する
-  func doUserActions(_ actions: [SetEdgeStatusAction]) {
+  private func doUserActions(_ actions: [SetEdgeStatusAction]) {
     do {
       for action in actions {
         let node = action.edge.nodes[0]
@@ -88,7 +167,7 @@ class ActionFinder : Solver {
   ///
   /// - Parameter board: ユーザーの着手盤面
   /// - Returns: ユーザーの着手盤面から漏れているアクション
-  func findAbsentAction(board: Board) -> SetEdgeStatusAction? {
+  private func findAbsentAction(board: Board) -> SetEdgeStatusAction? {
     for i in 0 ..< board.edges.count {
       let edge = board.edges[i]
       if edge.status == .unset {
@@ -113,11 +192,12 @@ class ActionFinder : Solver {
   ///
   /// - Parameter edge: 対象のエッジ
   /// - Returns: 明らかにOFFならtrue
-  private func isEdgeObviouslyOff(_ edge: Edge, after: Bool = false) -> Bool {
+  private func isEdgeObviouslyOff(_ edge: Edge) -> Bool {
     if edge.nodes[0].onCount == 2 || edge.nodes[1].onCount == 2 {
       return true
     }
-    if after {
+    if edge.status == .off {
+      // エッジの変更watch時には、ステータスえ変更後に呼び出される
       if edge.nodes[0].offCount == 4 || edge.nodes[1].offCount == 4 {
         return true
       }
@@ -149,7 +229,7 @@ class ActionFinder : Solver {
   /// これまでの打ち手による盤面の状況から、次の着手を探し出す
   ///
   /// - Throws: 着手探索例外（打ち手が見つかったら例外が発生する
-  func findSurroundingElements() throws {
+  private func findSurroundingElements() throws {
     watching = true
     defer {
       watching = false
@@ -225,7 +305,7 @@ class ActionFinder : Solver {
     }
     try super.changeEdgeStatus(of: edge, to: status)
     if watching && !trying {
-      if status == .on || !isEdgeObviouslyOff(edge, after: true) {
+      if status == .on || !isEdgeObviouslyOff(edge) {
         throw FinderException(action: SetEdgeStatusAction(edge: edge, status: status))
       }
     }
@@ -234,9 +314,9 @@ class ActionFinder : Solver {
   // 試しに1ステップだけ未設定のEdgeをOnまたはOffに設定して、エラーになればその逆の状態に確定させる.
   override func tryOneStep() throws -> Bool {
     startNewStep(useCache: false)
-    minimumAction = nil
-    minimumExtent = Int.max
-    minimumStep = currentStep.actions
+    minimumAction.reset()
+//    minimumExtent = Int.max
+//    minimumStep = currentStep.actions
     for edge in board.edges {
       if edge.status == .unset {
         tryOnEdges = [:]
@@ -246,9 +326,9 @@ class ActionFinder : Solver {
       }
     }
     backToPreviousStep()
-    if let action = minimumAction {
-      solvingContext.relatedElements = minimumStep
-      if let failed = minimumFailed {
+    if let action = minimumAction.tryEdgeAction {
+      solvingContext.relatedElements = minimumAction.steps
+      if let failed = minimumAction.failedElement {
         // 失敗に終わった結果の確定
         solvingContext.function = .tryFail
         solvingContext.mainElements = [failed]
@@ -257,7 +337,7 @@ class ActionFinder : Solver {
         // 同じ状態に変更されるエッジ
         solvingContext.function = .trySameResult
         solvingContext.mainElements = [action.edge]
-        let sameAction = minimumStep.last! as! SetEdgeStatusAction
+        let sameAction = minimumAction.steps.last! as! SetEdgeStatusAction
         try changeEdgeStatus(of: sameAction.edge, to: sameAction.newStatus)
       }
     }
@@ -275,12 +355,18 @@ class ActionFinder : Solver {
       let exception = error as! SolveException
       switch exception {
       case .failed(reason: let reason):
-        if tryingChainCount < minimumExtent {
-          minimumExtent = tryingChainCount
-          minimumAction = SetEdgeStatusAction(edge: edge, status: status.otherStatus())
-          minimumStep = currentStep.actions
-          minimumFailed = reason
+        if tryingChainCount < minimumAction.extent {
+          minimumAction.extent = tryingChainCount
+          minimumAction.tryEdgeAction = SetEdgeStatusAction(edge: edge, status: status.otherStatus())
+          minimumAction.steps = currentStep.actions
+          minimumAction.failedElement = reason
         }
+//        if tryingChainCount < minimumExtent {
+//          minimumExtent = tryingChainCount
+//          minimumAction = SetEdgeStatusAction(edge: edge, status: status.otherStatus())
+//          minimumStep = currentStep.actions
+//          minimumFailed = reason
+//        }
         currentStep.rewind(addCache: false)
         endTrying()
         return true
@@ -303,17 +389,28 @@ class ActionFinder : Solver {
         // on/offいずれか大きい方の手数で判定
         let chainCount = tryingChainCount + onChainCount
         
-        if chainCount < minimumExtent {
-          minimumExtent = chainCount
-          minimumAction = SetEdgeStatusAction(edge: edge, status: .on)
+        if chainCount < minimumAction.extent {
+          minimumAction.extent = chainCount
+          minimumAction.tryEdgeAction = SetEdgeStatusAction(edge: edge, status: .on)
           // stepにはOon/off両方のアクションを連続して保存
-          minimumStep = []
-          minimumStep.append(contentsOf: actions)
-          minimumStep.append(contentsOf: currentStep.actions)
-          minimumStep.append(action)
+          minimumAction.steps = []
+          minimumAction.steps.append(contentsOf: actions)
+          minimumAction.steps.append(contentsOf: currentStep.actions)
+          minimumAction.steps.append(action)
           // sameResultの場合、failedをnilに
-          minimumFailed = nil
+          minimumAction.failedElement = nil
         }
+//        if chainCount < minimumExtent {
+//          minimumExtent = chainCount
+//          minimumAction = SetEdgeStatusAction(edge: edge, status: .on)
+//          // stepにはOon/off両方のアクションを連続して保存
+//          minimumStep = []
+//          minimumStep.append(contentsOf: actions)
+//          minimumStep.append(contentsOf: currentStep.actions)
+//          minimumStep.append(action)
+//          // sameResultの場合、failedをnilに
+//          minimumFailed = nil
+//        }
         currentStep.rewind(addCache: false)
         endTrying()
         return true

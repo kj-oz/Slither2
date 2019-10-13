@@ -227,7 +227,7 @@ class Board {
   /// - Parameters:
   ///   - node: 探索元のNode
   ///   - edge: 最初の方向のEdge
-  /// - Returns: 連続線のedgeから見てnodeと逆側の末端のNode、連続線が閉じている場合にはnil
+  /// - Returns: （連続線のedgeから見てnodeと逆側の末端のNode、連続線が閉じている場合にはnil、そのノードに至るまでのエッジの配列）
   func getLoopEnd(from node: Node, and edge: Edge) -> (Node?, [Edge]) {
     var loop : [Edge] = [edge]
     var nd = edge.anotherNode(of: node)
