@@ -197,7 +197,7 @@ class InitialAdviseInfo : AdviseInfo {
 /// 何らかの解法により見つる手の見落としの情報
 class MissAdviseInfo : AdviseInfo {
   /// 解法
-  var function: SolvingContext.Function
+  var function: FindingContext.Function
   /// 見落としたアクション
   var action: SetEdgeStatusAction
   /// 解法の起点の要素
@@ -210,12 +210,12 @@ class MissAdviseInfo : AdviseInfo {
   /// 何らかの解法により見つる手の見逃しの情報
   ///
   /// - Parameter result: 探索の結果
-  init(result: FindResult) {
-    function = result.context.function
-    action = result.action
-    reasonElements = result.context.mainElements
+  init(result: FindingContext) {
+    function = result.function
+    action = result.action!
+    reasonElements = result.mainElements
     super.init()
-    self.board = result.context.board
+    self.board = result.board
     reasonLabel = "理由表示"
     fixLabel = "確定"
     switch function {
@@ -269,8 +269,8 @@ class AreaCheckAdviseInfo : MissAdviseInfo {
   var areaNodes: [Node]
   
   // 領域のノード情報を関連要素から取得
-  override init(result: FindResult) {
-    areaNodes = result.context.relatedElements as! [Node]
+  override init(result: FindingContext) {
+    areaNodes = result.relatedElements as! [Node]
     super.init(result: result)
     reasonElements = []
     message = "領域出入りから確定します。"
@@ -306,12 +306,12 @@ class TryAdviseInfo : AdviseInfo {
   /// １手仮置により見つる手の見逃しの情報の構築
   ///
   /// - Parameter result: 探索の結果
-  init(result: FindResult) {
+  init(result: FindingContext) {
     steps = []
-    action = result.action
-    reasonElement = result.context.mainElements[0]
+    action = result.action!
+    reasonElement = result.mainElements[0]
     super.init()
-    self.board = result.context.board
+    self.board = result.board
     fixLabel = "確定"
   }
   
@@ -380,9 +380,9 @@ class TryAdviseInfo : AdviseInfo {
 class TryFailAdviseInfo : TryAdviseInfo {
   
   // 実施したアクションを、エッジの状態変更のアクションごとのステップに分解する
-  override init(result: FindResult) {
+  override init(result: FindingContext) {
     super.init(result: result)
-    if let actions = result.context.relatedElements as? [Action] {
+    if let actions = result.relatedElements as? [Action] {
       var currStep: [Action] = []
       for action in actions {
         currStep.append(action)
@@ -448,10 +448,10 @@ class TrySameResultAdviseInfo : TryAdviseInfo {
   var offIndex = 0
   
   // ステップを構築する際、offIndexを設定する
-  override init(result: FindResult) {
+  override init(result: FindingContext) {
     super.init(result: result)
-    let edge = result.action.edge
-    if let actions = result.context.relatedElements as? [Action] {
+    let edge = result.action!.edge
+    if let actions = result.relatedElements as? [Action] {
       var currStep: [Action] = []
       for action in actions {
         currStep.append(action)

@@ -10,12 +10,12 @@ import Foundation
 
 /// 解の探索中にこれ以上の探索ができなくなった（必要なくなった）際にスローする例外
 ///
-/// - failed: 何らかの矛盾が発生した
+/// - failed: 何らかの矛盾が発生した [reason: 矛盾の発生した要素]
 /// - finished: 正解が見つかった
 /// - cacheHit: キャッシュにヒットした
 /// - timeover: 制限時間オーバー
 /// - stepover: 1ステップトライ時の延長エッジ数の制限オーバー
-/// - sameAction: 1ステップトライ時の.onと.offで同じ状態になった
+/// - sameAction: 1ステップトライ時の.onと.offで同じ状態になった [action: 同じ状態になったアクション]
 enum SolveException: Error {
   case failed(reason: Element?)
   case finished
@@ -156,32 +156,3 @@ struct SolveOption {
   }
 }
 
-class SolvingContext {
-  enum Function {
-    case initialize
-    case smallLoop
-    case checkCell
-    case checkNode
-    case checkGate
-    case checkColor
-    case tryFail
-    case trySameResult
-    case checkArea
-  }
-  
-  var function = Function.initialize
-  
-  var mainElements: [Element] = []
-  
-  var relatedElements: Any = []
-  
-//  var tryStep: [Action] = []
-//
-//  var action: Action?
-  
-  var board: Board?
-  
-  init(board: Board?) {
-    self.board = board
-  }
-}

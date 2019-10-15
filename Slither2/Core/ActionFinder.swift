@@ -8,18 +8,84 @@
 
 import Foundation
 
-/// 次の手の探索結果
-struct FindResult {
-  /// エッジに対するアクション
-  let action: SetEdgeStatusAction
-  /// そのアクションを発見した理由等
-  let context: SolvingContext
+/// 次の手の探索結果とそこに至る過程の情報
+struct FindingContext {
+  /// 探索の手法
+  ///
+  /// - initialize: 初期配置
+  /// - smallLoop: 小ループ防止
+  /// - checkCell: セルのチェック
+  /// - checkNode: ノードのチェック
+  /// - checkGate: ゲートのチェック
+  /// - checkColor: セルの色のチェック
+  /// - tryFail: 1手仮置（矛盾の発生）
+  /// - trySameResult: 1手仮置（ON/OFFで同じ状態の発生）
+  /// - checkArea: 領域チェック
+  enum Function {
+    case initialize
+    case smallLoop
+    case checkCell
+    case checkNode
+    case checkGate
+    case checkColor
+    case tryFail
+    case trySameResult
+    case checkArea
+  }
+  
+  /// 探索の手法
+  var function = Function.initialize
+  
+  /// 探索時の主対象要素
+  var mainElements: [Element] = []
+  
+  /// 探索時の関連要素
+  var relatedElements: Any = []
+  
+  /// 見つかったアクション
+  var action: SetEdgeStatusAction?
+  //  var tryStep: [Action] = []
+  //
+  //  var action: Action?
+  
+  /// 探索の対象のボード
+  var board: Board?
+  
+  /// 対象のボードを指定して探索結果を初期化する
+  ///
+  /// - Parameter board: ボード
+  init(board: Board?) {
+    self.board = board
+  }
+
+//  /// そのアクションを発見した理由等
+//  let context: SolvingContext
 //
 //  init(action: SetEdgeStatusAction, context: SolvingContext) {
 //    self.action = action
 //    self.context = context
 //  }
 }
+
+///// 手を探索している際の状態
+//class SolvingContext {
+//  /// 探索の手法
+//  var function = Function.initialize
+//
+//  var mainElements: [Element] = []
+//
+//  var relatedElements: Any = []
+//
+//  //  var tryStep: [Action] = []
+//  //
+//  //  var action: Action?
+//
+//  var board: Board?
+//
+//  init(board: Board?) {
+//    self.board = board
+//  }
+//}
 
 /// アドバイス時の次の手を探し出すクラス
 class ActionFinder : Solver {
@@ -43,14 +109,11 @@ class ActionFinder : Solver {
     var steps: [Action] = []
     /// 矛盾が発生した要素（
     var failedElement: Element?
-    
-    mutating func reset() {
-      self = TryAction()
-//      tryEdgeAction = nil
-//      extent = Int.max
-//      steps = []
-//      failedElement = nil
-    }
+//
+//    ///
+//    mutating func reset() {
+//      self = TryAction()
+//    }
   }
 
   /// 次手が見つかるのを待っている状態かどうか
@@ -73,7 +136,10 @@ class ActionFinder : Solver {
 //  private var minimumFailed: Element?
 
   /// 解いている過程の状況
-  var solvingContext: SolvingContext
+  //var solvingContext: SolvingContext
+  
+  /// 探索している過程の状況
+  var context: FindingContext
   
   /// ONで仮置した際の手順
   var onActions: [Action] = []
@@ -82,7 +148,8 @@ class ActionFinder : Solver {
   ///
   /// - Parameter board: 次手検索用の盤面
   override init(board: Board) {
-    solvingContext = SolvingContext(board: board)
+    //solvingContext = SolvingContext(board: board)
+    context = FindingContext(board: board)
     super.init(board: board)
   }
   
@@ -90,13 +157,14 @@ class ActionFinder : Solver {
   ///
   /// - Parameter userActions: これまでのユーザの着手
   /// - Returns: 探索の結果
-  func findNextAction(userActions: [SetEdgeStatusAction]) -> FindResult? {
+  func findNextAction(userActions: [SetEdgeStatusAction]) -> FindingContext? {
     option.debug = true
     // 初期探索パターンの漏れのチェック
     doInitialStep()
     if let action = findAbsentAction(board: board) {
-      solvingContext.function = .initialize
-      return FindResult(action: action, context: solvingContext)
+      context.action = action
+      context.function = .initialize
+      return context
     }
     currentStep.rewind()
     
@@ -106,12 +174,13 @@ class ActionFinder : Solver {
     // 小ループ防止のOFFエッジの見落としのチェック
     if let action = findAbsentAction(board: board) {
       // 小ループ1歩手前の状態は、これ以降新たなエッジがONにならない限り発生しない
-      solvingContext.function = .smallLoop
+      context.action = action
+      context.function = .smallLoop
       let edge = action.edge
       let node = edge.nodes[0]
       let (_, loop) = board.getLoopEnd(from: node, and: node.onEdge(connectTo: edge)!)
-      solvingContext.mainElements = loop
-      return FindResult(action: action, context: solvingContext)
+      context.mainElements = loop
+      return context
     }
     
     // 次の手の探索
@@ -119,7 +188,8 @@ class ActionFinder : Solver {
       try findSurroundingElements()
     } catch {
       if let findException = error as? FinderException {
-        return FindResult(action: findException.action, context: solvingContext)
+        context.action = findException.action
+        return context
       }
     }
     
@@ -314,7 +384,8 @@ class ActionFinder : Solver {
   // 試しに1ステップだけ未設定のEdgeをOnまたはOffに設定して、エラーになればその逆の状態に確定させる.
   override func tryOneStep() throws -> Bool {
     startNewStep(useCache: false)
-    minimumAction.reset()
+    minimumAction = TryAction()
+//    minimumAction.reset()
 //    minimumExtent = Int.max
 //    minimumStep = currentStep.actions
     for edge in board.edges {
@@ -327,16 +398,16 @@ class ActionFinder : Solver {
     }
     backToPreviousStep()
     if let action = minimumAction.tryEdgeAction {
-      solvingContext.relatedElements = minimumAction.steps
+      context.relatedElements = minimumAction.steps
       if let failed = minimumAction.failedElement {
         // 失敗に終わった結果の確定
-        solvingContext.function = .tryFail
-        solvingContext.mainElements = [failed]
+        context.function = .tryFail
+        context.mainElements = [failed]
         try changeEdgeStatus(of: action.edge, to: action.newStatus)
       } else {
         // 同じ状態に変更されるエッジ
-        solvingContext.function = .trySameResult
-        solvingContext.mainElements = [action.edge]
+        context.function = .trySameResult
+        context.mainElements = [action.edge]
         let sameAction = minimumAction.steps.last! as! SetEdgeStatusAction
         try changeEdgeStatus(of: sameAction.edge, to: sameAction.newStatus)
       }
@@ -439,48 +510,48 @@ class ActionFinder : Solver {
   
   // 与えられた状態がOnに変化したEdgeの与えられた方向のNodeをチェックする
   override func checkNodeOfOnEdge(edge: Edge, pos: Int) throws {
-    solvingContext.function = .checkNode
-    solvingContext.mainElements = [edge.nodes[pos]]
+    context.function = .checkNode
+    context.mainElements = [edge.nodes[pos]]
     try super.checkNodeOfOnEdge(edge: edge, pos: pos)
   }
   
   // 与えられた状態がOnに変化したEdgeの与えられた方向のCellをチェックする
   override func checkCellOfOnEdge(edge: Edge, pos: Int) throws {
-    solvingContext.function = .checkCell
-    solvingContext.mainElements = [edge.cells[pos]]
+    context.function = .checkCell
+    context.mainElements = [edge.cells[pos]]
     try super.checkCellOfOnEdge(edge: edge, pos: pos)
   }
   
   // 与えられた状態がOffに変化したEdgeの与えられた方向のNodeをチェックする
   override func checkNodeOfOffEdge(edge: Edge, pos: Int) throws {
-    solvingContext.function = .checkNode
-    solvingContext.mainElements = [edge.nodes[pos]]
+    context.function = .checkNode
+    context.mainElements = [edge.nodes[pos]]
     try super.checkNodeOfOffEdge(edge: edge, pos: pos)
   }
   
   // 与えられた状態がOffに変化したEdgeの与えられた方向のCellをチェックする
   override func checkCellOfOffEdge(edge: Edge, pos: Int) throws {
-    solvingContext.function = .checkCell
-    solvingContext.mainElements = [edge.cells[pos]]
+    context.function = .checkCell
+    context.mainElements = [edge.cells[pos]]
     try super.checkCellOfOffEdge(edge: edge, pos: pos)
   }
   
   // 状態が変化したエッジに接していたセルの色をチェックする
   override func checkColor(of cell: Cell) throws {
-    solvingContext.function = .checkColor
-    solvingContext.mainElements = [cell]
+    context.function = .checkColor
+    context.mainElements = [cell]
     try super.checkColor(of: cell)
   }
   
   // 与えられたCellの四隅の斜めに接するCellとの関係のチェックを行う
   override func checkGate(of cell: Cell) throws {
-    solvingContext.function = .checkGate
+    context.function = .checkGate
     switch cell.number {
     case 1:
       for h in [0, 1] {
         for v in [0, 1] {
           let node = cell.hEdges[v].nodes[h]
-          solvingContext.mainElements = [cell, node]
+          context.mainElements = [cell, node]
           try checkGateC1(cell: cell, h: h, v: v)
         }
       }
@@ -489,7 +560,7 @@ class ActionFinder : Solver {
       for h in [0, 1] {
         for v in [0, 1] {
           let node = cell.hEdges[v].nodes[h]
-          solvingContext.mainElements = [cell, node]
+          context.mainElements = [cell, node]
           try checkGateC2(cell: cell, h: h, v: v)
         }
       }
@@ -498,7 +569,7 @@ class ActionFinder : Solver {
       for h in [0, 1] {
         for v in [0, 1] {
           let node = cell.hEdges[v].nodes[h]
-          solvingContext.mainElements = [cell, node]
+          context.mainElements = [cell, node]
           try checkGateC3(cell: cell, h: h, v: v)
         }
       }
@@ -528,8 +599,8 @@ class AreaCheckerAF : AreaChecker {
   // ゲート部の（エッジの）ステータスを変更する
   override func changeGateStatus(of gate: Point, from area: Area, to status: EdgeStatus) throws -> Bool {
     let af = solver as! ActionFinder
-    af.solvingContext.function = .checkArea
-    af.solvingContext.mainElements = [gate.node]
+    af.context.function = .checkArea
+    af.context.mainElements = [gate.node]
     var nodes: [Node] = []
     for y in 0 ..< height {
       for x in 0 ..< width {
@@ -539,7 +610,7 @@ class AreaCheckerAF : AreaChecker {
         }
       }
     }
-    af.solvingContext.relatedElements = nodes
+    af.context.relatedElements = nodes
     return try super.changeGateStatus(of: gate, from: area, to: status)
   }
 }

@@ -43,9 +43,9 @@ class Adviser {
     
     let finder = ActionFinder(board: Board(width: board.width, height: board.height, numbers: board.numbers))
     if let result = finder.findNextAction(userActions: userActions) {
-      switch result.context.function {
+      switch result.function {
       case .initialize:
-        return InitialAdviseInfo(puzzle: puzzle, action: result.action)
+        return InitialAdviseInfo(puzzle: puzzle, action: result.action!)
       case .smallLoop, .checkNode, .checkCell, .checkGate, .checkColor:
         return MissAdviseInfo(result: result)
       case .tryFail:
