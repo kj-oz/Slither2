@@ -458,8 +458,9 @@ class ActionFinder : Solver {
         }
         
         // on/offいずれか大きい方の手数で判定
-        let chainCount = tryingChainCount + onChainCount
-        
+        let chainCount = max(tryingChainCount, onChainCount)
+        //let chainCount = tryingChainCount + onChainCount
+
         if chainCount < minimumAction.extent {
           minimumAction.extent = chainCount
           minimumAction.tryEdgeAction = SetEdgeStatusAction(edge: edge, status: .on)

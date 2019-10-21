@@ -362,7 +362,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Slither2/Core/Solver.swift"
-            timestampString = "591932283.830001"
+            timestampString = "593099368.132152"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "387"
@@ -394,7 +394,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Slither2/AdviseInfo.swift"
-            timestampString = "592791373.664"
+            timestampString = "593099368.132539"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "340"
@@ -410,7 +410,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Slither2/AdviseInfo.swift"
-            timestampString = "592791373.66493"
+            timestampString = "593099368.132586"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "173"
@@ -426,12 +426,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Slither2/Core/ActionFinder.swift"
-            timestampString = "592791373.665361"
+            timestampString = "593099368.132628"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "286"
-            endingLineNumber = "286"
-            landmarkName = "isEdgeObviouslyOff(_:)"
+            startingLineNumber = "316"
+            endingLineNumber = "316"
+            landmarkName = "findSurroundingElements()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -442,12 +442,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Slither2/Core/ActionFinder.swift"
-            timestampString = "592791373.665558"
+            timestampString = "593099368.132672"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "255"
-            endingLineNumber = "255"
-            landmarkName = "findAbsentAction(board:)"
+            startingLineNumber = "285"
+            endingLineNumber = "285"
+            landmarkName = "isEdgeObviouslyOff(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -458,13 +458,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Slither2/Core/ActionFinder.swift"
-            timestampString = "592791373.665661"
+            timestampString = "593099368.132715"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "261"
-            endingLineNumber = "261"
-            landmarkName = "ActionFinder"
-            landmarkType = "3">
+            startingLineNumber = "291"
+            endingLineNumber = "291"
+            landmarkName = "isEdgeObviouslyOff(_:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

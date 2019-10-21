@@ -420,8 +420,9 @@ class Solver {
           throw SolveException.stepover
         }
       }
-      if let onStatus = tryOnEdges[edge], onStatus.status == status &&
-          (onStatus.extentCount + tryingChainCount < option.tryOneStepMaxExtent) {
+      if let onStatus = tryOnEdges[edge], onStatus.status == status {
+//      if let onStatus = tryOnEdges[edge], onStatus.status == status &&
+//          (onStatus.extentCount + tryingChainCount < option.tryOneStepMaxExtent) {
         throw SolveException.sameAction(action: SetEdgeStatusAction(edge: edge, status: status))
       }
     }
